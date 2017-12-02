@@ -1,0 +1,48 @@
+#ifndef SHADER_MANAGER_HPP
+#define SHADER_MANAGER_HPP
+#include "Singleton.hpp"
+
+#include <memory>
+//#include <string>
+#include "Vector3.hpp"
+
+class Object;
+class Camera;
+
+struct ID3D11Device;
+struct ID3D11DeviceContext;
+
+class SingleColorShaderGroup;
+class DeferredSingleColorShaderGroup;
+class DeferredLightShaderGroup;
+
+enum ShaderType
+{
+	SINGLE_COLOR,
+	D_SINGLE_COLOR,
+	D_LIGHT
+};
+
+class ShaderManager : public Singleton<ShaderManager>
+{
+	friend class Singleton<ShaderManager>;
+	ShaderManager();
+	~ShaderManager();
+
+public:
+	bool Initialize(ID3D11Device* device);
+
+	void SetShaderType(ID3D11DeviceContext* deviceContext, const ShaderType& shaderType);
+	
+	void SetPerFrameConstantBuffer(ID3D11DeviceContext* deviceContext, Camera* camera, Vector3f lightPos, float lightIntensity);
+	void SetPerObjectConstantBuffer(ID3D11DeviceContext* deviceContext, Object* object);
+
+private:
+	std::unique_ptr<SingleColorShaderGroup> m_colorShaders;
+	std::unique_ptr<DeferredSingleColorShaderGroup> m_d_colorShaders;
+	std::unique_ptr<DeferredLightShaderGroup> m_d_lightShaders;
+
+	ShaderType m_currentShaderType;
+};
+
+#endif
