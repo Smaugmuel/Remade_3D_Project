@@ -23,6 +23,11 @@ public:
 	void Render();
 
 private:
+	void RenderDeferredFirstPass();
+	void RenderDepth();
+	void RenderShadowPass();
+	void RenderDeferredLightPass();
+
 	std::vector<std::unique_ptr<Object>> m_cubes;
 	std::unique_ptr<Object> m_floor;
 };

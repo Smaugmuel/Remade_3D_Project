@@ -220,10 +220,6 @@ void Game::Update()
 
 void Game::Render()
 {
-	// Clear color seems to not work, it's only black
-	//Direct3D::Get()->ClearDefaultTarget();
-	Direct3D::Get()->ClearAllTargets();
-
 	//ShaderManager::Get()->SetShaderGroup(Direct3D::Get()->GetDeviceContext(), ShaderType::SINGLE_COLOR);
 	////m_shaderManager->SetShaderGroup(Direct3D::Get()->GetDeviceContext(), "SingleColor");
 	//
@@ -240,9 +236,20 @@ void Game::Render()
 	//Direct3D::Get()->SetDefaultTarget();
 
 
-	// Render objects with first deferred pass
+	// Clear color seems to not work, it's only black
+	Direct3D::Get()->ClearAllTargets();
+
+	//RenderDepth();
+
+	RenderDeferredFirstPass();
+	RenderDeferredLightPass();
+
+	Direct3D::Get()->Present();
+}
+
+void Game::RenderDeferredFirstPass()
+{
 	Direct3D::Get()->SetDeferredTargets();
-	//Direct3D::Get()->ClearDeferredTargets();
 
 	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::D_SINGLE_COLOR);
 	ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
@@ -254,11 +261,24 @@ void Game::Render()
 	}
 	ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_floor.get());
 	m_floor->Render(Direct3D::Get()->GetDeviceContext());
+}
 
+void Game::RenderDepth()
+{
+	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::DEPTH);
+	ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
 
+	for (unsigned int i = 0; i < m_cubes.size(); i++)
+	{
+		ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_cubes[i].get());
+		m_cubes[i]->Render(Direct3D::Get()->GetDeviceContext());
+	}
+	ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_floor.get());
+	m_floor->Render(Direct3D::Get()->GetDeviceContext());
+}
 
-
-	/* Render to depth texture */
+void Game::RenderShadowPass()
+{
 	//Direct3D::Get()->SetShadowTarget();
 	//ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::SHADOW);
 	//ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
@@ -270,16 +290,13 @@ void Game::Render()
 	//}
 	//ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_floor.get());
 	//m_floor->Render(Direct3D::Get()->GetDeviceContext());
+}
 
-
-
-
-	// Render screen quad with second deferred pass (light)
+void Game::RenderDeferredLightPass()
+{
 	Direct3D::Get()->SetDefaultTarget();
 
 	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::D_LIGHT);
 	ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
 	DeferredScreenTarget::Get()->Render(Direct3D::Get()->GetDeviceContext());
-
-	Direct3D::Get()->Present();
 }

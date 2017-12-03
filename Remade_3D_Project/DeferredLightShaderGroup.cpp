@@ -18,7 +18,6 @@ bool DeferredLightShaderGroup::Initialize(ID3D11Device* device)
 	HRESULT result;
 	D3D11_BUFFER_DESC ps_perFrameDesc;
 	D3D11_SAMPLER_DESC samplerDesc;
-	D3D11_INPUT_ELEMENT_DESC inputDesc[2];
 
 	wchar_t* vsName = L"VS_D_Light.hlsl";
 	wchar_t* psName = L"PS_D_Light.hlsl";
@@ -83,8 +82,11 @@ bool DeferredLightShaderGroup::Initialize(ID3D11Device* device)
 
 
 	// Create input layout ========================================================================
-	inputDesc[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 };
-	inputDesc[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
 
 	result = device->CreateInputLayout(
 		inputDesc,

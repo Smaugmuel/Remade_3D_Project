@@ -1,45 +1,43 @@
-#include "DeferredSingleColorShaderGroup.hpp"
-
+#include "DepthShaderGroup.hpp"
 #include <d3d11.h>
 #include <d3dcompiler.h>
-
 #include "Camera.hpp"
 #include "Object.hpp"
 
-DeferredSingleColorShaderGroup::DeferredSingleColorShaderGroup()
+DepthShaderGroup::DepthShaderGroup()
 {
 }
 
-DeferredSingleColorShaderGroup::~DeferredSingleColorShaderGroup()
+DepthShaderGroup::~DepthShaderGroup()
 {
-	if (m_vs)
-	{
-		m_vs->Release();
-		m_vs = nullptr;
-	}
-	if (m_ps)
-	{
-		m_ps->Release();
-		m_ps = nullptr;
-	}
 	if (m_layout)
 	{
 		m_layout->Release();
 		m_layout = nullptr;
-	}
-	if (m_vsPerFrameBuffer)
-	{
-		m_vsPerFrameBuffer->Release();
-		m_vsPerFrameBuffer = nullptr;
 	}
 	if (m_vsPerObjectBuffer)
 	{
 		m_vsPerObjectBuffer->Release();
 		m_vsPerObjectBuffer = nullptr;
 	}
+	if (m_vsPerFrameBuffer)
+	{
+		m_vsPerFrameBuffer->Release();
+		m_vsPerFrameBuffer = nullptr;
+	}
+	if (m_ps)
+	{
+		m_ps->Release();
+		m_ps = nullptr;
+	}
+	if (m_vs)
+	{
+		m_vs->Release();
+		m_vs = nullptr;
+	}
 }
 
-bool DeferredSingleColorShaderGroup::Initialize(ID3D11Device * device)
+bool DepthShaderGroup::Initialize(ID3D11Device * device)
 {
 	ID3D10Blob* vertexShaderBlob;
 	ID3D10Blob* pixelShaderBlob;
@@ -48,8 +46,9 @@ bool DeferredSingleColorShaderGroup::Initialize(ID3D11Device * device)
 	D3D11_BUFFER_DESC vs_perFrameDesc;
 
 
-	wchar_t* vsName = L"VS_D_SingleColor.hlsl";
-	wchar_t* psName = L"PS_D_SingleColor.hlsl";
+	wchar_t* vsName = L"VS_Depth.hlsl";
+	wchar_t* psName = L"PS_Depth.hlsl";
+
 
 
 	// Compile shaders ============================================================================
@@ -114,8 +113,6 @@ bool DeferredSingleColorShaderGroup::Initialize(ID3D11Device * device)
 	D3D11_INPUT_ELEMENT_DESC inputDesc[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
 	result = device->CreateInputLayout(
@@ -168,7 +165,7 @@ bool DeferredSingleColorShaderGroup::Initialize(ID3D11Device * device)
 	return true;
 }
 
-void DeferredSingleColorShaderGroup::SetupShaders(ID3D11DeviceContext * deviceContext)
+void DepthShaderGroup::SetupShaders(ID3D11DeviceContext * deviceContext)
 {
 	deviceContext->VSSetShader(m_vs, nullptr, 0);
 	deviceContext->HSSetShader(nullptr, nullptr, 0);
@@ -177,11 +174,9 @@ void DeferredSingleColorShaderGroup::SetupShaders(ID3D11DeviceContext * deviceCo
 	deviceContext->PSSetShader(m_ps, nullptr, 0);
 
 	deviceContext->IASetInputLayout(m_layout);
-
-	// Might need to set sample state here
 }
 
-void DeferredSingleColorShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, Camera * camera)
+void DepthShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, Camera * camera)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result;
@@ -203,13 +198,13 @@ void DeferredSingleColorShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * d
 
 	frameDataVS = (VS_PerFrameBuffer*)mappedResource.pData;
 	frameDataVS->view = camera->GetViewMatrix();
-	frameDataVS->projection = camera->GetProjectionMatrix();
+	frameDataVS->proj = camera->GetProjectionMatrix();
 
 	deviceContext->Unmap(m_vsPerFrameBuffer, 0);
 	deviceContext->VSSetConstantBuffers(0, 1, &m_vsPerFrameBuffer);
 }
 
-void DeferredSingleColorShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * deviceContext, Object * object)
+void DepthShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * deviceContext, Object * object)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result;
@@ -230,8 +225,6 @@ void DeferredSingleColorShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * 
 
 	objectData = (VS_PerObjectBuffer*)mappedResource.pData;
 	objectData->world = object->GetWorldMatrix();
-	objectData->color = object->GetColor();
-	objectData->padding = 1.0f;
 
 	deviceContext->Unmap(m_vsPerObjectBuffer, 0);
 	deviceContext->VSSetConstantBuffers(1, 1, &m_vsPerObjectBuffer);

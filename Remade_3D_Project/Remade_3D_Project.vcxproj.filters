@@ -105,6 +105,9 @@
     <ClCompile Include="ShadowShaderGroup.cpp">
       <Filter>Source Files\Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="DepthShaderGroup.cpp">
+      <Filter>Source Files\Shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Direct3D.hpp">
@@ -182,6 +185,9 @@
     <ClInclude Include="ShadowShaderGroup.hpp">
       <Filter>Header Files\Shaders</Filter>
     </ClInclude>
+    <ClInclude Include="DepthShaderGroup.hpp">
+      <Filter>Source Files\Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VS_SingleColor.hlsl">
@@ -200,6 +206,12 @@
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PS_D_Light.hlsl">
+      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Depth.hlsl">
+      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Depth.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
   </ItemGroup>

@@ -15,6 +15,7 @@ struct ID3D11DeviceContext;
 class SingleColorShaderGroup;
 class DeferredSingleColorShaderGroup;
 class DeferredLightShaderGroup;
+class DepthShaderGroup;
 class ShadowShaderGroup;
 
 enum ShaderType
@@ -22,6 +23,7 @@ enum ShaderType
 	SINGLE_COLOR,
 	D_SINGLE_COLOR,
 	D_LIGHT,
+	DEPTH
 	//SHADOW
 };
 
@@ -43,6 +45,7 @@ private:
 	std::unique_ptr<SingleColorShaderGroup> m_colorShaders;
 	std::unique_ptr<DeferredSingleColorShaderGroup> m_d_colorShaders;
 	std::unique_ptr<DeferredLightShaderGroup> m_d_lightShaders;
+	std::unique_ptr<DepthShaderGroup> m_depthShaders;
 	//std::unique_ptr<ShadowShaderGroup> m_s_shaders;
 
 	ShaderType m_currentShaderType;
