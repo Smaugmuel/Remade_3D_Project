@@ -46,7 +46,6 @@ bool DeferredSingleColorShaderGroup::Initialize(ID3D11Device * device)
 	HRESULT result;
 	D3D11_BUFFER_DESC vs_perObjectDesc;
 	D3D11_BUFFER_DESC vs_perFrameDesc;
-	D3D11_BUFFER_DESC ps_perFrameDesc;
 
 
 	wchar_t* vsName = L"VS_D_SingleColor.hlsl";
@@ -147,8 +146,7 @@ bool DeferredSingleColorShaderGroup::Initialize(ID3D11Device * device)
 	vs_perObjectDesc.MiscFlags = 0;
 	vs_perObjectDesc.StructureByteStride = 0;
 
-	result = device->CreateBuffer(&vs_perObjectDesc, nullptr, &m_vsPerObjectBuffer);
-	if (FAILED(result))
+	if (FAILED(device->CreateBuffer(&vs_perObjectDesc, nullptr, &m_vsPerObjectBuffer)))
 	{
 		return false;
 	}
@@ -162,8 +160,7 @@ bool DeferredSingleColorShaderGroup::Initialize(ID3D11Device * device)
 	vs_perFrameDesc.MiscFlags = 0;
 	vs_perFrameDesc.StructureByteStride = 0;
 
-	result = device->CreateBuffer(&vs_perFrameDesc, nullptr, &m_vsPerFrameBuffer);
-	if (FAILED(result))
+	if (FAILED(device->CreateBuffer(&vs_perFrameDesc, nullptr, &m_vsPerFrameBuffer)))
 	{
 		return false;
 	}
@@ -233,6 +230,8 @@ void DeferredSingleColorShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * 
 
 	objectData = (VS_PerObjectBuffer*)mappedResource.pData;
 	objectData->world = object->GetWorldMatrix();
+	objectData->color = object->GetColor();
+	objectData->padding = 1.0f;
 
 	deviceContext->VSSetConstantBuffers(1, 1, &m_vsPerObjectBuffer);
 	deviceContext->Unmap(m_vsPerObjectBuffer, 0);

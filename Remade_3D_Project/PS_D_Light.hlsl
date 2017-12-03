@@ -1,12 +1,15 @@
 Texture2D worldPosTexture : register(t0);
 Texture2D normalTexture : register(t1);
 Texture2D colorTexture : register(t2);
+//Texture2D depthTexture : register(t3);
 
 SamplerState sampleState : register(s0);
 
 cbuffer LightBuffer : register(b0)
 {
 	float4 lightData;
+	//matrix<float, 4, 4> view;
+	//matrix<float, 4, 4> proj;
 };
 
 struct VS_OUT
@@ -26,6 +29,9 @@ float4 main(VS_OUT input) : SV_Target
 
 	float3 toLight = normalize(lightPos - worldPos.xyz);
 	float diffuse = saturate(dot(toLight, normal.xyz));
+
+	/*float depth = pow(depthTexture.Sample(sampleState, input.uv).r, 100);
+	return float4(depth, depth, depth, 1.0f);*/
 
 	//return normal;
 	//return float4(0, 0, 1, 1);

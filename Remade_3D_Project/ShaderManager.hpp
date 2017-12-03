@@ -15,12 +15,14 @@ struct ID3D11DeviceContext;
 class SingleColorShaderGroup;
 class DeferredSingleColorShaderGroup;
 class DeferredLightShaderGroup;
+class ShadowShaderGroup;
 
 enum ShaderType
 {
 	SINGLE_COLOR,
 	D_SINGLE_COLOR,
-	D_LIGHT
+	D_LIGHT,
+	//SHADOW
 };
 
 class ShaderManager : public Singleton<ShaderManager>
@@ -34,13 +36,14 @@ public:
 
 	void SetShaderType(ID3D11DeviceContext* deviceContext, const ShaderType& shaderType);
 	
-	void SetPerFrameConstantBuffer(ID3D11DeviceContext* deviceContext, Camera* camera, Vector3f lightPos, float lightIntensity);
+	void SetPerFrameConstantBuffer(ID3D11DeviceContext* deviceContext, Camera* camera, Camera* lightCamera, float lightIntensity);
 	void SetPerObjectConstantBuffer(ID3D11DeviceContext* deviceContext, Object* object);
 
 private:
 	std::unique_ptr<SingleColorShaderGroup> m_colorShaders;
 	std::unique_ptr<DeferredSingleColorShaderGroup> m_d_colorShaders;
 	std::unique_ptr<DeferredLightShaderGroup> m_d_lightShaders;
+	//std::unique_ptr<ShadowShaderGroup> m_s_shaders;
 
 	ShaderType m_currentShaderType;
 };

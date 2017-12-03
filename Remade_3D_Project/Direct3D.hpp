@@ -15,10 +15,11 @@
 enum BufferType
 {
 	//DEFAULT,
-	D_WORLD_POS,
+	D_WORLD_POS,		// Deferred
 	D_NORMALS,
 	D_COLOR,
-	NR_OF_ELEMENTS
+	NR_OF_D_ELEMENTS,
+	//S_DEPTH				// Shadow
 };
 
 class Direct3D final : public Singleton<Direct3D>
@@ -34,16 +35,20 @@ public:
 
 	void ClearDefaultTarget();
 	void ClearDeferredTargets();
+	//void ClearShadowTarget();
 	void ClearAllTargets();
+
 	void Present();
 
 	void SetDefaultTarget();
 	void SetDeferredTargets();
+	//void SetShadowTarget();
 
 	ID3D11Device* GetDevice() const;
 	ID3D11DeviceContext* GetDeviceContext() const;
 
-	ID3D11ShaderResourceView** GetShaderResourceViews();
+	ID3D11ShaderResourceView** GetDeferredShaderResourceViews();
+	//ID3D11ShaderResourceView* GetShadowShaderResourceView();
 
 private:
 	bool InitializeDeviceAndSwapChain();
@@ -56,6 +61,11 @@ private:
 	bool InitializeDeferredDepthBufferAndDepthStencilView();
 	bool InitializeDeferredViewport();
 
+	/* Shadow */
+	//bool InitializeShadowDepthBufferAndDepthStencilView();
+	//bool InitializeShadowShaderResourceView();
+	//bool InitializeShadowViewport();
+
 	IDXGISwapChain* m_swapChain;
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_deviceContext;
@@ -64,14 +74,19 @@ private:
 	ID3D11DepthStencilView* m_depthStencilView;
 	D3D11_VIEWPORT m_viewPort;
 
-	// Deferred rendering
-	ID3D11Texture2D* m_d_renderTargetTextures[BufferType::NR_OF_ELEMENTS];
-	ID3D11RenderTargetView* m_d_renderTargetViews[BufferType::NR_OF_ELEMENTS];
-	ID3D11ShaderResourceView* m_d_shaderResourceViews[BufferType::NR_OF_ELEMENTS];
+	// Deferred
+	ID3D11Texture2D* m_d_renderTargetTextures[BufferType::NR_OF_D_ELEMENTS];
+	ID3D11RenderTargetView* m_d_renderTargetViews[BufferType::NR_OF_D_ELEMENTS];
+	ID3D11ShaderResourceView* m_d_shaderResourceViews[BufferType::NR_OF_D_ELEMENTS];
 	ID3D11Texture2D* m_d_depthStencilBuffer;
 	ID3D11DepthStencilView* m_d_depthStencilView;
 	D3D11_VIEWPORT m_d_viewPort;
 
+	/* Shadow */
+	//ID3D11ShaderResourceView* m_s_shaderResourceView;
+	//ID3D11Texture2D* m_s_depthStencilBuffer;
+	//ID3D11DepthStencilView* m_s_depthStencilView;
+	//D3D11_VIEWPORT m_s_viewport;
 
 	HWND m_windowHandle;
 	Vector2i m_windowDimensions;

@@ -1,6 +1,7 @@
 #include "DeferredLightShaderGroup.hpp"
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#include "Camera.hpp"
 
 DeferredLightShaderGroup::DeferredLightShaderGroup()
 {
@@ -155,7 +156,7 @@ void DeferredLightShaderGroup::SetupShaders(ID3D11DeviceContext * deviceContext)
 	deviceContext->PSSetSamplers(0, 1, &m_samplerState);
 }
 
-void DeferredLightShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources, Vector3f lightPosition, float lightIntensity)
+void DeferredLightShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources, /*ID3D11ShaderResourceView* depthTexture,*/ Camera* lightCamera, float lightIntensity)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	PS_PerFrameBuffer* frameDataPS;
@@ -176,11 +177,14 @@ void DeferredLightShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext* deviceCo
 	}
 	
 	frameDataPS = (PS_PerFrameBuffer*)mappedResource.pData;
-	frameDataPS->lightPosition = lightPosition;
+	frameDataPS->lightPosition = lightCamera->GetPosition();
 	frameDataPS->lightIntensity = lightIntensity;
+	frameDataPS->lightView = lightCamera->GetViewMatrix();
+	frameDataPS->lightProj = lightCamera->GetProjectionMatrix();
 
 	deviceContext->Unmap(m_psPerFrameBuffer, 0);
 	deviceContext->PSSetConstantBuffers(0, 1, &m_psPerFrameBuffer);
 
 	deviceContext->PSSetShaderResources(0, nrOfResources, resources);
+	//deviceContext->PSGetShaderResources(nrOfResources, 1, &depthTexture);
 }

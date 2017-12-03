@@ -24,6 +24,8 @@ bool Object::Initialize(ID3D11Device* device, const char* modelFileName)
 	m_rotation = Vector3f(0, 0, 0);
 	m_scale = Vector3f(1, 1, 1);
 
+	m_color = Vector3f(1, 0, 0);
+
 	UpdateWorldMatrix();
 
 	return true;
@@ -54,7 +56,7 @@ void Object::Move(const Vector3f& offset)
 	m_update_flag_world = true;
 }
 
-void Object::Move(const float& x, const float& y, const float& z)
+void Object::Move(float x, float y, float z)
 {
 	Move(Vector3f(x, y, z));
 }
@@ -69,7 +71,7 @@ void Object::Rotate(const Vector3f& rotation)
 	m_update_flag_world = true;
 }
 
-void Object::Rotate(const float& x, const float& y, const float& z)
+void Object::Rotate(float x, float y, float z)
 {
 	Rotate(Vector3f(x, y, z));
 }
@@ -85,9 +87,9 @@ void Object::SetPosition(const Vector3f& position)
 	m_update_flag_world = true;
 }
 
-void Object::SetPosition(const float& x, const float& y, const float& z)
+void Object::SetPosition(float x, float y, float z)
 {
-	SetRotation(Vector3f(x, y, z));
+	SetPosition(Vector3f(x, y, z));
 }
 
 void Object::SetRotation(const Vector3f& rotation)
@@ -102,7 +104,7 @@ void Object::SetRotation(const Vector3f& rotation)
 	m_update_flag_world = true;
 }
 
-void Object::SetRotation(const float& x, const float& y, const float& z)
+void Object::SetRotation(float x, float y, float z)
 {
 	SetRotation(Vector3f(x, y, z));
 }
@@ -119,9 +121,19 @@ void Object::SetScale(const Vector3f& scale)
 	m_update_flag_world = true;
 }
 
-void Object::SetScale(const float& x, const float& y, const float& z)
+void Object::SetScale(float x, float y, float z)
 {
 	SetScale(Vector3f(x, y, z));
+}
+
+void Object::SetColor(const Vector3f & color)
+{
+	m_color = color;
+}
+
+void Object::SetColor(float r, float g, float b)
+{
+	SetColor(Vector3f(r, g, b));
 }
 
 const Vector3f& Object::GetPosition() const
@@ -142,6 +154,11 @@ const Vector3f& Object::GetScale() const
 const DirectX::XMMATRIX Object::GetWorldMatrix() const
 {
 	return DirectX::XMLoadFloat4x4(&m_worldMatrix);
+}
+
+const Vector3f & Object::GetColor() const
+{
+	return m_color;
 }
 
 void Object::UpdateWorldMatrix()

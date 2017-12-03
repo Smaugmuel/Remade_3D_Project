@@ -22,22 +22,27 @@ public:
 	void Render(ID3D11DeviceContext* deviceContext);
 
 	void Move(const Vector3f& offset);
-	void Move(const float& x, const float& y, const float& z);
+	void Move(float x, float y, float z);
 	void Rotate(const Vector3f& offset);
-	void Rotate(const float& x, const float& y, const float& z);
+	void Rotate(float x, float y, float z);
 
 	void SetPosition(const Vector3f& position);
-	void SetPosition(const float& x, const float& y, const float& z);
+	void SetPosition(float x, float y, float z);
 	void SetRotation(const Vector3f& rotation);
-	void SetRotation(const float& x, const float& y, const float& z);
+	void SetRotation(float x, float y, float z);
 	void SetScale(const Vector3f& scale);
-	void SetScale(const float& x, const float& y, const float& z);
+	void SetScale(float x, float y, float z);
+
+	void SetColor(const Vector3f& color);
+	void SetColor(float r, float g, float b);
 
 	const Vector3f& GetPosition() const;
 	const Vector3f& GetRotation() const;
 	const Vector3f& GetScale() const;
 
 	const DirectX::XMMATRIX GetWorldMatrix() const;
+
+	const Vector3f& GetColor() const;
 
 private:
 	void UpdateWorldMatrix();
@@ -49,6 +54,8 @@ private:
 	DirectX::XMFLOAT4X4 m_worldMatrix;
 
 	std::unique_ptr<Model> m_model;
+
+	Vector3f m_color;
 
 	bool m_update_flag_world;
 };

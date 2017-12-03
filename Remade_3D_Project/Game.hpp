@@ -18,10 +18,13 @@ public:
 	bool Initialize();
 	void Run();
 
-private:
-	//std::unique_ptr<Camera> m_playerCamera;
-	std::vector<std::unique_ptr<Object>> m_objects;
+	bool ProcessInput();
+	void Update();
+	void Render();
 
+private:
+	std::vector<std::unique_ptr<Object>> m_cubes;
+	std::unique_ptr<Object> m_floor;
 };
 
 #endif

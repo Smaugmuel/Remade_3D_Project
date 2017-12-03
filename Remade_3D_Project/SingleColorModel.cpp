@@ -103,7 +103,8 @@ bool SingleColorModel::LoadFromFile(const char* fileName)
 }
 bool SingleColorModel::CreateVertexBuffer(ID3D11Device* device)
 {
-	m_vertexBuffer = Buffers::CreateVertexBuffer(device, m_nrOfVerts * sizeof(SingleColorVertex), m_vertices);
+	//m_vertexBuffer = Buffers::CreateVertexBuffer(device, m_nrOfVerts * sizeof(SingleColorVertex), m_vertices);
+	m_vertexBuffer = Buffers::CreateDynamicVertexBuffer(device, m_nrOfVerts * sizeof(SingleColorVertex), m_vertices);
 
 	if (!m_vertexBuffer)
 	{

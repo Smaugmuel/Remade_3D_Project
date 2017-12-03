@@ -8,6 +8,7 @@
 #include "SingleColorShaderGroup.hpp"
 #include "DeferredSingleColorShaderGroup.hpp"
 #include "DeferredLightShaderGroup.hpp"
+#include "ShadowShaderGroup.hpp"
 
 ShaderManager* Singleton<ShaderManager>::s_instance = nullptr;
 
@@ -39,6 +40,12 @@ bool ShaderManager::Initialize(ID3D11Device* device)
 		return false;
 	}
 
+	//m_s_shaders = std::make_unique<ShadowShaderGroup>();
+	//if (!m_s_shaders->Initialize(device))
+	//{
+	//	return false;
+	//}
+
 	m_currentShaderType = (ShaderType)-1;
 
 	return true;
@@ -62,6 +69,9 @@ void ShaderManager::SetShaderType(ID3D11DeviceContext* deviceContext, const Shad
 	case ShaderType::D_LIGHT:
 		m_d_lightShaders->SetupShaders(deviceContext);
 		break;
+	//case ShaderType::SHADOW:
+	//	m_s_shaders->SetupShaders(deviceContext);
+	//	break;
 	default:
 		break;
 	}
@@ -86,7 +96,7 @@ void ShaderManager::SetShaderType(ID3D11DeviceContext* deviceContext, const Shad
 	//}
 }
 
-void ShaderManager::SetPerFrameConstantBuffer(ID3D11DeviceContext* deviceContext, Camera* camera, Vector3f lightPos, float lightIntensity)
+void ShaderManager::SetPerFrameConstantBuffer(ID3D11DeviceContext* deviceContext, Camera* camera, Camera* lightCamera, float lightIntensity)
 {
 	switch (m_currentShaderType)
 	{
@@ -97,8 +107,11 @@ void ShaderManager::SetPerFrameConstantBuffer(ID3D11DeviceContext* deviceContext
 		m_d_colorShaders->SetupPerFrameBuffer(deviceContext, camera);
 		break;
 	case ShaderType::D_LIGHT:
-		m_d_lightShaders->SetupPerFrameBuffer(deviceContext, BufferType::NR_OF_ELEMENTS, Direct3D::Get()->GetShaderResourceViews(), lightPos, lightIntensity);
+		m_d_lightShaders->SetupPerFrameBuffer(deviceContext, BufferType::NR_OF_D_ELEMENTS, Direct3D::Get()->GetDeferredShaderResourceViews(),/* Direct3D::Get()->GetShadowShaderResourceView(),*/ lightCamera, lightIntensity);
 		break;
+	//case ShaderType::SHADOW:
+	//	m_s_shaders->SetupPerFrameBuffer(deviceContext, lightCamera);
+	//	break;
 	default:
 		break;
 	}
@@ -116,6 +129,9 @@ void ShaderManager::SetPerObjectConstantBuffer(ID3D11DeviceContext* deviceContex
 	case ShaderType::D_SINGLE_COLOR:
 		m_d_colorShaders->SetupPerObjectBuffer(deviceContext, object);
 		break;
+	//case ShaderType::SHADOW:
+	//	m_s_shaders->SetupPerObjectBuffer(deviceContext, object);
+	//	break;
 	default:
 		break;
 	}
