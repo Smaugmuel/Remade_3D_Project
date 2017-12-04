@@ -9,6 +9,10 @@ float4 main(VS_OUT input) : SV_TARGET
 	float depthValue = input.depthPosition.z / input.depthPosition.w;
 	float4 color;
 	
+
+	depthValue = pow(depthValue, 100);
+	return float4(depthValue, depthValue, depthValue, 1.0f);
+
 	if (depthValue > 0.999f)
 	{
 		color = float4(0.0f, 0.0f, 1.0f, 1.0f);

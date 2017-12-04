@@ -30,8 +30,8 @@ float4 main(VS_OUT input) : SV_Target
 	float3 toLight = normalize(lightPos - worldPos.xyz);
 	float diffuse = saturate(dot(toLight, normal.xyz));
 
-	/*float depth = pow(depthTexture.Sample(sampleState, input.uv).r, 100);
-	return float4(depth, depth, depth, 1.0f);*/
+	//float depth = pow(depthTexture.Sample(sampleState, input.uv).r, 100);
+	//return float4(depth, depth, depth, 1.0f);
 
 	//return normal;
 	//return float4(0, 0, 1, 1);

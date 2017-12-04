@@ -433,13 +433,13 @@ bool Direct3D::InitializeDeferredViewport()
 
 void Direct3D::ClearDefaultTarget()
 {
-	float clearColor[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+	float clearColor[] = { 0.0f, 1.0f, 0.0f, 1.0f };
 	m_deviceContext->ClearRenderTargetView(m_renderTargetView, clearColor);
 	m_deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 void Direct3D::ClearDeferredTargets()
 {
-	float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	for (unsigned int i = 0; i < BufferType::NR_OF_D_ELEMENTS; i++)
 	{
 		m_deviceContext->ClearRenderTargetView(m_d_renderTargetViews[i], clearColor);

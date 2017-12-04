@@ -239,10 +239,15 @@ void Game::Render()
 	// Clear color seems to not work, it's only black
 	Direct3D::Get()->ClearAllTargets();
 
-	//RenderDepth();
-
-	RenderDeferredFirstPass();
-	RenderDeferredLightPass();
+	if (false)
+	{
+		RenderDepth();
+	}
+	else
+	{
+		RenderDeferredFirstPass();
+		RenderDeferredLightPass();
+	}
 
 	Direct3D::Get()->Present();
 }
