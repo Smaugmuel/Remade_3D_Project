@@ -220,24 +220,8 @@ void Game::Update()
 
 void Game::Render()
 {
-	//ShaderManager::Get()->SetShaderGroup(Direct3D::Get()->GetDeviceContext(), ShaderType::SINGLE_COLOR);
-	////m_shaderManager->SetShaderGroup(Direct3D::Get()->GetDeviceContext(), "SingleColor");
-	//
-	//ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera());
-	//
-	//Direct3D::Get()->SetDeferredTargets();		
-	//
-	//for (unsigned int i = 0; i < m_objects.size(); i++)
-	//{
-	//	ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_objects[i].get());
-	//	m_objects[i]->Render(Direct3D::Get()->GetDeviceContext());
-	//}
-	//
-	//Direct3D::Get()->SetDefaultTarget();
-
-
-	// Clear color seems to not work, it's only black
-	Direct3D::Get()->ClearAllTargets();
+	// Clear color seems to not work correctly based on light position
+	Direct3D::Get()->ClearDefaultTarget();
 
 	if (false)
 	{
@@ -246,6 +230,8 @@ void Game::Render()
 	else
 	{
 		RenderDeferredFirstPass();
+		RenderShadowPass();
+
 		RenderDeferredLightPass();
 	}
 
@@ -255,6 +241,7 @@ void Game::Render()
 void Game::RenderDeferredFirstPass()
 {
 	Direct3D::Get()->SetDeferredTargets();
+	Direct3D::Get()->ClearDeferredTargets();
 
 	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::D_SINGLE_COLOR);
 	ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
@@ -284,17 +271,19 @@ void Game::RenderDepth()
 
 void Game::RenderShadowPass()
 {
-	//Direct3D::Get()->SetShadowTarget();
-	//ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::SHADOW);
-	//ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
-	//
-	//for (unsigned int i = 0; i < m_cubes.size(); i++)
-	//{
-	//	ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_cubes[i].get());
-	//	m_cubes[i]->Render(Direct3D::Get()->GetDeviceContext());
-	//}
-	//ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_floor.get());
-	//m_floor->Render(Direct3D::Get()->GetDeviceContext());
+	Direct3D::Get()->SetShadowTarget();
+	Direct3D::Get()->ClearShadowTarget();
+
+	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::SHADOW);
+	ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
+	
+	for (unsigned int i = 0; i < m_cubes.size(); i++)
+	{
+		ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_cubes[i].get());
+		m_cubes[i]->Render(Direct3D::Get()->GetDeviceContext());
+	}
+	ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_floor.get());
+	m_floor->Render(Direct3D::Get()->GetDeviceContext());
 }
 
 void Game::RenderDeferredLightPass()

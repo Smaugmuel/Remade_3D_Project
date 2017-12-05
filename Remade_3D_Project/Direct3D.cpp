@@ -9,20 +9,38 @@ Direct3D::Direct3D() : Singleton<Direct3D>()
 Direct3D::~Direct3D()
 {
 	/* Shadow */
-	//if (m_s_shaderResourceView)
+	if (m_s_shaderResourceView)
+	{
+		m_s_shaderResourceView->Release();
+		m_s_shaderResourceView = nullptr;
+	}
+	if (m_s_depthStencilView)
+	{
+		m_s_depthStencilView->Release();
+		m_s_depthStencilView = nullptr;
+	}
+	if (m_s_depthStencilBuffer)
+	{
+		m_s_depthStencilBuffer->Release();
+		m_s_depthStencilBuffer = nullptr;
+	}
+
+
+	/* Render to texture */
+	//if (m_rt_shaderResourceView)
 	//{
-	//	m_s_shaderResourceView->Release();
-	//	m_s_shaderResourceView = nullptr;
+	//	m_rt_shaderResourceView->Release();
+	//	m_rt_shaderResourceView = nullptr;
 	//}
-	//if (m_s_depthStencilView)
+	//if (m_rt_renderTargetView)
 	//{
-	//	m_s_depthStencilView->Release();
-	//	m_s_depthStencilView = nullptr;
+	//	m_rt_renderTargetView->Release();
+	//	m_rt_renderTargetView = nullptr;
 	//}
-	//if (m_s_depthStencilBuffer)
+	//if (m_rt_renderTargetTexture)
 	//{
-	//	m_s_depthStencilBuffer->Release();
-	//	m_s_depthStencilBuffer = nullptr;
+	//	m_rt_renderTargetTexture->Release();
+	//	m_rt_renderTargetTexture = nullptr;
 	//}
 
 
@@ -131,19 +149,25 @@ bool Direct3D::Initialize(const HWND& windowHandle, const Vector2i& dimensions)
 		return false;
 	}
 
+	/* Render to texture */
+	//if (!InitializeRenderToTextureRenderTargetView())
+	//{
+	//	return false;
+	//}
+
 	/* Shadow */
-	//if (!InitializeShadowDepthBufferAndDepthStencilView())
-	//{
-	//	return false;
-	//}
-	//if (!InitializeShadowShaderResourceView())
-	//{
-	//	return false;
-	//}
-	//if (!InitializeShadowViewport())
-	//{
-	//	return false;
-	//}
+	if (!InitializeShadowDepthBufferAndDepthStencilView())
+	{
+		return false;
+	}
+	if (!InitializeShadowShaderResourceView())
+	{
+		return false;
+	}
+	if (!InitializeShadowViewport())
+	{
+		return false;
+	}
 
 	return true;
 }
@@ -369,67 +393,107 @@ bool Direct3D::InitializeDeferredViewport()
 	return true;
 }
 
-//bool Direct3D::InitializeShadowDepthBufferAndDepthStencilView()
+//bool Direct3D::InitializeRenderToTextureRenderTargetView()
 //{
-//	D3D11_TEXTURE2D_DESC depthBufferDesc;
-//	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-//
-//	depthBufferDesc.Width = m_windowDimensions.x;
-//	depthBufferDesc.Height = m_windowDimensions.y;	// Change to quadratic later ?
-//	depthBufferDesc.MipLevels = 1;
-//	depthBufferDesc.ArraySize = 1;
-//	depthBufferDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
-//	depthBufferDesc.SampleDesc.Count = 1;
-//	depthBufferDesc.SampleDesc.Quality = 0;
-//	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-//	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-//	depthBufferDesc.CPUAccessFlags = 0;
-//	depthBufferDesc.MiscFlags = 0;
-//
-//	if (FAILED(m_device->CreateTexture2D(&depthBufferDesc, NULL, &m_s_depthStencilBuffer)))
-//	{
-//		return false;
-//	}
-//
-//	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-//	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-//	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-//	depthStencilViewDesc.Texture2D.MipSlice = 0;
-//
-//	if (FAILED(m_device->CreateDepthStencilView(m_s_depthStencilBuffer, &depthStencilViewDesc, &m_s_depthStencilView)))
-//	{
-//		return false;
-//	}
-//
-//	return true;
-//}
-//bool Direct3D::InitializeShadowShaderResourceView()
-//{
+//	D3D11_TEXTURE2D_DESC textureDesc;
+//	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
 //	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 //
-//	shaderResourceViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+//
+//	ZeroMemory(&textureDesc, sizeof(textureDesc));
+//	textureDesc.Width = m_windowDimensions.x;
+//	textureDesc.Height = m_windowDimensions.y;
+//	textureDesc.MipLevels = 1;
+//	textureDesc.ArraySize = 1;
+//	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+//	textureDesc.SampleDesc.Count = 1;
+//	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+//	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+//	textureDesc.CPUAccessFlags = 0;
+//	textureDesc.MiscFlags = 0;
+//
+//	if (FAILED(m_device->CreateTexture2D(&textureDesc, nullptr, &m_rt_renderTargetTexture)))
+//		return false;
+//
+//	renderTargetViewDesc.Format = textureDesc.Format;
+//	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+//	renderTargetViewDesc.Texture2D.MipSlice = 0;
+//
+//	if (FAILED(m_device->CreateRenderTargetView(m_rt_renderTargetTexture, &renderTargetViewDesc, &m_rt_renderTargetView)))
+//		return false;
+//
+//	shaderResourceViewDesc.Format = textureDesc.Format;
 //	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 //	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 //	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 //
-//	if (FAILED(m_device->CreateShaderResourceView(m_s_depthStencilBuffer, &shaderResourceViewDesc, &m_s_shaderResourceView)))
-//	{
+//	if (FAILED(m_device->CreateShaderResourceView(m_rt_renderTargetTexture, &shaderResourceViewDesc, &m_rt_shaderResourceView)))
 //		return false;
-//	}
 //
 //	return true;
 //}
-//bool Direct3D::InitializeShadowViewport()
-//{
-//	m_s_viewport.Width = (float)m_windowDimensions.x;
-//	m_s_viewport.Height = (float)m_windowDimensions.y;
-//	m_s_viewport.MinDepth = 0.0f;
-//	m_s_viewport.MaxDepth = 1.0f;
-//	m_s_viewport.TopLeftX = 0.0f;
-//	m_s_viewport.TopLeftY = 0.0f;
-//
-//	return true;
-//}
+
+bool Direct3D::InitializeShadowDepthBufferAndDepthStencilView()
+{
+	D3D11_TEXTURE2D_DESC depthBufferDesc;
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+
+	depthBufferDesc.Width = m_windowDimensions.x;
+	depthBufferDesc.Height = m_windowDimensions.y;	// Change to quadratic later ?
+	depthBufferDesc.MipLevels = 1;
+	depthBufferDesc.ArraySize = 1;
+	depthBufferDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+	depthBufferDesc.SampleDesc.Count = 1;
+	depthBufferDesc.SampleDesc.Quality = 0;
+	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
+	depthBufferDesc.CPUAccessFlags = 0;
+	depthBufferDesc.MiscFlags = 0;
+
+	if (FAILED(m_device->CreateTexture2D(&depthBufferDesc, NULL, &m_s_depthStencilBuffer)))
+	{
+		return false;
+	}
+
+	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
+	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDesc.Texture2D.MipSlice = 0;
+
+	if (FAILED(m_device->CreateDepthStencilView(m_s_depthStencilBuffer, &depthStencilViewDesc, &m_s_depthStencilView)))
+	{
+		return false;
+	}
+
+	return true;
+}
+bool Direct3D::InitializeShadowShaderResourceView()
+{
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	shaderResourceViewDesc.Texture2D.MipLevels = 1;
+
+	if (FAILED(m_device->CreateShaderResourceView(m_s_depthStencilBuffer, &shaderResourceViewDesc, &m_s_shaderResourceView)))
+	{
+		return false;
+	}
+
+	return true;
+}
+bool Direct3D::InitializeShadowViewport()
+{
+	m_s_viewport.Width = (float)m_windowDimensions.x;
+	m_s_viewport.Height = (float)m_windowDimensions.y;
+	m_s_viewport.MinDepth = 0.0f;
+	m_s_viewport.MaxDepth = 1.0f;
+	m_s_viewport.TopLeftX = 0.0f;
+	m_s_viewport.TopLeftY = 0.0f;
+
+	return true;
+}
 
 void Direct3D::ClearDefaultTarget()
 {
@@ -447,15 +511,25 @@ void Direct3D::ClearDeferredTargets()
 
 	m_deviceContext->ClearDepthStencilView(m_d_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
-//void Direct3D::ClearShadowTarget()
+//void Direct3D::ClearRenderToTextureTarget()
 //{
-//	m_deviceContext->ClearDepthStencilView(m_s_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+//	float clearColor[] = { 0.0f, 1.0f, 0.0f, 1.0f };
+//	m_deviceContext->ClearRenderTargetView(m_rt_renderTargetView, clearColor);
+//
+//	// This might be wrong
+//	m_deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 //}
+
+void Direct3D::ClearShadowTarget()
+{
+	m_deviceContext->ClearDepthStencilView(m_s_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+}
 void Direct3D::ClearAllTargets()
 {
 	ClearDefaultTarget();
 	ClearDeferredTargets();
-	/*ClearShadowTarget();*/
+	/*ClearRenderToTextureTarget();*/
+	ClearShadowTarget();
 }
 
 void Direct3D::Present()
@@ -473,11 +547,17 @@ void Direct3D::SetDeferredTargets()
 	m_deviceContext->OMSetRenderTargets(BufferType::NR_OF_D_ELEMENTS, m_d_renderTargetViews, m_d_depthStencilView);
 	m_deviceContext->RSSetViewports(1, &m_d_viewPort);
 }
-//void Direct3D::SetShadowTarget()
+//void Direct3D::SetRenderToTextureTarget()
 //{
-//	m_deviceContext->OMSetRenderTargets(0, nullptr, m_s_depthStencilView);
-//	m_deviceContext->RSSetViewports(1, &m_viewPort);
+//	// This might be wrong
+//	m_deviceContext->OMSetRenderTargets(1, &m_rt_renderTargetView, m_depthStencilView);
 //}
+
+void Direct3D::SetShadowTarget()
+{
+	m_deviceContext->OMSetRenderTargets(0, nullptr, m_s_depthStencilView);
+	m_deviceContext->RSSetViewports(1, &m_s_viewport);
+}
 
 ID3D11Device* Direct3D::GetDevice() const
 {
@@ -491,7 +571,12 @@ ID3D11ShaderResourceView ** Direct3D::GetDeferredShaderResourceViews()
 {
 	return m_d_shaderResourceViews;
 }
-//ID3D11ShaderResourceView * Direct3D::GetShadowShaderResourceView()
+//ID3D11ShaderResourceView * Direct3D::GetRenderToTextureShaderResoureView()
 //{
-//	return m_s_shaderResourceView;
+//	return m_rt_shaderResourceView;
 //}
+
+ID3D11ShaderResourceView * Direct3D::GetShadowShaderResourceView()
+{
+	return m_s_shaderResourceView;
+}

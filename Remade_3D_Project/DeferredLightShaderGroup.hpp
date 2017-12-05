@@ -32,7 +32,7 @@ public:
 	bool Initialize(ID3D11Device* device);
 
 	void SetupShaders(ID3D11DeviceContext* deviceContext);
-	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources/*, ID3D11ShaderResourceView* depthTexture*/, Camera* lightCamera, float lightIntensity);
+	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources, ID3D11ShaderResourceView* depthTexture, Camera* lightCamera, float lightIntensity);
 
 private:
 	ID3D11VertexShader* m_vs;

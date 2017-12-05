@@ -35,20 +35,23 @@ public:
 
 	void ClearDefaultTarget();
 	void ClearDeferredTargets();
-	//void ClearShadowTarget();
+	//void ClearRenderToTextureTarget();
+	void ClearShadowTarget();
 	void ClearAllTargets();
 
 	void Present();
 
 	void SetDefaultTarget();
 	void SetDeferredTargets();
-	//void SetShadowTarget();
+	//void SetRenderToTextureTarget();
+	void SetShadowTarget();
 
 	ID3D11Device* GetDevice() const;
 	ID3D11DeviceContext* GetDeviceContext() const;
 
 	ID3D11ShaderResourceView** GetDeferredShaderResourceViews();
-	//ID3D11ShaderResourceView* GetShadowShaderResourceView();
+	//ID3D11ShaderResourceView* GetRenderToTextureShaderResoureView();
+	ID3D11ShaderResourceView* GetShadowShaderResourceView();
 
 private:
 	bool InitializeDeviceAndSwapChain();
@@ -61,10 +64,13 @@ private:
 	bool InitializeDeferredDepthBufferAndDepthStencilView();
 	bool InitializeDeferredViewport();
 
+	/* Render to texture */
+	//bool InitializeRenderToTextureRenderTargetView();
+
 	/* Shadow */
-	//bool InitializeShadowDepthBufferAndDepthStencilView();
-	//bool InitializeShadowShaderResourceView();
-	//bool InitializeShadowViewport();
+	bool InitializeShadowDepthBufferAndDepthStencilView();
+	bool InitializeShadowShaderResourceView();
+	bool InitializeShadowViewport();
 
 	IDXGISwapChain* m_swapChain;
 	ID3D11Device* m_device;
@@ -82,11 +88,16 @@ private:
 	ID3D11DepthStencilView* m_d_depthStencilView;
 	D3D11_VIEWPORT m_d_viewPort;
 
+	/* Render to texture */
+	//ID3D11Texture2D* m_rt_renderTargetTexture;
+	//ID3D11RenderTargetView* m_rt_renderTargetView;
+	//ID3D11ShaderResourceView* m_rt_shaderResourceView;
+
 	/* Shadow */
-	//ID3D11ShaderResourceView* m_s_shaderResourceView;
-	//ID3D11Texture2D* m_s_depthStencilBuffer;
-	//ID3D11DepthStencilView* m_s_depthStencilView;
-	//D3D11_VIEWPORT m_s_viewport;
+	ID3D11ShaderResourceView* m_s_shaderResourceView;
+	ID3D11Texture2D* m_s_depthStencilBuffer;
+	ID3D11DepthStencilView* m_s_depthStencilView;
+	D3D11_VIEWPORT m_s_viewport;
 
 	HWND m_windowHandle;
 	Vector2i m_windowDimensions;

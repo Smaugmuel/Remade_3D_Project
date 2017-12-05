@@ -23,8 +23,8 @@ enum ShaderType
 	SINGLE_COLOR,
 	D_SINGLE_COLOR,
 	D_LIGHT,
-	DEPTH
-	//SHADOW
+	DEPTH,
+	SHADOW
 };
 
 class ShaderManager : public Singleton<ShaderManager>
@@ -46,7 +46,7 @@ private:
 	std::unique_ptr<DeferredSingleColorShaderGroup> m_d_colorShaders;
 	std::unique_ptr<DeferredLightShaderGroup> m_d_lightShaders;
 	std::unique_ptr<DepthShaderGroup> m_depthShaders;
-	//std::unique_ptr<ShadowShaderGroup> m_s_shaders;
+	std::unique_ptr<ShadowShaderGroup> m_s_shaders;
 
 	ShaderType m_currentShaderType;
 };
