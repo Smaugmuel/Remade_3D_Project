@@ -1,0 +1,7 @@
+#ifndef SYSTEM_INFORMATION_HPP
+#define SYSTEM_INFORMATION_HPP
+
+#define WNDW 800
+#define WNDH 800
+
+#endif

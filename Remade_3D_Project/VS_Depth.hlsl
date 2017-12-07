@@ -1,10 +1,10 @@
-cbuffer PerFrame
+cbuffer PerFrame : register(b0)
 {
 	matrix<float, 4, 4> view;
 	matrix<float, 4, 4> proj;
 };
 
-cbuffer PerObject
+cbuffer PerObject : register(b1)
 {
 	matrix<float, 4, 4> world;
 };

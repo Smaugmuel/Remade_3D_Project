@@ -1,5 +1,6 @@
 #include "Camera.hpp"
 #include <math.h>
+#include "SystemInformation.hpp"
 
 Camera::Camera()
 {
@@ -44,8 +45,8 @@ void Camera::Initialize()
 	m_up = Vector3f(0, 1, 0 );
 
 	m_FOV = 3.1415927f * 0.5f;
-	m_dimensions.x = 640.0f;
-	m_dimensions.y = 640.0f;
+	m_dimensions.x = WNDW;
+	m_dimensions.y = WNDH;
 	m_nearPlane = 0.1f;
 	m_farPlane = 1000.0f;
 

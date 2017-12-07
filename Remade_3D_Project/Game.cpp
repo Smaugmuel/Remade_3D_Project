@@ -8,6 +8,8 @@
 #include "Camera.hpp"
 #include "Object.hpp"
 
+#include "SystemInformation.hpp"
+
 Game* Singleton<Game>::s_instance = nullptr;
 
 //	If generalizing a vertex shader, which parts will be different between them?
@@ -40,7 +42,7 @@ Game::~Game()
 
 bool Game::Initialize()
 {
-	if (!Window::Get()->Initialize(Vector2i(640, 640)))
+	if (!Window::Get()->Initialize(Vector2i(WNDW, WNDH)))
 	{
 		return false;
 	}
@@ -75,6 +77,36 @@ bool Game::Initialize()
 	}
 	cam->SetDimensions(Window::Get()->GetDimensions());
 	cam->SetPosition(Vector3f(0, 0, -10));
+	cam->SetTarget(Vector3f(0, 0, 0));
+	cam->Update();
+
+	cam = PlayerCameraManager::Get()->CreateCamera();
+	if (!cam)
+	{
+		return false;
+	}
+	cam->SetDimensions(Window::Get()->GetDimensions());
+	cam->SetPosition(Vector3f(10, 0, 0));
+	cam->SetTarget(Vector3f(0, 0, 0));
+	cam->Update();
+
+	cam = PlayerCameraManager::Get()->CreateCamera();
+	if (!cam)
+	{
+		return false;
+	}
+	cam->SetDimensions(Window::Get()->GetDimensions());
+	cam->SetPosition(Vector3f(0, 0, 10));
+	cam->SetTarget(Vector3f(0, 0, 0));
+	cam->Update();
+
+	cam = PlayerCameraManager::Get()->CreateCamera();
+	if (!cam)
+	{
+		return false;
+	}
+	cam->SetDimensions(Window::Get()->GetDimensions());
+	cam->SetPosition(Vector3f(-10, 0, 0));
 	cam->SetTarget(Vector3f(0, 0, 0));
 	cam->Update();
 
@@ -230,7 +262,7 @@ void Game::Render()
 	else
 	{
 		RenderDeferredFirstPass();
-		RenderShadowPass();
+		//RenderShadowPass();
 
 		RenderDeferredLightPass();
 	}
@@ -274,7 +306,7 @@ void Game::RenderShadowPass()
 	Direct3D::Get()->SetShadowTarget();
 	Direct3D::Get()->ClearShadowTarget();
 
-	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::SHADOW);
+	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::D_SHADOW);
 	ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
 	
 	for (unsigned int i = 0; i < m_cubes.size(); i++)

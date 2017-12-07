@@ -9,7 +9,7 @@
 #include "DeferredSingleColorShaderGroup.hpp"
 #include "DeferredLightShaderGroup.hpp"
 #include "DepthShaderGroup.hpp"
-#include "ShadowShaderGroup.hpp"
+#include "DeferredShadowShaderGroup.hpp"
 
 ShaderManager* Singleton<ShaderManager>::s_instance = nullptr;
 
@@ -47,7 +47,7 @@ bool ShaderManager::Initialize(ID3D11Device* device)
 		return false;
 	}
 
-	m_s_shaders = std::make_unique<ShadowShaderGroup>();
+	m_s_shaders = std::make_unique<DeferredShadowShaderGroup>();
 	if (!m_s_shaders->Initialize(device))
 	{
 		return false;
@@ -79,7 +79,7 @@ void ShaderManager::SetShaderType(ID3D11DeviceContext* deviceContext, const Shad
 	case ShaderType::DEPTH:
 		m_depthShaders->SetupShaders(deviceContext);
 		break;
-	case ShaderType::SHADOW:
+	case ShaderType::D_SHADOW:
 		m_s_shaders->SetupShaders(deviceContext);
 		break;
 	default:
@@ -122,7 +122,7 @@ void ShaderManager::SetPerFrameConstantBuffer(ID3D11DeviceContext* deviceContext
 	case ShaderType::DEPTH:
 		m_depthShaders->SetupPerFrameBuffer(deviceContext, camera);
 		break;
-	case ShaderType::SHADOW:
+	case ShaderType::D_SHADOW:
 		m_s_shaders->SetupPerFrameBuffer(deviceContext, lightCamera);
 		break;
 	default:
@@ -145,7 +145,7 @@ void ShaderManager::SetPerObjectConstantBuffer(ID3D11DeviceContext* deviceContex
 	case ShaderType::DEPTH:
 		m_depthShaders->SetupPerObjectBuffer(deviceContext, object);
 		break;
-	case ShaderType::SHADOW:
+	case ShaderType::D_SHADOW:
 		m_s_shaders->SetupPerObjectBuffer(deviceContext, object);
 		break;
 	default:

@@ -152,6 +152,7 @@
     <ClCompile Include="DepthShaderGroup.cpp" />
     <ClCompile Include="PlayerCameraManager.cpp" />
     <ClCompile Include="DeferredScreenTarget.cpp" />
+    <ClCompile Include="DeferredShadowShaderGroup.cpp" />
     <ClCompile Include="ShadowShaderGroup.cpp" />
     <ClCompile Include="SingleColorShaderGroup.cpp" />
     <ClCompile Include="DeferredLightShaderGroup.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="DepthShaderGroup.hpp" />
     <ClInclude Include="PlayerCameraManager.hpp" />
     <ClInclude Include="DeferredScreenTarget.hpp" />
+    <ClInclude Include="DeferredShadowShaderGroup.hpp" />
     <ClInclude Include="ShadowShaderGroup.hpp" />
     <ClInclude Include="SingleColorShaderGroup.hpp" />
     <ClInclude Include="DeferredLightShaderGroup.hpp" />
@@ -214,6 +216,7 @@
     <ClInclude Include="PixelShader.hpp" />
     <ClInclude Include="Shader.hpp" />
     <ClInclude Include="Singleton.hpp" />
+    <ClInclude Include="SystemInformation.hpp" />
     <ClInclude Include="Vector2.hpp" />
     <ClInclude Include="Vector3.hpp" />
     <ClInclude Include="VertexShader.hpp" />

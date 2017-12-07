@@ -29,8 +29,52 @@ float4 main(VS_OUT input) : SV_Target
 	float diffuse = 0.0f;
 	float4 projectedPos;
 	float2 projectedUV;
+	float depthValue;
+	float depthValueLight;
 	
 	
+	float2 uv_splitScreen;
+
+	if (input.uv.x <= 0.5f)
+	{
+		if (input.uv.y <= 0.5f)
+		{
+			uv_splitScreen = float2(input.uv.x * 2, input.uv.y * 2);
+			return worldPosTexture.Sample(sampleState, uv_splitScreen);
+		}
+		else
+		{
+			uv_splitScreen = float2(input.uv.x * 2, input.uv.y * 2 - 1);
+
+			worldPos = worldPosTexture.Sample(sampleState, uv_splitScreen);
+			normal = normalTexture.Sample(sampleState, uv_splitScreen);
+			color = colorTexture.Sample(sampleState, uv_splitScreen);
+
+			lightPos = lightData.xyz;
+			lightIntensity = lightData.w;
+
+			toLight = normalize(lightPos - worldPos.xyz);
+			diffuse = saturate(dot(toLight, normal.xyz));
+			return float4(color.xyz * saturate(diffuse + 0.1f), 1.0f);
+		}
+	}
+	else
+	{
+		if (input.uv.y <= 0.5f)
+		{
+			uv_splitScreen = float2(input.uv.x * 2 - 1, input.uv.y * 2);
+			return normalTexture.Sample(sampleState, uv_splitScreen);
+		}
+		else
+		{
+			uv_splitScreen = float2(input.uv.x * 2 - 1, input.uv.y * 2 - 1);
+			depthValue = pow(depthTexture.Sample(sampleState, uv_splitScreen).x, 1);
+			return float4(depthValue, depthValue, depthValue, 1);
+		}
+	}
+	//*/
+
+
 	worldPos = worldPosTexture.Sample(sampleState, input.uv);
 	normal = normalTexture.Sample(sampleState, input.uv);
 	color = colorTexture.Sample(sampleState, input.uv);
@@ -39,6 +83,9 @@ float4 main(VS_OUT input) : SV_Target
 	lightIntensity = lightData.w;
 
 	toLight = normalize(lightPos - worldPos.xyz);
+	diffuse = saturate(dot(toLight, normal.xyz));
+
+
 
 	projectedPos = mul(worldPos, mul(lightView, lightProj));
 	
@@ -48,10 +95,17 @@ float4 main(VS_OUT input) : SV_Target
 
 	if (saturate(projectedUV.x) == projectedUV.x && saturate(projectedUV.y) == projectedUV.y)
 	{
-		float depthValue = depthTexture.Sample(sampleState, projectedUV).x;
-		float depthValueLight = projectedPos.z - 0.01f;
+		depthValue = depthTexture.Sample(sampleState, projectedUV).x;
+		depthValueLight = projectedPos.z - 0.01f;
 
-
+		//if (depthValue < 0.1)
+		//{
+		//	return float4(0, 1, 0, 1);
+		//}
+		//else
+		//{
+		//	return float4(1, 0, 0, 1);
+		//}
 
 		/*if (depthValueLight < depthValue)
 		{
@@ -59,12 +113,5 @@ float4 main(VS_OUT input) : SV_Target
 		}*/
 	}
 
-	diffuse = saturate(dot(toLight, normal.xyz));
-
-	//float depth = pow(depthTexture.Sample(sampleState, input.uv).r, 100);
-	//return float4(depth, depth, depth, 1.0f);
-
-	//return normal;
-	//return float4(0, 0, 1, 1);
 	return float4(color.xyz * saturate(diffuse + 0.1f), 1.0f);
 }

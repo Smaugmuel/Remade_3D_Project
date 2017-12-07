@@ -3,7 +3,7 @@ cbuffer PerFrame : register(b0)
 	matrix<float, 4, 4> view;
 	matrix<float, 4, 4> projection;
 };
-cbuffer Perobject : register(b1)
+cbuffer PerObject : register(b1)
 {
 	matrix<float, 4, 4> world;
 	float3 color;

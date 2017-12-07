@@ -44,8 +44,8 @@ private:
 	ID3D11InputLayout* m_layout;
 
 	//ID3D11Buffer** m_vsBuffers;
-	ID3D11Buffer* m_vsPerObjectBuffer;
 	ID3D11Buffer* m_vsPerFrameBuffer;
+	ID3D11Buffer* m_vsPerObjectBuffer;
 };
 
 #endif

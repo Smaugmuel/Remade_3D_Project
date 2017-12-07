@@ -450,7 +450,7 @@ bool Direct3D::InitializeShadowDepthBufferAndDepthStencilView()
 	depthBufferDesc.CPUAccessFlags = 0;
 	depthBufferDesc.MiscFlags = 0;
 
-	if (FAILED(m_device->CreateTexture2D(&depthBufferDesc, NULL, &m_s_depthStencilBuffer)))
+	if (FAILED(m_device->CreateTexture2D(&depthBufferDesc, nullptr, &m_s_depthStencilBuffer)))
 	{
 		return false;
 	}
