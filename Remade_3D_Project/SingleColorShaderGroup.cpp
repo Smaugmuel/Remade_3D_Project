@@ -216,7 +216,7 @@ void SingleColorShaderGroup::SetupShaders(ID3D11DeviceContext* deviceContext)
 
 	//deviceContext->VSSetConstantBuffers(0, 2, m_vsBuffers);
 }
-void SingleColorShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, Camera * camera)
+void SingleColorShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, Camera * camera, Camera* lightCamera, float lightIntensity)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result;
@@ -259,12 +259,9 @@ void SingleColorShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext* deviceCont
 		return;
 	}
 
-	static float a = 0.0f;
-	a += 0.0002f;
-
 	frameDataPS = (PS_PerFrameBuffer*)mappedResource.pData;
-	frameDataPS->lightPosition = Vector3f(cosf(a), sinf(a), -1.0f) * 10.0f;
-	frameDataPS->lightIntensity = 1.0f;
+	frameDataPS->lightPosition = lightCamera->GetPosition();
+	frameDataPS->lightIntensity = lightIntensity;
 
 	deviceContext->PSSetConstantBuffers(0, 1, &m_psPerFrameBuffer);
 	deviceContext->Unmap(m_psPerFrameBuffer, 0);

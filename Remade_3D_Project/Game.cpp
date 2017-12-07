@@ -76,7 +76,7 @@ bool Game::Initialize()
 		return false;
 	}
 	cam->SetDimensions(Window::Get()->GetDimensions());
-	cam->SetPosition(Vector3f(0, 0, -10));
+	cam->SetPosition(Vector3f(0, 0, -20));
 	cam->SetTarget(Vector3f(0, 0, 0));
 	cam->Update();
 
@@ -86,7 +86,7 @@ bool Game::Initialize()
 		return false;
 	}
 	cam->SetDimensions(Window::Get()->GetDimensions());
-	cam->SetPosition(Vector3f(10, 0, 0));
+	cam->SetPosition(Vector3f(20, 0, 0));
 	cam->SetTarget(Vector3f(0, 0, 0));
 	cam->Update();
 
@@ -96,7 +96,7 @@ bool Game::Initialize()
 		return false;
 	}
 	cam->SetDimensions(Window::Get()->GetDimensions());
-	cam->SetPosition(Vector3f(0, 0, 10));
+	cam->SetPosition(Vector3f(0, 0, 20));
 	cam->SetTarget(Vector3f(0, 0, 0));
 	cam->Update();
 
@@ -106,7 +106,7 @@ bool Game::Initialize()
 		return false;
 	}
 	cam->SetDimensions(Window::Get()->GetDimensions());
-	cam->SetPosition(Vector3f(-10, 0, 0));
+	cam->SetPosition(Vector3f(-20, 0, 0));
 	cam->SetTarget(Vector3f(0, 0, 0));
 	cam->Update();
 
@@ -259,15 +259,33 @@ void Game::Render()
 	{
 		RenderDepth();
 	}
-	else
+	else if (false)
 	{
 		RenderDeferredFirstPass();
 		//RenderShadowPass();
 
 		RenderDeferredLightPass();
 	}
+	else
+	{
+		RenderNormal();
+	}
 
 	Direct3D::Get()->Present();
+}
+
+void Game::RenderNormal()
+{
+	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::SINGLE_COLOR);
+	ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
+
+	for (unsigned int i = 0; i < m_cubes.size(); i++)
+	{
+		ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_cubes[i].get());
+		m_cubes[i]->Render(Direct3D::Get()->GetDeviceContext());
+	}
+	ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_floor.get());
+	m_floor->Render(Direct3D::Get()->GetDeviceContext());
 }
 
 void Game::RenderDeferredFirstPass()
@@ -323,6 +341,7 @@ void Game::RenderDeferredLightPass()
 	Direct3D::Get()->SetDefaultTarget();
 
 	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::D_LIGHT);
+
 	ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
 	DeferredScreenTarget::Get()->Render(Direct3D::Get()->GetDeviceContext());
 }

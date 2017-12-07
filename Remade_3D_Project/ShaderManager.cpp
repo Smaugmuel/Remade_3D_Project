@@ -111,7 +111,7 @@ void ShaderManager::SetPerFrameConstantBuffer(ID3D11DeviceContext* deviceContext
 	switch (m_currentShaderType)
 	{
 	case ShaderType::SINGLE_COLOR:
-		m_colorShaders->SetupPerFrameBuffer(deviceContext, camera);
+		m_colorShaders->SetupPerFrameBuffer(deviceContext, camera, lightCamera, lightIntensity);
 		break;
 	case ShaderType::D_SINGLE_COLOR:
 		m_d_colorShaders->SetupPerFrameBuffer(deviceContext, camera);

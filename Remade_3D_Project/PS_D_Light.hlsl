@@ -55,7 +55,7 @@ float4 main(VS_OUT input) : SV_Target
 
 			toLight = normalize(lightPos - worldPos.xyz);
 			diffuse = saturate(dot(toLight, normal.xyz));
-			return float4(color.xyz * saturate(diffuse + 0.1f), 1.0f);
+			return float4(color.xyz * saturate(diffuse + 0.1f) * lightIntensity, 1.0f);
 		}
 	}
 	else

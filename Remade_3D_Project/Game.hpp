@@ -23,6 +23,7 @@ public:
 	void Render();
 
 private:
+	void RenderNormal();
 	void RenderDeferredFirstPass();
 	void RenderDepth();
 	void RenderShadowPass();
