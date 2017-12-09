@@ -567,6 +567,10 @@ ID3D11DeviceContext* Direct3D::GetDeviceContext() const
 {
 	return m_deviceContext;
 }
+ID3D11DepthStencilView * Direct3D::GetDepthStencilView()
+{
+	return m_depthStencilView;
+}
 ID3D11ShaderResourceView ** Direct3D::GetDeferredShaderResourceViews()
 {
 	return m_d_shaderResourceViews;

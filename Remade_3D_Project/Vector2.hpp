@@ -23,28 +23,28 @@ struct Vector2 final
 	{
 	}
 
-	const Vector2<Type>& operator=(const Vector2<Type>& right)
+	Vector2<Type>& operator=(const Vector2<Type>& right)
 	{
 		x = right.x;
 		y = right.y;
 
 		return *this;
 	}
-	const Vector2<Type> operator+=(const Vector2<Type>& right)
+	Vector2<Type> operator+=(const Vector2<Type>& right)
 	{
 		x += right.x;
 		y += right.y;
 
 		return *this;
 	}
-	const Vector2<Type> operator-=(const Vector2<Type>& right)
+	Vector2<Type> operator-=(const Vector2<Type>& right)
 	{
 		x -= right.x;
 		y -= right.y;
 
 		return *this;
 	}
-	const Vector2<Type> operator*=(const Type& coefficient)
+	Vector2<Type> operator*=(const Type& coefficient)
 	{
 		x *= coefficient;
 		y *= coefficient;
@@ -52,33 +52,37 @@ struct Vector2 final
 		return *this;
 	}
 
-	const Vector2<Type> operator+(const Vector2<Type>& right) const
+	Vector2<Type> operator+(const Vector2<Type>& right) const
 	{
 		return Vector2<Type>(x + right.x, y + right.y);
 	}
-	const Vector2<Type> operator-(const Vector2<Type>& right) const
+	Vector2<Type> operator-(const Vector2<Type>& right) const
 	{
 		return Vector2<Type>(x - right.x, y - right.y);
 	}
-	const Vector2<Type> operator*(const Type& coefficient) const
+	Vector2<Type> operator*(const Type& coefficient) const
 	{
 		return Vector2<Type>(x * coefficient, y * coefficient);
 	}
-	
-	const Vector2<Type> reflectAround(const Vector2<Type>& vec) const
+	bool operator==(const Vector2<Type>& right) const
+	{
+		return right.x == x && right.y == y;
+	}
+
+	Vector2<Type> reflectAround(const Vector2<Type>& vec) const
 	{
 		return (vec * (2 * this->dot(vec) / vec.lengthSquared()) - *this);
 	}
-	const Vector2<Type> reflectOn(const Vector2<Type>& mirror) const
+	Vector2<Type> reflectOn(const Vector2<Type>& mirror) const
 	{
 		return (*this - mirror * (2 * this->dot(mirror) / mirror.lengthSquared()));
 	}
 
-	const Type dot(const Vector2<Type>& right) const
+	float dot(const Vector2<Type>& right) const
 	{
 		return x*right.x + y*right.y;
 	}
-	const Vector2<Type> cross() const
+	Vector2<Type> cross() const
 	{
 		return Vector2<Type>(-y, x);
 	}
@@ -94,11 +98,11 @@ struct Vector2 final
 		y *= lenDiv;
 	}
 
-	const Type length() const
+	float length() const
 	{
 		return std::sqrtf(lengthSquared());
 	}
-	const Type lengthSquared() const
+	float lengthSquared() const
 	{
 		return (x*x + y*y);
 	}

@@ -49,6 +49,11 @@ public:
 	ID3D11Device* GetDevice() const;
 	ID3D11DeviceContext* GetDeviceContext() const;
 
+
+	/* Added for DebugWindow and RenderTexture classes */
+	ID3D11DepthStencilView* GetDepthStencilView();
+
+
 	ID3D11ShaderResourceView** GetDeferredShaderResourceViews();
 	//ID3D11ShaderResourceView* GetRenderToTextureShaderResoureView();
 	ID3D11ShaderResourceView* GetShadowShaderResourceView();

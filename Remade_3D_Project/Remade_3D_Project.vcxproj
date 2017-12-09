@@ -148,11 +148,13 @@
   <ItemGroup>
     <ClCompile Include="Buffers.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="DebugWindow.cpp" />
     <ClCompile Include="DeferredSingleColorShaderGroup.cpp" />
     <ClCompile Include="DepthShaderGroup.cpp" />
     <ClCompile Include="PlayerCameraManager.cpp" />
     <ClCompile Include="DeferredScreenTarget.cpp" />
     <ClCompile Include="DeferredShadowShaderGroup.cpp" />
+    <ClCompile Include="RenderTexture.cpp" />
     <ClCompile Include="ShadowShaderGroup.cpp" />
     <ClCompile Include="SingleColorShaderGroup.cpp" />
     <ClCompile Include="DeferredLightShaderGroup.cpp" />
@@ -185,11 +187,13 @@
   <ItemGroup>
     <ClInclude Include="Camera.hpp" />
     <ClInclude Include="Buffers.hpp" />
+    <ClInclude Include="DebugWindow.hpp" />
     <ClInclude Include="DeferredSingleColorShaderGroup.hpp" />
     <ClInclude Include="DepthShaderGroup.hpp" />
     <ClInclude Include="PlayerCameraManager.hpp" />
     <ClInclude Include="DeferredScreenTarget.hpp" />
     <ClInclude Include="DeferredShadowShaderGroup.hpp" />
+    <ClInclude Include="RenderTexture.hpp" />
     <ClInclude Include="ShadowShaderGroup.hpp" />
     <ClInclude Include="SingleColorShaderGroup.hpp" />
     <ClInclude Include="DeferredLightShaderGroup.hpp" />

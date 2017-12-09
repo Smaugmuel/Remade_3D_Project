@@ -10,6 +10,10 @@
 
 #include "SystemInformation.hpp"
 
+/* Added with rastertek */
+#include "RenderTexture.hpp"
+#include "DebugWindow.hpp"
+
 Game* Singleton<Game>::s_instance = nullptr;
 
 //	If generalizing a vertex shader, which parts will be different between them?
@@ -80,7 +84,7 @@ bool Game::Initialize()
 	cam->SetTarget(Vector3f(0, 0, 0));
 	cam->Update();
 
-	cam = PlayerCameraManager::Get()->CreateCamera();
+	/*cam = PlayerCameraManager::Get()->CreateCamera();
 	if (!cam)
 	{
 		return false;
@@ -108,7 +112,7 @@ bool Game::Initialize()
 	cam->SetDimensions(Window::Get()->GetDimensions());
 	cam->SetPosition(Vector3f(-20, 0, 0));
 	cam->SetTarget(Vector3f(0, 0, 0));
-	cam->Update();
+	cam->Update();*/
 
 
 	// Cubes
@@ -126,6 +130,22 @@ bool Game::Initialize()
 		return false;
 	m_floor->SetScale(100.0f, 0.02f, 100.0f);
 	m_floor->SetPosition(0.0f, -10.0f, 0.0f);
+
+
+
+
+	/* Added with rastertek */
+	//m_renderTexture = std::make_unique<RenderTexture>();
+	//if (!m_renderTexture->Initialize(Direct3D::Get()->GetDevice(), Window::Get()->GetDimensions()))
+	//{
+	//	return false;
+	//}
+	//m_debugWindow = std::make_unique<DebugWindow>();
+	//if (!m_debugWindow->Initialize(Direct3D::Get()->GetDevice(), Window::Get()->GetDimensions(), Vector2i(100, 100)))
+	//{
+	//	return false;
+	//}
+
 
 	return true;
 }
@@ -286,6 +306,10 @@ void Game::RenderNormal()
 	}
 	ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_floor.get());
 	m_floor->Render(Direct3D::Get()->GetDeviceContext());
+}
+
+void Game::RenderToTexture()
+{
 }
 
 void Game::RenderDeferredFirstPass()

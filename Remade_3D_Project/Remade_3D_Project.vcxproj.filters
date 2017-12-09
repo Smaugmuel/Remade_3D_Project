@@ -34,6 +34,12 @@
     <Filter Include="Source Files\Not In use">
       <UniqueIdentifier>{3c30bc65-3bc4-40fe-a96e-1bdfb8716124}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\RasterTekShadowMap">
+      <UniqueIdentifier>{4ff8cef5-0eb9-453c-a44e-a13a9bfb6339}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RasterTekShadowMap">
+      <UniqueIdentifier>{3d8e149b-f1e6-42ec-ac2e-a34533cf7547}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -102,13 +108,19 @@
     <ClCompile Include="DeferredScreenTarget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DepthShaderGroup.cpp">
-      <Filter>Source Files\Shaders</Filter>
-    </ClCompile>
     <ClCompile Include="DeferredShadowShaderGroup.cpp">
       <Filter>Source Files\Shaders</Filter>
     </ClCompile>
     <ClCompile Include="ShadowShaderGroup.cpp">
+      <Filter>Source Files\RasterTekShadowMap</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthShaderGroup.cpp">
+      <Filter>Source Files\RasterTekShadowMap</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -185,9 +197,6 @@
     <ClInclude Include="DeferredScreenTarget.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DepthShaderGroup.hpp">
-      <Filter>Header Files\Shaders</Filter>
-    </ClInclude>
     <ClInclude Include="SystemInformation.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -195,7 +204,16 @@
       <Filter>Header Files\Shaders</Filter>
     </ClInclude>
     <ClInclude Include="ShadowShaderGroup.hpp">
-      <Filter>Header Files\Shaders</Filter>
+      <Filter>Header Files\RasterTekShadowMap</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTexture.hpp">
+      <Filter>Header Files\RasterTekShadowMap</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthShaderGroup.hpp">
+      <Filter>Header Files\RasterTekShadowMap</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugWindow.hpp">
+      <Filter>Header Files\RasterTekShadowMap</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -223,11 +241,11 @@
     <FxCompile Include="PS_Depth.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="VS_Shadow.hlsl">
-      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="PS_Shadow.hlsl">
-      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
+      <Filter>Source Files\RasterTekShadowMap</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_Shadow.hlsl">
+      <Filter>Source Files\RasterTekShadowMap</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

@@ -7,6 +7,10 @@
 //class Camera;
 class Object;
 
+/* Added with rastertek */
+class RenderTexture;
+class DebugWindow;
+
 class Game final : public Singleton<Game>
 {
 	friend class Singleton<Game>;
@@ -24,6 +28,10 @@ public:
 
 private:
 	void RenderNormal();
+
+	/* Added with rastertek */
+	void RenderToTexture();
+
 	void RenderDeferredFirstPass();
 	void RenderDepth();
 	void RenderShadowPass();
@@ -31,6 +39,10 @@ private:
 
 	std::vector<std::unique_ptr<Object>> m_cubes;
 	std::unique_ptr<Object> m_floor;
+	
+	/* Added with rastertek */
+	std::unique_ptr<RenderTexture> m_renderTexture;
+	std::unique_ptr<DebugWindow> m_debugWindow;
 };
 
 #endif
