@@ -6,20 +6,18 @@
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
-
-class Model;
-class Camera;
+struct ID3D11ShaderResourceView;
 
 class Object
 {
 public:
 	Object();
-	~Object();
+	virtual ~Object();
 
-	bool Initialize(ID3D11Device* device, const char* modelFileName);
+	virtual bool Initialize(ID3D11Device* device, const char* modelName) = 0;
+	virtual void Render(ID3D11DeviceContext* deviceContext) = 0;
 
 	void Update();
-	void Render(ID3D11DeviceContext* deviceContext);
 
 	void Move(const Vector3f& offset);
 	void Move(float x, float y, float z);
@@ -33,16 +31,14 @@ public:
 	void SetScale(const Vector3f& scale);
 	void SetScale(float x, float y, float z);
 
-	void SetColor(const Vector3f& color);
-	void SetColor(float r, float g, float b);
-
 	const Vector3f& GetPosition() const;
 	const Vector3f& GetRotation() const;
 	const Vector3f& GetScale() const;
 
 	const DirectX::XMMATRIX GetWorldMatrix() const;
 
-	const Vector3f& GetColor() const;
+protected:
+	void InitializeBaseClass();
 
 private:
 	void UpdateWorldMatrix();
@@ -52,10 +48,6 @@ private:
 	Vector3f m_scale;
 
 	DirectX::XMFLOAT4X4 m_worldMatrix;
-
-	std::unique_ptr<Model> m_model;
-
-	Vector3f m_color;
 
 	bool m_update_flag_world;
 };

@@ -50,8 +50,10 @@ public:
 	ID3D11DeviceContext* GetDeviceContext() const;
 
 
-	/* Added for DebugWindow and RenderTexture classes */
+	/* Added with rastertek */
 	ID3D11DepthStencilView* GetDepthStencilView();
+	void EnableZBuffer();
+	void DisableZBuffer();
 
 
 	ID3D11ShaderResourceView** GetDeferredShaderResourceViews();
@@ -82,6 +84,8 @@ private:
 	ID3D11DeviceContext* m_deviceContext;
 	ID3D11RenderTargetView* m_renderTargetView;
 	ID3D11Texture2D* m_depthStencilBuffer;
+	ID3D11DepthStencilState* m_depthStencilState;
+	ID3D11DepthStencilState* m_depthDisabledStencilState;	/* Added with rastertek */
 	ID3D11DepthStencilView* m_depthStencilView;
 	D3D11_VIEWPORT m_viewPort;
 

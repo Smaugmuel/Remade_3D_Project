@@ -32,6 +32,7 @@ void Camera::operator=(const Camera& camera)
 
 	m_view = camera.m_view;
 	m_projection = camera.m_projection;
+	m_orthographic = camera.m_orthographic;
 
 	// Matrices were copied as well
 	m_update_flag_view = false;
@@ -52,6 +53,7 @@ void Camera::Initialize()
 
 	UpdateViewMatrix();
 	UpdateProjectionMatrix();
+	UpdateOrthographicMatrix();
 
 	//m_frustum = new Frustum;
 }
@@ -61,10 +63,13 @@ void Camera::Update()
 	if (m_update_flag_view)
 	{
 		UpdateViewMatrix();
+		m_update_flag_view = false;
 	}
 	if (m_update_flag_proj)
 	{
 		UpdateProjectionMatrix();
+		UpdateOrthographicMatrix();
+		m_update_flag_proj = false;
 	}
 }
 void Camera::UpdateViewMatrix()
@@ -75,8 +80,6 @@ void Camera::UpdateViewMatrix()
 		m_up.XMV());
 
 	DirectX::XMStoreFloat4x4(&m_view, view);
-
-	m_update_flag_view = false;
 }
 void Camera::UpdateProjectionMatrix()
 {
@@ -87,8 +90,16 @@ void Camera::UpdateProjectionMatrix()
 		m_farPlane);
 
 	DirectX::XMStoreFloat4x4(&m_projection, projection);
+}
+void Camera::UpdateOrthographicMatrix()
+{
+	DirectX::XMMATRIX orthographic = DirectX::XMMatrixOrthographicLH(
+		m_dimensions.x,
+		m_dimensions.y,
+		m_nearPlane,
+		m_farPlane);
 
-	m_update_flag_proj = false;
+	DirectX::XMStoreFloat4x4(&m_orthographic, orthographic);
 }
 
 void Camera::Move(const Vector3f& direction)
@@ -182,6 +193,7 @@ void Camera::SetFOV(float FOV)
 void Camera::SetDimensions(const Vector2f & dimensions)
 {
 	m_dimensions = dimensions;
+	m_update_flag_proj = true;
 }
 void Camera::SetNearPlane(float nearPlane)
 {
@@ -260,6 +272,11 @@ const DirectX::XMMATRIX Camera::GetViewMatrix() const
 const DirectX::XMMATRIX Camera::GetProjectionMatrix() const
 {
 	return DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&m_projection));
+}
+
+const DirectX::XMMATRIX Camera::GetOrthogonalMatrix() const
+{
+	return DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&m_orthographic));
 }
 
 //bool Camera::GetWasAltered() const

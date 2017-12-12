@@ -2,6 +2,7 @@ Texture2D worldPosTexture : register(t0);
 Texture2D normalTexture : register(t1);
 Texture2D colorTexture : register(t2);
 Texture2D depthTexture : register(t3);
+Texture2D torgueTexture : register(t4);
 
 SamplerState sampleState : register(s0);
 
@@ -67,9 +68,20 @@ float4 main(VS_OUT input) : SV_Target
 		}
 		else
 		{
+			/*
+			 *
+			 *
+			 *
+			 *
+			 *
+			 *
+			 *
+			 */
 			uv_splitScreen = float2(input.uv.x * 2 - 1, input.uv.y * 2 - 1);
-			depthValue = pow(depthTexture.Sample(sampleState, uv_splitScreen).x, 1);
-			return float4(depthValue, depthValue, depthValue, 1);
+			return torgueTexture.Sample(sampleState, uv_splitScreen);
+			
+			//depthValue = pow(depthTexture.Sample(sampleState, uv_splitScreen).x, 1);
+			//return float4(depthValue, depthValue, depthValue, 1);
 		}
 	}
 	//*/

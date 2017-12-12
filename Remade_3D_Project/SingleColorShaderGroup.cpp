@@ -1,10 +1,9 @@
 #include "SingleColorShaderGroup.hpp"
+#include "SingleColorObject.hpp"
+#include "Camera.hpp"
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
-
-#include "Camera.hpp"
-#include "Object.hpp"
 
 SingleColorShaderGroup::SingleColorShaderGroup()
 {
@@ -285,8 +284,14 @@ void SingleColorShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext* deviceCon
 		return;
 	}
 
-	objectData = (VS_PerObjectBuffer*)mappedResource.pData;
-	objectData->world = object->GetWorldMatrix();
+	SingleColorObject* obj = dynamic_cast<SingleColorObject*>(object);
+	if (obj)
+	{
+		objectData = (VS_PerObjectBuffer*)mappedResource.pData;
+		objectData->world = obj->GetWorldMatrix();
+		objectData->color = obj->GetColor();
+		objectData->padding = 0.0f;
+	}
 
 	deviceContext->VSSetConstantBuffers(1, 1, &m_vsPerObjectBuffer);
 	deviceContext->Unmap(m_vsPerObjectBuffer, 0);

@@ -1,5 +1,6 @@
 #include "ModelFactory.hpp"
 #include "SingleColorModel.hpp"
+#include "TextureModel.hpp"
 #include <d3d11.h>
 
 #include <fstream>
@@ -16,7 +17,7 @@
 //{
 //}
 
-bool ModelFactory::CheckIfModelHasTexcoords(const char* modelFileName)
+bool ModelFactory::CheckIfModelHasTexcoords(const char * modelFileName)
 {
 	std::ifstream fin(modelFileName);
 	std::string line;
@@ -53,13 +54,13 @@ bool ModelFactory::CheckIfModelHasTexcoords(const char* modelFileName)
 //	m_modelMap[modelType] = function;
 //}
 
-Model* ModelFactory::Create(const char* modelFileName, ID3D11Device* device)
+Model* ModelFactory::Create(const char * modelFileName, ID3D11Device * device)
 {
 	Model* model = nullptr;
 
 	if (ModelFactory::CheckIfModelHasTexcoords(modelFileName))
 	{
-		// Create texture model
+		model = new TextureModel;
 	}
 	else
 	{
@@ -71,12 +72,12 @@ Model* ModelFactory::Create(const char* modelFileName, ID3D11Device* device)
 		if (!model->LoadFromFile(modelFileName))
 		{
 			delete model;
-			model = nullptr;
+			return nullptr;
 		}
 		if (!model->CreateVertexBuffer(device))
 		{
 			delete model;
-			model = nullptr;
+			return nullptr;
 		}
 	}
 

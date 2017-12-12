@@ -40,7 +40,7 @@ bool DebugWindow::Initialize(ID3D11Device * device, Vector2i screenDimensions, V
 	m_vertices[4].uv = Vector2f(1.0f, 1.0f);	// Bottom right
 	m_vertices[5].uv = Vector2f(0.0f, 1.0f);	// Bottom left
 	
-	SetPosition(Vector2i(0.0f, 0.0f));
+	SetPosition(Vector2i(0, 0));
 
 
 	vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;

@@ -81,6 +81,20 @@ Direct3D::~Direct3D()
 		m_depthStencilView->Release();
 		m_depthStencilView = nullptr;
 	}
+
+	/* Added with rastertek */
+	if (m_depthStencilState)
+	{
+		m_depthStencilState->Release();
+		m_depthStencilState = nullptr;
+	}
+	if (m_depthDisabledStencilState)
+	{
+		m_depthDisabledStencilState->Release();
+		m_depthDisabledStencilState = nullptr;
+	}
+
+
 	if (m_depthStencilBuffer)
 	{
 		m_depthStencilBuffer->Release();
@@ -233,10 +247,12 @@ bool Direct3D::InitializeDefaultRenderTargetView()
 bool Direct3D::InitializeDefaultDepthBufferAndDepthStencilView()
 {
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
 	//D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	HRESULT result;
 
-
+	// Depth buffer ================================================================================================
 	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
 	depthBufferDesc.Width = m_windowDimensions.x;
 	depthBufferDesc.Height = m_windowDimensions.y;
@@ -257,6 +273,58 @@ bool Direct3D::InitializeDefaultDepthBufferAndDepthStencilView()
 	}
 
 
+	// Depth stencil state ================================================================================================
+	ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	depthStencilDesc.StencilEnable = true;
+	depthStencilDesc.StencilReadMask = 0xFF;
+	depthStencilDesc.StencilWriteMask = 0xFF;
+	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	
+	result = m_device->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilState);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	m_deviceContext->OMSetDepthStencilState(m_depthStencilState, 0);
+
+
+	// Depth disabled stencil state ================================================================================================
+	ZeroMemory(&depthDisabledStencilDesc, sizeof(depthDisabledStencilDesc));
+	depthDisabledStencilDesc.DepthEnable = false;
+	depthDisabledStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthDisabledStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	depthDisabledStencilDesc.StencilEnable = true;
+	depthDisabledStencilDesc.StencilReadMask = 0xFF;
+	depthDisabledStencilDesc.StencilWriteMask = 0xFF;
+	depthDisabledStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthDisabledStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthDisabledStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	depthDisabledStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthDisabledStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	result = m_device->CreateDepthStencilState(&depthDisabledStencilDesc, &m_depthDisabledStencilState);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+
+	// Depth stencil view ================================================================================================
+	
 	//ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
 	//depthStencilViewDesc.Flags = 0;
 	//depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -570,6 +638,14 @@ ID3D11DeviceContext* Direct3D::GetDeviceContext() const
 ID3D11DepthStencilView * Direct3D::GetDepthStencilView()
 {
 	return m_depthStencilView;
+}
+void Direct3D::EnableZBuffer()
+{
+	m_deviceContext->OMSetDepthStencilState(m_depthStencilState, 0);
+}
+void Direct3D::DisableZBuffer()
+{
+	m_deviceContext->OMSetDepthStencilState(m_depthDisabledStencilState, 0);
 }
 ID3D11ShaderResourceView ** Direct3D::GetDeferredShaderResourceViews()
 {

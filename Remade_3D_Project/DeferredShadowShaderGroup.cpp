@@ -1,8 +1,9 @@
 #include "DeferredShadowShaderGroup.hpp"
+#include "Object.hpp"
+#include "Camera.hpp"
+
 #include <d3d11.h>
 #include <d3dcompiler.h>
-#include "Camera.hpp"
-#include "Object.hpp"
 
 DeferredShadowShaderGroup::DeferredShadowShaderGroup()
 {
@@ -226,7 +227,7 @@ void DeferredShadowShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * devic
 
 	objectData = (VS_PerObjectBuffer*)mappedResource.pData;
 	objectData->world = object->GetWorldMatrix();
-	objectData->color = object->GetColor();
+	objectData->color = Vector3f(0, 0, 0);
 	objectData->padding = 1.0f;
 
 	deviceContext->Unmap(m_vsPerObjectBuffer, 0);

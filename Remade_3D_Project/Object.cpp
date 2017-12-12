@@ -1,7 +1,4 @@
 #include "Object.hpp"
-#include "Model.hpp"
-#include "ModelFactory.hpp"
-#include <d3d11.h>
 
 Object::Object()
 {
@@ -10,25 +7,14 @@ Object::Object()
 Object::~Object()
 {
 }
-bool Object::Initialize(ID3D11Device* device, const char* modelFileName)
+
+void Object::InitializeBaseClass()
 {
-	
-	m_model = std::unique_ptr<Model>(ModelFactory::Create(modelFileName, device));
-
-	if (!m_model)
-	{
-		return false;
-	}
-
 	m_position = Vector3f(0, 0, 0);
 	m_rotation = Vector3f(0, 0, 0);
 	m_scale = Vector3f(1, 1, 1);
 
-	m_color = Vector3f(1, 0, 0);
-
 	UpdateWorldMatrix();
-
-	return true;
 }
 
 void Object::Update()
@@ -37,11 +23,6 @@ void Object::Update()
 	{
 		UpdateWorldMatrix();
 	}
-}
-
-void Object::Render(ID3D11DeviceContext* deviceContext)
-{
-	m_model->Render(deviceContext);
 }
 
 void Object::Move(const Vector3f& offset)
@@ -126,16 +107,6 @@ void Object::SetScale(float x, float y, float z)
 	SetScale(Vector3f(x, y, z));
 }
 
-void Object::SetColor(const Vector3f & color)
-{
-	m_color = color;
-}
-
-void Object::SetColor(float r, float g, float b)
-{
-	SetColor(Vector3f(r, g, b));
-}
-
 const Vector3f& Object::GetPosition() const
 {
 	return m_position;
@@ -154,11 +125,6 @@ const Vector3f& Object::GetScale() const
 const DirectX::XMMATRIX Object::GetWorldMatrix() const
 {
 	return DirectX::XMLoadFloat4x4(&m_worldMatrix);
-}
-
-const Vector3f & Object::GetColor() const
-{
-	return m_color;
 }
 
 void Object::UpdateWorldMatrix()

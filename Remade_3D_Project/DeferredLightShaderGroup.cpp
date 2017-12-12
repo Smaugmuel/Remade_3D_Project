@@ -3,6 +3,8 @@
 #include <d3dcompiler.h>
 #include "Camera.hpp"
 
+#include "Texture.hpp"
+
 DeferredLightShaderGroup::DeferredLightShaderGroup()
 {
 }

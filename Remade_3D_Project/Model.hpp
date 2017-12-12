@@ -6,6 +6,7 @@
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct ID3D11Buffer;
+struct ID3D11ShaderResourceView;
 
 //#include <vector>
 //class Model_

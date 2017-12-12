@@ -18,6 +18,8 @@ class SingleColorShaderGroup
 	struct VS_PerObjectBuffer
 	{
 		DirectX::XMMATRIX world;
+		Vector3f color;
+		float padding;
 	};
 	struct VS_PerFrameBuffer
 	{

@@ -10,6 +10,7 @@
 #include "DeferredLightShaderGroup.hpp"
 #include "DepthShaderGroup.hpp"
 #include "DeferredShadowShaderGroup.hpp"
+#include "TextureShaderGroup.hpp"
 
 ShaderManager* Singleton<ShaderManager>::s_instance = nullptr;
 
@@ -53,6 +54,12 @@ bool ShaderManager::Initialize(ID3D11Device* device)
 		return false;
 	}
 
+	m_textureShaders = std::make_unique<TextureShaderGroup>();
+	if (!m_textureShaders->Initialize(device))
+	{
+		return false;
+	}
+
 	m_currentShaderType = (ShaderType)-1;
 
 	return true;
@@ -81,6 +88,9 @@ void ShaderManager::SetShaderType(ID3D11DeviceContext* deviceContext, const Shad
 		break;
 	case ShaderType::D_SHADOW:
 		m_s_shaders->SetupShaders(deviceContext);
+		break;
+	case ShaderType::TEXTURE:
+		m_textureShaders->SetupShaders(deviceContext);
 		break;
 	default:
 		break;
@@ -125,6 +135,9 @@ void ShaderManager::SetPerFrameConstantBuffer(ID3D11DeviceContext* deviceContext
 	case ShaderType::D_SHADOW:
 		m_s_shaders->SetupPerFrameBuffer(deviceContext, lightCamera);
 		break;
+	case ShaderType::TEXTURE:
+		m_textureShaders->SetupPerFrameBuffer(deviceContext, camera, lightCamera, lightIntensity);
+		break;
 	default:
 		break;
 	}
@@ -147,6 +160,9 @@ void ShaderManager::SetPerObjectConstantBuffer(ID3D11DeviceContext* deviceContex
 		break;
 	case ShaderType::D_SHADOW:
 		m_s_shaders->SetupPerObjectBuffer(deviceContext, object);
+		break;
+	case ShaderType::TEXTURE:
+		m_textureShaders->SetupPerObjectBuffer(deviceContext, object);
 		break;
 	default:
 		break;

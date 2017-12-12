@@ -1,6 +1,8 @@
 #ifndef VECTOR2_HPP
 #define VECTOR2_HPP
 
+#include <DirectXMath.h>
+
 template<typename Type>
 struct Vector2 final
 {
@@ -17,6 +19,9 @@ struct Vector2 final
 	{
 	}
 	Vector2(const Vector2<float>& right) : x((Type)right.x), y((Type)right.y)
+	{
+	}
+	Vector2(const DirectX::XMFLOAT2& right) : x(right.x), y(right.y)
 	{
 	}
 	~Vector2()

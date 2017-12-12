@@ -17,6 +17,7 @@ class DeferredSingleColorShaderGroup;
 class DeferredLightShaderGroup;
 class DepthShaderGroup;
 class DeferredShadowShaderGroup;
+class TextureShaderGroup;
 
 enum ShaderType
 {
@@ -24,7 +25,8 @@ enum ShaderType
 	D_SINGLE_COLOR,
 	D_LIGHT,
 	DEPTH,
-	D_SHADOW
+	D_SHADOW,
+	TEXTURE
 };
 
 class ShaderManager : public Singleton<ShaderManager>
@@ -47,6 +49,7 @@ private:
 	std::unique_ptr<DeferredLightShaderGroup> m_d_lightShaders;
 	std::unique_ptr<DepthShaderGroup> m_depthShaders;
 	std::unique_ptr<DeferredShadowShaderGroup> m_s_shaders;
+	std::unique_ptr<TextureShaderGroup> m_textureShaders;
 
 	ShaderType m_currentShaderType;
 };

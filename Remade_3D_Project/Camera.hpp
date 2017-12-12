@@ -50,6 +50,8 @@ public:
 	
 	const DirectX::XMMATRIX GetViewMatrix() const;
 	const DirectX::XMMATRIX GetProjectionMatrix() const;
+	const DirectX::XMMATRIX GetOrthogonalMatrix() const;
+
 
 	float GetFOV() const;
 	const Vector2f& GetDimensions() const;
@@ -64,6 +66,7 @@ public:
 private:
 	void UpdateViewMatrix();
 	void UpdateProjectionMatrix();
+	void UpdateOrthographicMatrix();
 
 
 	Vector3f m_position;
@@ -77,6 +80,7 @@ private:
 
 	DirectX::XMFLOAT4X4 m_view;
 	DirectX::XMFLOAT4X4 m_projection;
+	DirectX::XMFLOAT4X4 m_orthographic;
 
 	//Frustum* m_frustum;
 

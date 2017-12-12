@@ -6,6 +6,8 @@ cbuffer PerFrame : register(b0)
 cbuffer Perobject : register(b1)
 {
 	matrix<float, 4, 4> world;
+	float3 color;
+	float padding;
 };
 
 struct VS_IN
@@ -33,7 +35,7 @@ VS_OUT main(VS_IN input)
 	output.position = mul(mul(worldPos, view), projection);
 	output.worldPosition = worldPos.xyz;
 	output.normal = normalize(norm.xyz);
-	output.color = input.color;
+	output.color = color;
 
 	return output;
 }

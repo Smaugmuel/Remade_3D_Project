@@ -6,29 +6,18 @@
 #include "Input.hpp"
 #include "PlayerCameraManager.hpp"
 #include "Camera.hpp"
-#include "Object.hpp"
+
+#include "SingleColorObject.hpp"
+#include "TextureObject.hpp"
 
 #include "SystemInformation.hpp"
 
 /* Added with rastertek */
-#include "RenderTexture.hpp"
-#include "DebugWindow.hpp"
+//#include "RenderTexture.hpp"
+//#include "DebugWindow.hpp"
+//#include "BitMap.hpp"
 
 Game* Singleton<Game>::s_instance = nullptr;
-
-//	If generalizing a vertex shader, which parts will be different between them?
-//		Constant buffers
-//			Per frame
-//			Per object
-//		Input layout
-//	How can these be solved?
-//		Constant buffer using templates
-//			When setting the values of the buffer, they need to be sent to the buffer directly, since the vertex shader can't deal with all kinds of parameters
-//			Template buffer with variadic arguments might work
-//			The shader simply passes the arguments along to the buffer
-//			When mapping the buffer, variadic arguments can be received as well
-//			Given an assignment operator, could the buffer update itself? Just use a SetVaules(args...) instead	
-
 
 Game::Game()
 {
@@ -118,14 +107,16 @@ bool Game::Initialize()
 	// Cubes
 	for (unsigned int i = 0; i < 9; i++)
 	{
-		m_cubes.push_back(std::make_unique<Object>());
-		if (!m_cubes[i]->Initialize(Direct3D::Get()->GetDevice(), "cube.obj"))
+		m_cubes.push_back(std::make_unique<TextureObject>());
+		if (!m_cubes[i]->Initialize(Direct3D::Get()->GetDevice(), "cube_uv.obj"))
+			return false;
+		if (!m_cubes[i]->LoadTexture(Direct3D::Get()->GetDevice(), "../Textures/Torgue.png"))
 			return false;
 		m_cubes[i]->SetPosition(Vector3f(-5.0f + (i % 3) * 5.0f, 5.0f - (i / 3) * 5.0f, 1.0f));
 	}
 
 	// Floor
-	m_floor = std::make_unique<Object>();
+	m_floor = std::make_unique<SingleColorObject>();
 	if (!m_floor->Initialize(Direct3D::Get()->GetDevice(), "cube.obj"))
 		return false;
 	m_floor->SetScale(100.0f, 0.02f, 100.0f);
@@ -135,6 +126,11 @@ bool Game::Initialize()
 
 
 	/* Added with rastertek */
+	//m_bitMap = std::make_unique<BitMap>();
+	//if (!m_bitMap->Initialize(Direct3D::Get()->GetDevice(), Window::Get()->GetDimensions(), Vector2i(100, 100)))
+	//{
+	//	return false;
+	//}
 	//m_renderTexture = std::make_unique<RenderTexture>();
 	//if (!m_renderTexture->Initialize(Direct3D::Get()->GetDevice(), Window::Get()->GetDimensions()))
 	//{
@@ -256,6 +252,21 @@ bool Game::ProcessInput()
 		PlayerCameraManager::Get()->GetCurrentCamera()->RotateRight(mouseMovement.x * 0.015f);
 	}
 
+	if (Input::Get()->IsKeyPressed('Z'))
+	{
+		static bool toggle = true;
+		toggle = !toggle;
+
+		if (toggle)
+		{
+			Direct3D::Get()->EnableZBuffer();
+		}
+		else
+		{
+			Direct3D::Get()->DisableZBuffer();
+		}
+	}
+
 	return true;
 }
 
@@ -286,9 +297,24 @@ void Game::Render()
 
 		RenderDeferredLightPass();
 	}
-	else
+	else if (true)
 	{
 		RenderNormal();
+	}
+	else
+	{
+		//RenderDeferredFirstPass();	// Render to the textures
+
+		////Direct3D::Get()->DisableZBuffer();
+		//m_bitMap->SetPosition(Vector2i(0, 0));
+		//m_bitMap->SetShaderResourceView(Direct3D::Get()->GetDeferredShaderResourceViews()[1]);	// normals
+		//m_bitMap->SetupVertexBuffer(Direct3D::Get()->GetDeviceContext());
+		//m_bitMap->Render(Direct3D::Get()->GetDeviceContext());
+		//
+		////RenderToTexture();
+		//
+
+		//RenderNormal();
 	}
 
 	Direct3D::Get()->Present();
@@ -296,7 +322,7 @@ void Game::Render()
 
 void Game::RenderNormal()
 {
-	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::SINGLE_COLOR);
+	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::TEXTURE);
 	ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
 
 	for (unsigned int i = 0; i < m_cubes.size(); i++)
@@ -304,13 +330,22 @@ void Game::RenderNormal()
 		ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_cubes[i].get());
 		m_cubes[i]->Render(Direct3D::Get()->GetDeviceContext());
 	}
+
+	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::SINGLE_COLOR);
+	ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
 	ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_floor.get());
 	m_floor->Render(Direct3D::Get()->GetDeviceContext());
 }
 
-void Game::RenderToTexture()
-{
-}
+//void Game::RenderToTexture()
+//{
+//	m_renderTexture->SetRenderTarget(Direct3D::Get()->GetDeviceContext(), Direct3D::Get()->GetDepthStencilView());
+//	m_renderTexture->ClearTarget(Direct3D::Get()->GetDeviceContext(), Direct3D::Get()->GetDepthStencilView());
+//
+//	RenderNormal();
+//
+//	Direct3D::Get()->SetDefaultTarget();
+//}
 
 void Game::RenderDeferredFirstPass()
 {

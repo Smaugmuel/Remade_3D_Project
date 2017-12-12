@@ -1,10 +1,9 @@
 #include "DeferredSingleColorShaderGroup.hpp"
+#include "SingleColorObject.hpp"
+#include "Camera.hpp"
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
-
-#include "Camera.hpp"
-#include "Object.hpp"
 
 DeferredSingleColorShaderGroup::DeferredSingleColorShaderGroup()
 {
@@ -203,6 +202,7 @@ void DeferredSingleColorShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * d
 
 	frameDataVS = (VS_PerFrameBuffer*)mappedResource.pData;
 	frameDataVS->view = camera->GetViewMatrix();
+	//frameDataVS->projection = camera->GetOrthogonalMatrix();
 	frameDataVS->projection = camera->GetProjectionMatrix();
 
 	deviceContext->Unmap(m_vsPerFrameBuffer, 0);
@@ -228,10 +228,14 @@ void DeferredSingleColorShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * 
 		return;
 	}
 
-	objectData = (VS_PerObjectBuffer*)mappedResource.pData;
-	objectData->world = object->GetWorldMatrix();
-	objectData->color = object->GetColor();
-	objectData->padding = 1.0f;
+	SingleColorObject* obj = dynamic_cast<SingleColorObject*>(object);
+	if (obj)
+	{
+		objectData = (VS_PerObjectBuffer*)mappedResource.pData;
+		objectData->world = obj->GetWorldMatrix();
+		objectData->color = obj->GetColor();
+		objectData->padding = 0.0f;
+	}
 
 	deviceContext->Unmap(m_vsPerObjectBuffer, 0);
 	deviceContext->VSSetConstantBuffers(1, 1, &m_vsPerObjectBuffer);
