@@ -1,7 +1,6 @@
-#ifndef TEXTURE_SHADER_GROUP_HPP
-#define TEXTURE_SHADER_GROUP_HPP
+#ifndef DEFERRED_TEXTURE_SHADER_GROUP_HPP
+#define DEFERRED_TEXTURE_SHADER_GROUP_HPP
 #include <DirectXMath.h>
-#include "Vector2.hpp"
 #include "Vector3.hpp"
 
 struct ID3D11VertexShader;
@@ -16,7 +15,7 @@ struct ID3D11ShaderResourceView;
 class Camera;
 class Object;
 
-class TextureShaderGroup
+class DeferredTextureShaderGroup
 {
 	struct VS_PerObjectBuffer
 	{
@@ -26,24 +25,16 @@ class TextureShaderGroup
 	{
 		DirectX::XMMATRIX view;
 		DirectX::XMMATRIX projection;
-		Vector3f lightPosition;
-		float padding;
 	};
-	//struct PS_PerFrameBuffer
-	//{
-	//	// Stored as a float4 in shader to prevent (?) automatic padding
-	//	Vector3f lightPosition;
-	//	float lightIntensity;
-	//};
 
 public:
-	TextureShaderGroup();
-	~TextureShaderGroup();
+	DeferredTextureShaderGroup();
+	~DeferredTextureShaderGroup();
 
 	bool Initialize(ID3D11Device* device);
 
 	void SetupShaders(ID3D11DeviceContext* deviceContext);
-	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX& viewMatrix, const DirectX::XMMATRIX& projectionMatrix, Vector3f lightPosition, float lightIntensity);
+	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX& viewMatrix, const DirectX::XMMATRIX& projectionMatrix);
 	void SetupPerObjectBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture);
 
 private:
@@ -52,9 +43,9 @@ private:
 
 	ID3D11InputLayout* m_layout;
 
-	ID3D11Buffer* m_vsPerObjectBuffer;
+	//ID3D11Buffer** m_vsBuffers;
 	ID3D11Buffer* m_vsPerFrameBuffer;
-	//ID3D11Buffer* m_psPerFrameBuffer;
+	ID3D11Buffer* m_vsPerObjectBuffer;
 
 	ID3D11SamplerState* m_samplerState;
 };

@@ -176,7 +176,7 @@ void DepthShaderGroup::SetupShaders(ID3D11DeviceContext * deviceContext)
 	deviceContext->IASetInputLayout(m_layout);
 }
 
-void DepthShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, Camera * camera)
+void DepthShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result;
@@ -197,14 +197,14 @@ void DepthShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, 
 	}
 
 	frameDataVS = (VS_PerFrameBuffer*)mappedResource.pData;
-	frameDataVS->view = camera->GetViewMatrix();
-	frameDataVS->proj = camera->GetProjectionMatrix();
+	frameDataVS->view = viewMatrix;
+	frameDataVS->proj = projectionMatrix;
 
 	deviceContext->Unmap(m_vsPerFrameBuffer, 0);
 	deviceContext->VSSetConstantBuffers(0, 1, &m_vsPerFrameBuffer);
 }
 
-void DepthShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * deviceContext, Object * object)
+void DepthShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & worldMatrix)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result;
@@ -224,7 +224,7 @@ void DepthShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * deviceContext,
 	}
 
 	objectData = (VS_PerObjectBuffer*)mappedResource.pData;
-	objectData->world = object->GetWorldMatrix();
+	objectData->world = worldMatrix;
 
 	deviceContext->Unmap(m_vsPerObjectBuffer, 0);
 	deviceContext->VSSetConstantBuffers(1, 1, &m_vsPerObjectBuffer);

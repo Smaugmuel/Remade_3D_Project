@@ -1,8 +1,8 @@
 Texture2D worldPosTexture : register(t0);
 Texture2D normalTexture : register(t1);
 Texture2D colorTexture : register(t2);
-Texture2D depthTexture : register(t3);
-Texture2D torgueTexture : register(t4);
+//Texture2D depthTexture : register(t3);
+Texture2D torgueTexture : register(t3);
 
 SamplerState sampleState : register(s0);
 
@@ -68,15 +68,6 @@ float4 main(VS_OUT input) : SV_Target
 		}
 		else
 		{
-			/*
-			 *
-			 *
-			 *
-			 *
-			 *
-			 *
-			 *
-			 */
 			uv_splitScreen = float2(input.uv.x * 2 - 1, input.uv.y * 2 - 1);
 			return torgueTexture.Sample(sampleState, uv_splitScreen);
 			
@@ -107,7 +98,7 @@ float4 main(VS_OUT input) : SV_Target
 
 	if (saturate(projectedUV.x) == projectedUV.x && saturate(projectedUV.y) == projectedUV.y)
 	{
-		depthValue = depthTexture.Sample(sampleState, projectedUV).x;
+		//depthValue = depthTexture.Sample(sampleState, projectedUV).x;
 		depthValueLight = projectedPos.z - 0.01f;
 
 		//if (depthValue < 0.1)

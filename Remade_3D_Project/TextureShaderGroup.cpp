@@ -1,5 +1,4 @@
 #include "TextureShaderGroup.hpp"
-#include "TextureObject.hpp"
 #include "Camera.hpp"
 
 #include <d3d11.h>
@@ -61,7 +60,7 @@ bool TextureShaderGroup::Initialize(ID3D11Device * device)
 	HRESULT result;
 	D3D11_BUFFER_DESC vs_perObjectDesc;
 	D3D11_BUFFER_DESC vs_perFrameDesc;
-	D3D11_BUFFER_DESC ps_perFrameDesc;
+	//D3D11_BUFFER_DESC ps_perFrameDesc;
 	D3D11_SAMPLER_DESC samplerDesc;
 
 
@@ -237,12 +236,11 @@ void TextureShaderGroup::SetupShaders(ID3D11DeviceContext * deviceContext)
 	deviceContext->PSSetSamplers(0, 1, &m_samplerState);
 }
 
-void TextureShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, Camera * camera, Camera * lightCamera, float lightIntensity)
+void TextureShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix, Vector3f lightPosition, float lightIntensity)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result;
 	VS_PerFrameBuffer* frameDataVS;
-	//PS_PerFrameBuffer* frameDataPS;
 
 	// Vertex Shader ===========================================================================
 	// Mapping and updating buffer
@@ -259,8 +257,10 @@ void TextureShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext
 	}
 
 	frameDataVS = (VS_PerFrameBuffer*)mappedResource.pData;
-	frameDataVS->view = camera->GetViewMatrix();
-	frameDataVS->projection = camera->GetProjectionMatrix();
+	frameDataVS->view = viewMatrix;
+	frameDataVS->projection = projectionMatrix;
+	frameDataVS->lightPosition = lightPosition;
+	frameDataVS->padding = lightIntensity;
 
 	deviceContext->Unmap(m_vsPerFrameBuffer, 0);
 	deviceContext->VSSetConstantBuffers(0, 1, &m_vsPerFrameBuffer);
@@ -288,12 +288,11 @@ void TextureShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext
 	//deviceContext->PSSetConstantBuffers(0, 1, &m_psPerFrameBuffer);
 }
 
-void TextureShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * deviceContext, Object * object)
+void TextureShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & worldMatrix, ID3D11ShaderResourceView * texture)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result;
 	VS_PerObjectBuffer* objectData;
-	ID3D11ShaderResourceView* texture;
 
 	// Mapping and updating PerFrameConstantBuffer
 	result = deviceContext->Map(
@@ -308,16 +307,12 @@ void TextureShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * deviceContex
 		return;
 	}
 
-	TextureObject* obj = dynamic_cast<TextureObject*>(object);
-	if (obj)
-	{
-		objectData = (VS_PerObjectBuffer*)mappedResource.pData;
-		objectData->world = obj->GetWorldMatrix();
-		
-		texture = obj->GetTexture();
-		deviceContext->PSSetShaderResources(0, 1, &texture);
-	}
+
+	objectData = (VS_PerObjectBuffer*)mappedResource.pData;
+	objectData->world = worldMatrix;
 
 	deviceContext->Unmap(m_vsPerObjectBuffer, 0);
 	deviceContext->VSSetConstantBuffers(1, 1, &m_vsPerObjectBuffer);
+
+	deviceContext->PSSetShaderResources(0, 1, &texture);
 }

@@ -34,8 +34,8 @@ public:
 	bool Initialize(ID3D11Device* device);
 
 	void SetupShaders(ID3D11DeviceContext* deviceContext);
-	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, Camera* camera);
-	void SetupPerObjectBuffer(ID3D11DeviceContext* deviceContext, Object* object);
+	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix);
+	void SetupPerObjectBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & worldMatrix, Vector3f color);
 
 private:
 	ID3D11VertexShader* m_vs;

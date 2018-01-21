@@ -1,28 +1,40 @@
-#include "DeferredLightShaderGroup.hpp"
+#include "HUDShaderGroup.hpp"
 #include <d3d11.h>
 #include <d3dcompiler.h>
-#include "Camera.hpp"
 
-#include "Texture.hpp"
-
-DeferredLightShaderGroup::DeferredLightShaderGroup()
+HUDShaderGroup::HUDShaderGroup()
 {
 }
 
-DeferredLightShaderGroup::~DeferredLightShaderGroup()
+HUDShaderGroup::~HUDShaderGroup()
 {
+	if (m_vs)
+	{
+		m_vs->Release();
+		m_vs = nullptr;
+	}
+	if (m_ps)
+	{
+		m_ps->Release();
+		m_ps = nullptr;
+	}
+	if (m_layout)
+	{
+		m_layout->Release();
+		m_layout = nullptr;
+	}
 }
 
-bool DeferredLightShaderGroup::Initialize(ID3D11Device* device)
+bool HUDShaderGroup::Initialize(ID3D11Device * device)
 {
 	ID3D10Blob* vertexShaderBlob;
 	ID3D10Blob* pixelShaderBlob;
 	HRESULT result;
-	D3D11_BUFFER_DESC ps_perFrameDesc;
 	D3D11_SAMPLER_DESC samplerDesc;
 
-	wchar_t* vsName = L"VS_D_Light.hlsl";
-	wchar_t* psName = L"PS_D_Light.hlsl";
+
+	wchar_t* vsName = L"VS_HUD.hlsl";
+	wchar_t* psName = L"PS_HUD.hlsl";
 
 
 	// Compile shaders ============================================================================
@@ -110,7 +122,7 @@ bool DeferredLightShaderGroup::Initialize(ID3D11Device* device)
 
 
 	// Create sampler state =======================================================================
-	samplerDesc.Filter = /*D3D11_FILTER_MIN_MAG_MIP_LINEAR*/ D3D11_FILTER_MIN_MAG_MIP_POINT;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -129,26 +141,10 @@ bool DeferredLightShaderGroup::Initialize(ID3D11Device* device)
 		return false;
 	}
 
-
-	// Create per-frame constant buffer ===========================================================
-	memset(&ps_perFrameDesc, 0, sizeof(ps_perFrameDesc));
-	ps_perFrameDesc.Usage = D3D11_USAGE_DYNAMIC;
-	ps_perFrameDesc.ByteWidth = sizeof(PS_PerFrameBuffer);
-	ps_perFrameDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	ps_perFrameDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	ps_perFrameDesc.MiscFlags = 0;
-	ps_perFrameDesc.StructureByteStride = 0;
-
-	result = device->CreateBuffer(&ps_perFrameDesc, nullptr, &m_psPerFrameBuffer);
-	if (FAILED(result))
-	{
-		return false;
-	}
-
 	return true;
 }
 
-void DeferredLightShaderGroup::SetupShaders(ID3D11DeviceContext * deviceContext)
+void HUDShaderGroup::SetupShaders(ID3D11DeviceContext * deviceContext)
 {
 	deviceContext->VSSetShader(m_vs, nullptr, 0);
 	deviceContext->HSSetShader(nullptr, nullptr, 0);
@@ -160,35 +156,7 @@ void DeferredLightShaderGroup::SetupShaders(ID3D11DeviceContext * deviceContext)
 	deviceContext->PSSetSamplers(0, 1, &m_samplerState);
 }
 
-void DeferredLightShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView ** resources, ID3D11ShaderResourceView * depthTexture, Vector3f lightPosition, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix, float lightIntensity)
+void HUDShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * deviceContext, ID3D11ShaderResourceView * texture)
 {
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	PS_PerFrameBuffer* frameDataPS;
-	HRESULT result;
-
-	// Pixel Shader ===========================================================================
-	// Mapping and updating buffer
-	result = deviceContext->Map(
-		m_psPerFrameBuffer,
-		0,
-		D3D11_MAP_WRITE_DISCARD,
-		0,
-		&mappedResource
-		);
-	if (FAILED(result))
-	{
-		return;
-	}
-
-	frameDataPS = (PS_PerFrameBuffer*)mappedResource.pData;
-	frameDataPS->lightView = lightViewMatrix;
-	frameDataPS->lightProj = lightProjectionMatrix;
-	frameDataPS->lightPosition = lightPosition;
-	frameDataPS->lightIntensity = lightIntensity;
-
-	deviceContext->Unmap(m_psPerFrameBuffer, 0);
-	deviceContext->PSSetConstantBuffers(0, 1, &m_psPerFrameBuffer);
-
-	deviceContext->PSSetShaderResources(0, nrOfResources, resources);
-	deviceContext->PSSetShaderResources(nrOfResources, 1, &depthTexture);
+	deviceContext->PSSetShaderResources(0, 1, &texture);
 }

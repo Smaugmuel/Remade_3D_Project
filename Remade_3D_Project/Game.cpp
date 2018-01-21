@@ -12,10 +12,7 @@
 
 #include "SystemInformation.hpp"
 
-/* Added with rastertek */
-//#include "RenderTexture.hpp"
-//#include "DebugWindow.hpp"
-//#include "BitMap.hpp"
+#include "HUDObject.hpp"
 
 Game* Singleton<Game>::s_instance = nullptr;
 
@@ -47,10 +44,6 @@ bool Game::Initialize()
 	{
 		return false;
 	}
-	//if (!m_shaderManager->CreateShaderGroup(Direct3D::Get()->GetDevice(), "SingleColor"))
-	//{
-	//	return false;
-	//}
 	if (!DeferredScreenTarget::Get()->Initialize(Direct3D::Get()->GetDevice()))
 	{
 		return false;
@@ -73,75 +66,35 @@ bool Game::Initialize()
 	cam->SetTarget(Vector3f(0, 0, 0));
 	cam->Update();
 
-	/*cam = PlayerCameraManager::Get()->CreateCamera();
-	if (!cam)
-	{
-		return false;
-	}
-	cam->SetDimensions(Window::Get()->GetDimensions());
-	cam->SetPosition(Vector3f(20, 0, 0));
-	cam->SetTarget(Vector3f(0, 0, 0));
-	cam->Update();
-
-	cam = PlayerCameraManager::Get()->CreateCamera();
-	if (!cam)
-	{
-		return false;
-	}
-	cam->SetDimensions(Window::Get()->GetDimensions());
-	cam->SetPosition(Vector3f(0, 0, 20));
-	cam->SetTarget(Vector3f(0, 0, 0));
-	cam->Update();
-
-	cam = PlayerCameraManager::Get()->CreateCamera();
-	if (!cam)
-	{
-		return false;
-	}
-	cam->SetDimensions(Window::Get()->GetDimensions());
-	cam->SetPosition(Vector3f(-20, 0, 0));
-	cam->SetTarget(Vector3f(0, 0, 0));
-	cam->Update();*/
-
-
 	// Cubes
 	for (unsigned int i = 0; i < 9; i++)
 	{
-		m_cubes.push_back(std::make_unique<TextureObject>());
-		if (!m_cubes[i]->Initialize(Direct3D::Get()->GetDevice(), "cube_uv.obj"))
+		m_texturedCubes.push_back(std::make_unique<TextureObject>());
+		if (!m_texturedCubes[i]->Initialize(Direct3D::Get()->GetDevice(), "cube_uv.obj"))
 			return false;
-		if (!m_cubes[i]->LoadTexture(Direct3D::Get()->GetDevice(), "../Textures/Torgue.png"))
+		if (!m_texturedCubes[i]->LoadTexture(Direct3D::Get()->GetDevice(), "../Textures/Torgue.png"))
 			return false;
-		m_cubes[i]->SetPosition(Vector3f(-5.0f + (i % 3) * 5.0f, 5.0f - (i / 3) * 5.0f, 1.0f));
+		m_texturedCubes[i]->SetPosition(Vector3f(-5.0f + (i % 3) * 5.0f, 5.0f - (i / 3) * 5.0f, 1.0f));
 	}
 
 	// Floor
-	m_floor = std::make_unique<SingleColorObject>();
-	if (!m_floor->Initialize(Direct3D::Get()->GetDevice(), "cube.obj"))
+	m_coloredFloor = std::make_unique<SingleColorObject>();
+	if (!m_coloredFloor->Initialize(Direct3D::Get()->GetDevice(), "cube.obj"))
 		return false;
-	m_floor->SetScale(100.0f, 0.02f, 100.0f);
-	m_floor->SetPosition(0.0f, -10.0f, 0.0f);
+	m_coloredFloor->SetScale(100.0f, 0.02f, 100.0f);
+	m_coloredFloor->SetPosition(0.0f, -10.0f, 0.0f);
+
+	// HUD
+	m_HUDObject = std::make_unique<HUDObject>();
+	if (!m_HUDObject->Initialize(Direct3D::Get()->GetDevice(), "../Textures/Torgue.png", Vector2i(0, 0), Vector2i(400, 400)))
+		return false;
+	m_HUDObject->SetPosition(Vector2i(500, 500));
+	m_HUDObject->SetDimensions(Vector2i(200, 200));
 
 
-
-
-	/* Added with rastertek */
-	//m_bitMap = std::make_unique<BitMap>();
-	//if (!m_bitMap->Initialize(Direct3D::Get()->GetDevice(), Window::Get()->GetDimensions(), Vector2i(100, 100)))
-	//{
-	//	return false;
-	//}
-	//m_renderTexture = std::make_unique<RenderTexture>();
-	//if (!m_renderTexture->Initialize(Direct3D::Get()->GetDevice(), Window::Get()->GetDimensions()))
-	//{
-	//	return false;
-	//}
-	//m_debugWindow = std::make_unique<DebugWindow>();
-	//if (!m_debugWindow->Initialize(Direct3D::Get()->GetDevice(), Window::Get()->GetDimensions(), Vector2i(100, 100)))
-	//{
-	//	return false;
-	//}
-
+	m_renderMode = RenderMode::NORMAL_MODE;
+	m_HUDMode = HUDMode::HUD_OFF;
+	m_orthogonal = OrthogonalCamera::ORTHOGONAL_OFF;
 
 	return true;
 }
@@ -171,88 +124,72 @@ void Game::Run()
 
 bool Game::ProcessInput()
 {
-	Input::Get()->Update();
+	Input* input = Input::Get();
 
-	if (Input::Get()->IsKeyDown(VK_ESCAPE))
+	input->Update();
+
+	if (input->IsKeyDown(VK_ESCAPE))
 	{
 		return false;
 	}
 
 	// Camera movement
-	if (Input::Get()->IsKeyDown('A'))
+	if (input->IsKeyDown('A'))
 	{
 		PlayerCameraManager::Get()->GetCurrentCamera()->MoveRight(-0.01f);
 	}
-	if (Input::Get()->IsKeyDown('D'))
+	if (input->IsKeyDown('D'))
 	{
 		PlayerCameraManager::Get()->GetCurrentCamera()->MoveRight(0.01f);
 	}
-	if (Input::Get()->IsKeyDown('W'))
+	if (input->IsKeyDown('W'))
 	{
 		PlayerCameraManager::Get()->GetCurrentCamera()->MoveForward(0.01f);
 	}
-	if (Input::Get()->IsKeyDown('S'))
+	if (input->IsKeyDown('S'))
 	{
 		PlayerCameraManager::Get()->GetCurrentCamera()->MoveForward(-0.01f);
 	}
-	if (Input::Get()->IsKeyDown(VK_SPACE))
+	if (input->IsKeyDown(VK_SPACE))
 	{
 		PlayerCameraManager::Get()->GetCurrentCamera()->MoveUp(0.01f);
 	}
-	if (Input::Get()->IsKeyDown(VK_SHIFT))
+	if (input->IsKeyDown(VK_SHIFT))
 	{
 		PlayerCameraManager::Get()->GetCurrentCamera()->MoveUp(-0.01f);
 	}
 
 	// Switch cameras
-	if (Input::Get()->IsKeyPressed(VK_RIGHT))
+	if (input->IsKeyPressed(VK_RIGHT))
 	{
 		PlayerCameraManager::Get()->ChangeUp();
 	}
-	if (Input::Get()->IsKeyPressed(VK_LEFT))
+	if (input->IsKeyPressed(VK_LEFT))
 	{
 		PlayerCameraManager::Get()->ChangeDown();
 	}
 
 	// Create camera
-	if (Input::Get()->IsKeyPressed(VK_RETURN))
+	if (input->IsKeyPressed(VK_RETURN))
 	{
 		// Create a new camera as a copy of the current one
 		PlayerCameraManager::Get()->CreateCamera();
 	}
 
 	// Look at origin
-	if (Input::Get()->IsKeyDown('R'))
+	if (input->IsKeyDown('R'))
 	{
 		PlayerCameraManager::Get()->GetCurrentCamera()->SetTarget(0.0f, 0.0f, 0.0f);
 	}
 
 	// Turn floor green
-	if (Input::Get()->IsKeyPressed(VK_LBUTTON))
+	if (input->IsKeyPressed(VK_LBUTTON))
 	{
-		Vector2f mousePos = Input::Get()->MousePosition();
-		m_floor->SetColor(0.0f, 1.0f, 0.0f);
+		m_coloredFloor->SetColor(0.0f, 1.0f, 0.0f);
 	}
 
-	// Rotate cubes or camera
-	if (Input::Get()->IsKeyDown(VK_RBUTTON))
-	{
-		Vector2f mouseMovement = Input::Get()->MouseMovement();
-
-		for (unsigned int i = 0; i < m_cubes.size(); i++)
-		{
-			m_cubes[i]->Rotate(mouseMovement.y * 0.01f * (i + 1), mouseMovement.x * 0.01f * (i + 1), 0.0f);
-		}
-	}
-	else
-	{
-		Vector2f mouseMovement = Input::Get()->MouseMovement();
-
-		PlayerCameraManager::Get()->GetCurrentCamera()->RotateUp(mouseMovement.y * 0.015f);
-		PlayerCameraManager::Get()->GetCurrentCamera()->RotateRight(mouseMovement.x * 0.015f);
-	}
-
-	if (Input::Get()->IsKeyPressed('Z'))
+	// Toggle depth tests
+	if (input->IsKeyPressed('Z'))
 	{
 		static bool toggle = true;
 		toggle = !toggle;
@@ -267,6 +204,51 @@ bool Game::ProcessInput()
 		}
 	}
 
+	// Toggle orthogonal projection
+	if (input->IsKeyPressed('O'))
+	{
+		m_orthogonal = (OrthogonalCamera)(1 - m_orthogonal);
+	}
+
+	// Change render mode
+	if (input->IsKeyPressed(49))	// 1
+	{
+		m_renderMode = (RenderMode)((m_renderMode + 1) % RenderMode::NR_OF_RENDER_MODES);
+	}
+
+	// Change hud mode
+	if (input->IsKeyPressed(50))
+	{
+		m_HUDMode = (HUDMode)((m_HUDMode + 1) % HUDMode::NR_OF_HUD_MODES);
+
+		switch (m_HUDMode)
+		{
+		case TORGUE_HUD:
+			m_HUDObject->SetDefaultShaderResourceView();
+			break;
+		default:
+			break;
+		}
+	}
+
+	// Rotate cubes or camera
+	if (input->IsKeyDown(VK_RBUTTON))
+	{
+		Vector2f mouseMovement = input->MouseMovement();
+
+		for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
+		{
+			m_texturedCubes[i]->Rotate(mouseMovement.y * 0.01f * (i + 1), mouseMovement.x * 0.01f * (i + 1), 0.0f);
+		}
+	}
+	else
+	{
+		Vector2f mouseMovement = input->MouseMovement();
+
+		PlayerCameraManager::Get()->GetCurrentCamera()->RotateUp(mouseMovement.y * 0.015f);
+		PlayerCameraManager::Get()->GetCurrentCamera()->RotateRight(mouseMovement.x * 0.015f);
+	}
+
 	return true;
 }
 
@@ -274,133 +256,232 @@ void Game::Update()
 {
 	PlayerCameraManager::Get()->Update();
 
-	for (unsigned int i = 0; i < m_cubes.size(); i++)
+	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
 	{
-		m_cubes[i]->Update();
+		m_texturedCubes[i]->Update();
 	}
-	m_floor->Update();
+	m_coloredFloor->Update();
 }
 
 void Game::Render()
 {
-	// Clear color seems to not work correctly based on light position
-	Direct3D::Get()->ClearDefaultTarget();
+	Direct3D* d3d = Direct3D::Get();
 
-	if (false)
+	// Clear color seems to not work correctly based on light position
+	d3d->ClearDefaultTarget();
+
+	switch (m_renderMode)
 	{
-		RenderDepth();
-	}
-	else if (false)
-	{
+	case NORMAL_MODE:
+		RenderNormal();
+		break;
+	case DEFERRED_MODE:
 		RenderDeferredFirstPass();
 		//RenderShadowPass();
-
 		RenderDeferredLightPass();
+		break;
+	case DEPTH_MODE:
+		RenderDepth();
+		break;
+	default:
+		break;
 	}
-	else if (true)
+
+	switch (m_HUDMode)
 	{
-		RenderNormal();
+	case TORGUE_HUD:
+		// The shader resource view is set when this mode is set
+		RenderHUD();
+		break;
+	case DEFERRED_POSITIONS:
+		m_HUDObject->SetShaderResourceView(d3d->GetDeferredShaderResourceViews()[0]);
+		RenderHUD();
+		break;
+	case DEFERRED_NORMALS:
+		m_HUDObject->SetShaderResourceView(d3d->GetDeferredShaderResourceViews()[1]);
+		RenderHUD();
+		break;
+	case DEFERRED_COLORS:
+		m_HUDObject->SetShaderResourceView(d3d->GetDeferredShaderResourceViews()[2]);
+		RenderHUD();
+		break;
+	//case HUD_OFF:
+		// Do not render HUD at all
+	default:
+		break;
 	}
-	else
-	{
-		//RenderDeferredFirstPass();	// Render to the textures
 
-		////Direct3D::Get()->DisableZBuffer();
-		//m_bitMap->SetPosition(Vector2i(0, 0));
-		//m_bitMap->SetShaderResourceView(Direct3D::Get()->GetDeferredShaderResourceViews()[1]);	// normals
-		//m_bitMap->SetupVertexBuffer(Direct3D::Get()->GetDeviceContext());
-		//m_bitMap->Render(Direct3D::Get()->GetDeviceContext());
-		//
-		////RenderToTexture();
-		//
-
-		//RenderNormal();
-	}
-
-	Direct3D::Get()->Present();
+	d3d->Present();
 }
 
 void Game::RenderNormal()
 {
-	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::TEXTURE);
-	ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
+	Direct3D* d3d = Direct3D::Get();
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	ShaderManager* shaders = ShaderManager::Get();
+	Camera* cam = PlayerCameraManager::Get()->GetCurrentCamera();
+	Camera* cam0 = PlayerCameraManager::Get()->GetCamera(0);
 
-	for (unsigned int i = 0; i < m_cubes.size(); i++)
+
+	// Render textured objects
+	shaders->SetShaderType(deviceContext, ShaderType::TEXTURE);
+
+	shaders->SetPerFrameTextureConstantBuffer(
+		deviceContext,
+		cam->GetViewMatrix(),
+		m_orthogonal ? cam->GetOrthogonalMatrix() : cam->GetProjectionMatrix(),
+		cam0->GetPosition(),
+		1.0f);
+
+	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
 	{
-		ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_cubes[i].get());
-		m_cubes[i]->Render(Direct3D::Get()->GetDeviceContext());
+		shaders->SetPerObjectTextureConstantBuffer(deviceContext, m_texturedCubes[i]->GetWorldMatrix(), m_texturedCubes[i]->GetTexture());
+		m_texturedCubes[i]->Render(deviceContext);
 	}
 
-	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::SINGLE_COLOR);
-	ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
-	ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_floor.get());
-	m_floor->Render(Direct3D::Get()->GetDeviceContext());
+
+	// Render single colored objects
+	shaders->SetShaderType(deviceContext, ShaderType::SINGLE_COLOR);
+
+	shaders->SetPerFrameSingleColorConstantBuffer(
+		deviceContext,
+		cam->GetViewMatrix(),
+		cam->GetProjectionMatrix(),
+		cam0->GetViewMatrix(),
+		cam0->GetProjectionMatrix(),
+		cam0->GetPosition(),
+		1.0f);
+	
+	shaders->SetPerObjectSingleColorConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix(), m_coloredFloor->GetColor());
+	
+	m_coloredFloor->Render(deviceContext);
 }
-
-//void Game::RenderToTexture()
-//{
-//	m_renderTexture->SetRenderTarget(Direct3D::Get()->GetDeviceContext(), Direct3D::Get()->GetDepthStencilView());
-//	m_renderTexture->ClearTarget(Direct3D::Get()->GetDeviceContext(), Direct3D::Get()->GetDepthStencilView());
-//
-//	RenderNormal();
-//
-//	Direct3D::Get()->SetDefaultTarget();
-//}
-
 void Game::RenderDeferredFirstPass()
 {
-	Direct3D::Get()->SetDeferredTargets();
-	Direct3D::Get()->ClearDeferredTargets();
+	Direct3D* d3d = Direct3D::Get();
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	ShaderManager* shaders = ShaderManager::Get();
+	Camera* cam = PlayerCameraManager::Get()->GetCurrentCamera();
 
-	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::D_SINGLE_COLOR);
-	ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
+	d3d->SetDeferredTargets();
+	d3d->ClearDeferredTargets();
 
-	for (unsigned int i = 0; i < m_cubes.size(); i++)
+
+	// Render textured objects
+	shaders->SetShaderType(deviceContext, ShaderType::D_TEXTURE);
+
+	shaders->SetPerFrameDeferredTextureConstantBuffer(
+		deviceContext,
+		cam->GetViewMatrix(),
+		m_orthogonal ? cam->GetOrthogonalMatrix() : cam->GetProjectionMatrix());
+
+	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
 	{
-		ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_cubes[i].get());
-		m_cubes[i]->Render(Direct3D::Get()->GetDeviceContext());
+		shaders->SetPerObjectDeferredTextureConstantBuffer(deviceContext, m_texturedCubes[i]->GetWorldMatrix(), m_texturedCubes[i]->GetTexture());
+		m_texturedCubes[i]->Render(deviceContext);
 	}
-	ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_floor.get());
-	m_floor->Render(Direct3D::Get()->GetDeviceContext());
-}
 
+
+	// Render single colored objects
+	shaders->SetShaderType(deviceContext, ShaderType::D_SINGLE_COLOR);
+
+	shaders->SetPerFrameDeferredSingleColorConstantBuffer(
+		deviceContext,
+		cam->GetViewMatrix(),
+		cam->GetProjectionMatrix());
+
+	shaders->SetPerObjectDeferredSingleColorConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix(), m_coloredFloor->GetColor());
+
+	m_coloredFloor->Render(deviceContext);
+}
 void Game::RenderDepth()
 {
-	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::DEPTH);
-	ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
+	Direct3D* d3d = Direct3D::Get();
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	ShaderManager* shaders = ShaderManager::Get();
+	Camera* cam = PlayerCameraManager::Get()->GetCurrentCamera();
 
-	for (unsigned int i = 0; i < m_cubes.size(); i++)
+	shaders->SetShaderType(deviceContext, ShaderType::DEPTH);
+	
+	shaders->SetPerFrameDepthConstantBuffer(
+		deviceContext,
+		cam->GetViewMatrix(),
+		m_orthogonal ? cam->GetOrthogonalMatrix() : cam->GetProjectionMatrix());
+
+	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
 	{
-		ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_cubes[i].get());
-		m_cubes[i]->Render(Direct3D::Get()->GetDeviceContext());
+		shaders->SetPerObjectDepthConstantBuffer(deviceContext, m_texturedCubes[i]->GetWorldMatrix());
+		m_texturedCubes[i]->Render(deviceContext);
 	}
-	ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_floor.get());
-	m_floor->Render(Direct3D::Get()->GetDeviceContext());
-}
 
+	shaders->SetPerObjectDepthConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix());
+	
+	m_coloredFloor->Render(deviceContext);
+}
 void Game::RenderShadowPass()
 {
-	Direct3D::Get()->SetShadowTarget();
-	Direct3D::Get()->ClearShadowTarget();
+	Direct3D* d3d = Direct3D::Get();
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	ShaderManager* shaders = ShaderManager::Get();
+	Camera* cam0 = PlayerCameraManager::Get()->GetCurrentCamera();
 
-	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::D_SHADOW);
-	ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
+	d3d->SetShadowTarget();
+	d3d->ClearShadowTarget();
+
+	shaders->SetShaderType(deviceContext, ShaderType::D_SHADOW);
+
+	shaders->SetPerFrameDeferredShadowConstantBuffer(
+		deviceContext,
+		cam0->GetViewMatrix(),
+		cam0->GetProjectionMatrix());
 	
-	for (unsigned int i = 0; i < m_cubes.size(); i++)
+	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
 	{
-		ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_cubes[i].get());
-		m_cubes[i]->Render(Direct3D::Get()->GetDeviceContext());
+		shaders->SetPerObjectDeferredShadowConstantBuffer(deviceContext, m_texturedCubes[i]->GetWorldMatrix());
+		m_texturedCubes[i]->Render(deviceContext);
 	}
-	ShaderManager::Get()->SetPerObjectConstantBuffer(Direct3D::Get()->GetDeviceContext(), m_floor.get());
-	m_floor->Render(Direct3D::Get()->GetDeviceContext());
-}
 
+	shaders->SetPerObjectDeferredShadowConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix());
+	m_coloredFloor->Render(deviceContext);
+}
 void Game::RenderDeferredLightPass()
 {
-	Direct3D::Get()->SetDefaultTarget();
+	Direct3D* d3d = Direct3D::Get();
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	ShaderManager* shaders = ShaderManager::Get();
+	Camera* cam0 = PlayerCameraManager::Get()->GetCamera(0);
 
-	ShaderManager::Get()->SetShaderType(Direct3D::Get()->GetDeviceContext(), ShaderType::D_LIGHT);
+	d3d->SetDefaultTarget();
 
-	ShaderManager::Get()->SetPerFrameConstantBuffer(Direct3D::Get()->GetDeviceContext(), PlayerCameraManager::Get()->GetCurrentCamera(), PlayerCameraManager::Get()->GetCamera(0), 1.0f);
-	DeferredScreenTarget::Get()->Render(Direct3D::Get()->GetDeviceContext());
+	shaders->SetShaderType(deviceContext, ShaderType::D_LIGHT);
+
+	shaders->SetPerFrameDeferredLightConstantBuffer(
+		deviceContext,
+		cam0->GetViewMatrix(),
+		cam0->GetProjectionMatrix(),
+		m_HUDObject->GetShaderResourceView(),
+		cam0->GetPosition(),
+		1.0f);
+
+	DeferredScreenTarget::Get()->Render(deviceContext);
+}
+void Game::RenderHUD()
+{
+	Direct3D* d3d = Direct3D::Get();
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	ShaderManager* shaders = ShaderManager::Get();
+
+	shaders->SetShaderType(deviceContext, ShaderType::HUD);
+
+	shaders->SetPerObjectHUDConstantBuffer(
+		deviceContext,
+		m_HUDObject->GetShaderResourceView());
+
+	// Disable depth test, so everything below is rendered above everything else
+	d3d->DisableZBuffer();
+
+	m_HUDObject->Render(deviceContext);
+
+	// Reenable
+	d3d->EnableZBuffer();
 }

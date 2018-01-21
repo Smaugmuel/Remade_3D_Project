@@ -94,8 +94,8 @@ void Camera::UpdateProjectionMatrix()
 void Camera::UpdateOrthographicMatrix()
 {
 	DirectX::XMMATRIX orthographic = DirectX::XMMatrixOrthographicLH(
-		m_dimensions.x,
-		m_dimensions.y,
+		m_dimensions.x * 0.05f,
+		m_dimensions.y * 0.05f,
 		m_nearPlane,
 		m_farPlane);
 

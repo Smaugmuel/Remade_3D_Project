@@ -215,7 +215,7 @@ void SingleColorShaderGroup::SetupShaders(ID3D11DeviceContext* deviceContext)
 
 	//deviceContext->VSSetConstantBuffers(0, 2, m_vsBuffers);
 }
-void SingleColorShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, Camera * camera, Camera* lightCamera, float lightIntensity)
+void SingleColorShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix, Vector3f lightPosition, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix, float lightIntensity)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result;
@@ -237,8 +237,8 @@ void SingleColorShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext* deviceCont
 	}
 
 	frameDataVS = (VS_PerFrameBuffer*)mappedResource.pData;
-	frameDataVS->view = camera->GetViewMatrix();
-	frameDataVS->projection = camera->GetProjectionMatrix();
+	frameDataVS->view = viewMatrix;
+	frameDataVS->projection = projectionMatrix;
 
 	deviceContext->VSSetConstantBuffers(0, 1, &m_vsPerFrameBuffer);
 	deviceContext->Unmap(m_vsPerFrameBuffer, 0);
@@ -259,13 +259,13 @@ void SingleColorShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext* deviceCont
 	}
 
 	frameDataPS = (PS_PerFrameBuffer*)mappedResource.pData;
-	frameDataPS->lightPosition = lightCamera->GetPosition();
+	frameDataPS->lightPosition = lightPosition;
 	frameDataPS->lightIntensity = lightIntensity;
 
 	deviceContext->PSSetConstantBuffers(0, 1, &m_psPerFrameBuffer);
 	deviceContext->Unmap(m_psPerFrameBuffer, 0);
 }
-void SingleColorShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext* deviceContext, Object* object)
+void SingleColorShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & worldMatrix, Vector3f color)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result;
@@ -284,14 +284,11 @@ void SingleColorShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext* deviceCon
 		return;
 	}
 
-	SingleColorObject* obj = dynamic_cast<SingleColorObject*>(object);
-	if (obj)
-	{
-		objectData = (VS_PerObjectBuffer*)mappedResource.pData;
-		objectData->world = obj->GetWorldMatrix();
-		objectData->color = obj->GetColor();
-		objectData->padding = 0.0f;
-	}
+	
+	objectData = (VS_PerObjectBuffer*)mappedResource.pData;
+	objectData->world = worldMatrix;
+	objectData->color = color;
+	objectData->padding = 0.0f;
 
 	deviceContext->VSSetConstantBuffers(1, 1, &m_vsPerObjectBuffer);
 	deviceContext->Unmap(m_vsPerObjectBuffer, 0);

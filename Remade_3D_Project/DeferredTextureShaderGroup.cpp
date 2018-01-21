@@ -1,15 +1,15 @@
-#include "DeferredSingleColorShaderGroup.hpp"
-#include "SingleColorObject.hpp"
+#include "DeferredTextureShaderGroup.hpp"
+#include "TextureObject.hpp"
 #include "Camera.hpp"
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
-DeferredSingleColorShaderGroup::DeferredSingleColorShaderGroup()
+DeferredTextureShaderGroup::DeferredTextureShaderGroup()
 {
 }
 
-DeferredSingleColorShaderGroup::~DeferredSingleColorShaderGroup()
+DeferredTextureShaderGroup::~DeferredTextureShaderGroup()
 {
 	if (m_vs)
 	{
@@ -38,17 +38,18 @@ DeferredSingleColorShaderGroup::~DeferredSingleColorShaderGroup()
 	}
 }
 
-bool DeferredSingleColorShaderGroup::Initialize(ID3D11Device * device)
+bool DeferredTextureShaderGroup::Initialize(ID3D11Device * device)
 {
 	ID3D10Blob* vertexShaderBlob;
 	ID3D10Blob* pixelShaderBlob;
 	HRESULT result;
 	D3D11_BUFFER_DESC vs_perObjectDesc;
 	D3D11_BUFFER_DESC vs_perFrameDesc;
+	D3D11_SAMPLER_DESC samplerDesc;
 
 
-	wchar_t* vsName = L"VS_D_SingleColor.hlsl";
-	wchar_t* psName = L"PS_D_SingleColor.hlsl";
+	wchar_t* vsName = L"VS_D_Texture.hlsl";
+	wchar_t* psName = L"PS_D_Texture.hlsl";
 
 
 	// Compile shaders ============================================================================
@@ -114,7 +115,7 @@ bool DeferredSingleColorShaderGroup::Initialize(ID3D11Device * device)
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 
 	result = device->CreateInputLayout(
@@ -136,6 +137,29 @@ bool DeferredSingleColorShaderGroup::Initialize(ID3D11Device * device)
 	pixelShaderBlob = nullptr;
 
 
+	// Create sampler state =======================================================================
+	samplerDesc.Filter = /*D3D11_FILTER_MIN_MAG_MIP_LINEAR*/ D3D11_FILTER_MIN_MAG_MIP_POINT;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.MipLODBias = 0.0f;
+	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	samplerDesc.BorderColor[0] = 0;
+	samplerDesc.BorderColor[1] = 0;
+	samplerDesc.BorderColor[2] = 0;
+	samplerDesc.BorderColor[3] = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	if (FAILED(device->CreateSamplerState(&samplerDesc, &m_samplerState)))
+	{
+		return false;
+	}
+
+
+	//m_vsBuffers = new ID3D11Buffer*[2];
+
 	// Create per-object vertex shader constant buffer ==========================================================
 	memset(&vs_perObjectDesc, 0, sizeof(vs_perObjectDesc));
 	vs_perObjectDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -145,7 +169,8 @@ bool DeferredSingleColorShaderGroup::Initialize(ID3D11Device * device)
 	vs_perObjectDesc.MiscFlags = 0;
 	vs_perObjectDesc.StructureByteStride = 0;
 
-	if (FAILED(device->CreateBuffer(&vs_perObjectDesc, nullptr, &m_vsPerObjectBuffer)))
+	result = device->CreateBuffer(&vs_perObjectDesc, nullptr, &m_vsPerObjectBuffer);//&m_vsBuffers[1]);
+	if (FAILED(result))
 	{
 		return false;
 	}
@@ -159,15 +184,31 @@ bool DeferredSingleColorShaderGroup::Initialize(ID3D11Device * device)
 	vs_perFrameDesc.MiscFlags = 0;
 	vs_perFrameDesc.StructureByteStride = 0;
 
-	if (FAILED(device->CreateBuffer(&vs_perFrameDesc, nullptr, &m_vsPerFrameBuffer)))
+	result = device->CreateBuffer(&vs_perFrameDesc, nullptr, &m_vsPerFrameBuffer);//&m_vsBuffers[0]);
+	if (FAILED(result))
 	{
 		return false;
 	}
 
+	// Create per-frame pixel shader constant buffer ==========================================================
+	//memset(&ps_perFrameDesc, 0, sizeof(ps_perFrameDesc));
+	//ps_perFrameDesc.Usage = D3D11_USAGE_DYNAMIC;
+	//ps_perFrameDesc.ByteWidth = sizeof(PS_PerFrameBuffer);
+	//ps_perFrameDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	//ps_perFrameDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	//ps_perFrameDesc.MiscFlags = 0;
+	//ps_perFrameDesc.StructureByteStride = 0;
+
+	//result = device->CreateBuffer(&ps_perFrameDesc, nullptr, &m_psPerFrameBuffer);//&m_vsBuffers[1]);
+	//if (FAILED(result))
+	//{
+	//	return false;
+	//}
+
 	return true;
 }
 
-void DeferredSingleColorShaderGroup::SetupShaders(ID3D11DeviceContext * deviceContext)
+void DeferredTextureShaderGroup::SetupShaders(ID3D11DeviceContext * deviceContext)
 {
 	deviceContext->VSSetShader(m_vs, nullptr, 0);
 	deviceContext->HSSetShader(nullptr, nullptr, 0);
@@ -176,20 +217,20 @@ void DeferredSingleColorShaderGroup::SetupShaders(ID3D11DeviceContext * deviceCo
 	deviceContext->PSSetShader(m_ps, nullptr, 0);
 
 	deviceContext->IASetInputLayout(m_layout);
-
-	// Might need to set sample state here
+	deviceContext->PSSetSamplers(0, 1, &m_samplerState);
 }
 
-void DeferredSingleColorShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix)
+void DeferredTextureShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result;
 	VS_PerFrameBuffer* frameDataVS;
+	//PS_PerFrameBuffer* frameDataPS;
 
 	// Vertex Shader ===========================================================================
 	// Mapping and updating buffer
 	result = deviceContext->Map(
-		m_vsPerFrameBuffer,
+		m_vsPerFrameBuffer,//m_vsBuffers[0],
 		0,
 		D3D11_MAP_WRITE_DISCARD,
 		0,
@@ -206,17 +247,39 @@ void DeferredSingleColorShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * d
 
 	deviceContext->Unmap(m_vsPerFrameBuffer, 0);
 	deviceContext->VSSetConstantBuffers(0, 1, &m_vsPerFrameBuffer);
+
+
+	// Pixel Shader ===========================================================================
+	// Mapping and updating buffer
+	//result = deviceContext->Map(
+	//	m_psPerFrameBuffer,//m_vsBuffers[0],
+	//	0,
+	//	D3D11_MAP_WRITE_DISCARD,
+	//	0,
+	//	&mappedResource
+	//	);
+	//if (FAILED(result))
+	//{
+	//	return;
+	//}
+
+	//frameDataPS = (PS_PerFrameBuffer*)mappedResource.pData;
+	//frameDataPS->lightPosition = lightCamera->GetPosition();
+	//frameDataPS->lightIntensity = lightIntensity;
+
+	//deviceContext->Unmap(m_psPerFrameBuffer, 0);
+	//deviceContext->PSSetConstantBuffers(0, 1, &m_psPerFrameBuffer);
 }
 
-void DeferredSingleColorShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & worldMatrix, Vector3f color)
+void DeferredTextureShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & worldMatrix, ID3D11ShaderResourceView * texture)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result;
 	VS_PerObjectBuffer* objectData;
 
-	// Mapping and updating PerFrameConstantBuffer
+	// Mapping and updating PerObjectConstantBuffer
 	result = deviceContext->Map(
-		m_vsPerObjectBuffer,
+		m_vsPerObjectBuffer,//m_vsBuffers[0],
 		0,
 		D3D11_MAP_WRITE_DISCARD,
 		0,
@@ -227,11 +290,12 @@ void DeferredSingleColorShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * 
 		return;
 	}
 
+
 	objectData = (VS_PerObjectBuffer*)mappedResource.pData;
 	objectData->world = worldMatrix;
-	objectData->color = color;
-	objectData->padding = 0.0f;
 
 	deviceContext->Unmap(m_vsPerObjectBuffer, 0);
 	deviceContext->VSSetConstantBuffers(1, 1, &m_vsPerObjectBuffer);
+
+	deviceContext->PSSetShaderResources(0, 1, &texture);
 }

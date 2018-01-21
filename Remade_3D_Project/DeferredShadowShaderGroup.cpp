@@ -173,7 +173,7 @@ void DeferredShadowShaderGroup::SetupShaders(ID3D11DeviceContext * deviceContext
 	deviceContext->PSSetShader(nullptr, nullptr, 0);
 }
 
-void DeferredShadowShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, Camera * lightCamera)
+void DeferredShadowShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result;
@@ -196,8 +196,8 @@ void DeferredShadowShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * device
 	frameDataVS = (VS_PerFrameBuffer*)mappedResource.pData;
 	//frameDataVS->view = camera->GetViewMatrix();
 	//frameDataVS->projection = camera->GetProjectionMatrix();
-	frameDataVS->lightView = lightCamera->GetViewMatrix();
-	frameDataVS->lightProj = lightCamera->GetProjectionMatrix();
+	frameDataVS->lightView = lightViewMatrix;
+	frameDataVS->lightProj = lightProjectionMatrix;
 	//frameDataVS->lightPosition = lightCamera->GetPosition();
 	//frameDataVS->padding = 0.0f;
 
@@ -206,7 +206,7 @@ void DeferredShadowShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * device
 	//deviceContext->PSSetShaderResources(0, 1, &depthTexture);
 }
 
-void DeferredShadowShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * deviceContext, Object * object)
+void DeferredShadowShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX& worldMatrix)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	HRESULT result;
@@ -226,7 +226,7 @@ void DeferredShadowShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * devic
 	}
 
 	objectData = (VS_PerObjectBuffer*)mappedResource.pData;
-	objectData->world = object->GetWorldMatrix();
+	objectData->world = worldMatrix;
 	objectData->color = Vector3f(0, 0, 0);
 	objectData->padding = 1.0f;
 

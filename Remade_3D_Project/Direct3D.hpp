@@ -35,7 +35,6 @@ public:
 
 	void ClearDefaultTarget();
 	void ClearDeferredTargets();
-	//void ClearRenderToTextureTarget();
 	void ClearShadowTarget();
 	void ClearAllTargets();
 
@@ -43,53 +42,50 @@ public:
 
 	void SetDefaultTarget();
 	void SetDeferredTargets();
-	//void SetRenderToTextureTarget();
 	void SetShadowTarget();
+
+	void EnableZBuffer();
+	void DisableZBuffer();
 
 	ID3D11Device* GetDevice() const;
 	ID3D11DeviceContext* GetDeviceContext() const;
 
-
-	/* Added with rastertek */
-	ID3D11DepthStencilView* GetDepthStencilView();
-	void EnableZBuffer();
-	void DisableZBuffer();
-
-
 	ID3D11ShaderResourceView** GetDeferredShaderResourceViews();
-	//ID3D11ShaderResourceView* GetRenderToTextureShaderResoureView();
 	ID3D11ShaderResourceView* GetShadowShaderResourceView();
 
 private:
+	/* Normal */
 	bool InitializeDeviceAndSwapChain();
 	bool InitializeDefaultRenderTargetView();
 	bool InitializeDefaultDepthBufferAndDepthStencilView();
 	bool InitializeDefaultViewport();
 
-	// Deferred
+	/* Deferred */
 	bool InitializeDeferredRenderTargetViews();
 	bool InitializeDeferredDepthBufferAndDepthStencilView();
 	bool InitializeDeferredViewport();
-
-	/* Render to texture */
-	//bool InitializeRenderToTextureRenderTargetView();
 
 	/* Shadow */
 	bool InitializeShadowDepthBufferAndDepthStencilView();
 	bool InitializeShadowShaderResourceView();
 	bool InitializeShadowViewport();
 
+
+	HWND m_windowHandle;
+	Vector2i m_windowDimensions;
 	IDXGISwapChain* m_swapChain;
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_deviceContext;
+	ID3D11DepthStencilState* m_depthStencilState;
+	ID3D11DepthStencilState* m_depthDisabledStencilState;
+
+	/* Normal */
 	ID3D11RenderTargetView* m_renderTargetView;
 	ID3D11Texture2D* m_depthStencilBuffer;
-	ID3D11DepthStencilState* m_depthStencilState;
-	ID3D11DepthStencilState* m_depthDisabledStencilState;	/* Added with rastertek */
 	ID3D11DepthStencilView* m_depthStencilView;
 	D3D11_VIEWPORT m_viewPort;
 
-	// Deferred
+	/* Deferred */
 	ID3D11Texture2D* m_d_renderTargetTextures[BufferType::NR_OF_D_ELEMENTS];
 	ID3D11RenderTargetView* m_d_renderTargetViews[BufferType::NR_OF_D_ELEMENTS];
 	ID3D11ShaderResourceView* m_d_shaderResourceViews[BufferType::NR_OF_D_ELEMENTS];
@@ -97,19 +93,11 @@ private:
 	ID3D11DepthStencilView* m_d_depthStencilView;
 	D3D11_VIEWPORT m_d_viewPort;
 
-	/* Render to texture */
-	//ID3D11Texture2D* m_rt_renderTargetTexture;
-	//ID3D11RenderTargetView* m_rt_renderTargetView;
-	//ID3D11ShaderResourceView* m_rt_shaderResourceView;
-
 	/* Shadow */
 	ID3D11ShaderResourceView* m_s_shaderResourceView;
 	ID3D11Texture2D* m_s_depthStencilBuffer;
 	ID3D11DepthStencilView* m_s_depthStencilView;
 	D3D11_VIEWPORT m_s_viewport;
-
-	HWND m_windowHandle;
-	Vector2i m_windowDimensions;
 };
 
 #endif

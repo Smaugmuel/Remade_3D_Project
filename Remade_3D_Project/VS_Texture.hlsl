@@ -2,6 +2,8 @@ cbuffer PerFrame : register(b0)
 {
 	matrix<float, 4, 4> view;
 	matrix<float, 4, 4> proj;
+	float3 lightPosition;
+	float padding;
 };
 cbuffer PerObject : register(b1)
 {
@@ -18,7 +20,8 @@ struct VS_IN
 struct VS_OUT
 {
 	float4 position : SV_POSITION;
-	float3 normal : NORMAL;
+	float3 normal : NORMAL0;
+	float3 toLight : NORMAL1;
 	float2 uv : TEXCOORD0;
 };
 
@@ -27,6 +30,9 @@ VS_OUT main(VS_IN input)
 	VS_OUT output;
 
 	output.position = mul(float4(input.position, 1.0f), world);
+
+	output.toLight = normalize(lightPosition - output.position.xyz);
+
 	output.position = mul(output.position, view);
 	output.position = mul(output.position, proj);
 	output.normal = mul(input.normal, (float3x3)world);
