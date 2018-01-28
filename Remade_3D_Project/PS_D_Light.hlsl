@@ -1,8 +1,7 @@
 Texture2D worldPosTexture : register(t0);
 Texture2D normalTexture : register(t1);
 Texture2D colorTexture : register(t2);
-//Texture2D depthTexture : register(t3);
-Texture2D torgueTexture : register(t3);
+Texture2D depthTexture : register(t3);
 
 SamplerState sampleState : register(s0);
 
@@ -21,99 +20,132 @@ struct VS_OUT
 
 float4 main(VS_OUT input) : SV_Target
 {
+	// Deferred first pass values
 	float4 worldPos;
 	float4 normal;
 	float4 color;
+
+	// Light values
 	float3 lightPos;
 	float lightIntensity;
+
+	// Vector from object to light
 	float3 toLight;
+
+	// Object position on screen, from light perspective
+	float4 lightScreenPos;
+
+	// UV coords at position above
+	float2 lightScreenUV;
+
+	// Distance to light
+	float depthToNearestObject;
+	float depthToThisObject;	
+
 	float diffuse = 0.0f;
-	float4 projectedPos;
-	float2 projectedUV;
-	float depthValue;
-	float depthValueLight;
-	
-	
-	float2 uv_splitScreen;
 
-	if (input.uv.x <= 0.5f)
+
+	//============= Split Screen =========================
+	float2 uv_coords;
+	if (input.uv.x <= 0.5f && input.uv.y <= 0.5f)
 	{
-		if (input.uv.y <= 0.5f)
-		{
-			uv_splitScreen = float2(input.uv.x * 2, input.uv.y * 2);
-			return worldPosTexture.Sample(sampleState, uv_splitScreen);
-		}
-		else
-		{
-			uv_splitScreen = float2(input.uv.x * 2, input.uv.y * 2 - 1);
-
-			worldPos = worldPosTexture.Sample(sampleState, uv_splitScreen);
-			normal = normalTexture.Sample(sampleState, uv_splitScreen);
-			color = colorTexture.Sample(sampleState, uv_splitScreen);
-
-			lightPos = lightData.xyz;
-			lightIntensity = lightData.w;
-
-			toLight = normalize(lightPos - worldPos.xyz);
-			diffuse = saturate(dot(toLight, normal.xyz));
-			return float4(color.xyz * saturate(diffuse + 0.1f) * lightIntensity, 1.0f);
-		}
+		// Top left
+		uv_coords = float2(input.uv.x * 2, input.uv.y * 2);
+		return worldPosTexture.Sample(sampleState, uv_coords);
+	}
+	else if (input.uv.x >= 0.5f && input.uv.y <= 0.5f)
+	{
+		// Top right
+		uv_coords = float2(input.uv.x * 2 - 1, input.uv.y * 2);
+		return normalTexture.Sample(sampleState, uv_coords);
+	}
+	else if (input.uv.x <= 0.5f && input.uv.y >= 0.5f)
+	{
+		// Bottom left
+		uv_coords = float2(input.uv.x * 2, input.uv.y * 2 - 1);
+		float depthValue = pow(depthTexture.Sample(sampleState, uv_coords).x, 100);
+		return float4(depthValue, depthValue, depthValue, 1);
 	}
 	else
 	{
-		if (input.uv.y <= 0.5f)
+		// Bottom right
+		uv_coords = float2(input.uv.x * 2 - 1, input.uv.y * 2 - 1);
+
+		worldPos = worldPosTexture.Sample(sampleState, uv_coords);
+		normal = normalTexture.Sample(sampleState, uv_coords);
+		color = colorTexture.Sample(sampleState, uv_coords);
+
+		lightPos = lightData.xyz;
+		lightIntensity = lightData.w;
+
+		toLight = normalize(lightPos - worldPos.xyz);
+
+		lightScreenPos = mul(worldPos, mul(lightView, lightProj));
+		lightScreenPos /= lightScreenPos.w;
+
+		// Translate from [-1, 1] to [0, 1]
+		lightScreenUV.x = (lightScreenPos.x + 1) * 0.5f;
+		lightScreenUV.y = 1 - (lightScreenPos.y + 1) * 0.5f;
+
+		if (saturate(lightScreenUV.x) == lightScreenUV.x && saturate(lightScreenUV.y) == lightScreenUV.y)
 		{
-			uv_splitScreen = float2(input.uv.x * 2 - 1, input.uv.y * 2);
-			return normalTexture.Sample(sampleState, uv_splitScreen);
+			depthToNearestObject = depthTexture.Sample(sampleState, lightScreenUV).x;
+			depthToThisObject = lightScreenPos.z - 0.0001f;
+
+			if (depthToThisObject < depthToNearestObject)
+			{
+				diffuse += saturate(dot(toLight, normal.xyz));
+			}
 		}
-		else
-		{
-			uv_splitScreen = float2(input.uv.x * 2 - 1, input.uv.y * 2 - 1);
-			return torgueTexture.Sample(sampleState, uv_splitScreen);
-			
-			//depthValue = pow(depthTexture.Sample(sampleState, uv_splitScreen).x, 1);
-			//return float4(depthValue, depthValue, depthValue, 1);
-		}
+
+		return float4(color.xyz * saturate(diffuse + 0.1f), 1.0f);
 	}
 	//*/
 
 
+
+	// Retrieve deferred values
 	worldPos = worldPosTexture.Sample(sampleState, input.uv);
 	normal = normalTexture.Sample(sampleState, input.uv);
 	color = colorTexture.Sample(sampleState, input.uv);
 
+	// Retrieve light values
 	lightPos = lightData.xyz;
 	lightIntensity = lightData.w;
 
+	// Vector from object to light
 	toLight = normalize(lightPos - worldPos.xyz);
-	diffuse = saturate(dot(toLight, normal.xyz));
 
 
+	//diffuse = saturate(dot(toLight, normal.xyz));
 
-	projectedPos = mul(worldPos, mul(lightView, lightProj));
+	// Object position seen from light
+	lightScreenPos = mul(worldPos, mul(lightView, lightProj));
+	lightScreenPos /= lightScreenPos.w;
+
+	// Translate from [-1, 1] to [0, 1]
+	lightScreenUV.x = (lightScreenPos.x + 1) * 0.5f;
+	lightScreenUV.y = 1 - (lightScreenPos.y + 1) * 0.5f;
+
+	//if ((projectedUV.x >= 0.0f && projectedUV.x <= 1.0f) && (projectedUV.y >= 0.0f && projectedUV.y <= 1.0f))
+	//{
+	//
+	//}
 	
-	projectedPos /= projectedPos.w;
-	projectedUV.x = (projectedPos.x + 1) * 0.5f;
-	projectedUV.y = (-projectedPos.y + 1) * 0.5f;
-
-	if (saturate(projectedUV.x) == projectedUV.x && saturate(projectedUV.y) == projectedUV.y)
+	if (saturate(lightScreenUV.x) == lightScreenUV.x && saturate(lightScreenUV.y) == lightScreenUV.y)
 	{
-		//depthValue = depthTexture.Sample(sampleState, projectedUV).x;
-		depthValueLight = projectedPos.z - 0.01f;
+		// Object position fit into light frustum (was visible from light
 
-		//if (depthValue < 0.1)
-		//{
-		//	return float4(0, 1, 0, 1);
-		//}
-		//else
-		//{
-		//	return float4(1, 0, 0, 1);
-		//}
+		depthToNearestObject = depthTexture.Sample(sampleState, lightScreenUV).x;
+		depthToThisObject = lightScreenPos.z - 0.0001f;
 
-		/*if (depthValueLight < depthValue)
+		if (depthToThisObject <= depthToNearestObject)
 		{
-			diffuse = saturate(dot(toLight, normal.xyz));
-		}*/
+			// This was the closest object
+
+			// Add diffuse lighting
+			diffuse += saturate(dot(toLight, normal.xyz));
+		}
 	}
 
 	return float4(color.xyz * saturate(diffuse + 0.1f), 1.0f);

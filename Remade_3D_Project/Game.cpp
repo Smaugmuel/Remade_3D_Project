@@ -125,6 +125,9 @@ void Game::Run()
 bool Game::ProcessInput()
 {
 	Input* input = Input::Get();
+	PlayerCameraManager* manager = PlayerCameraManager::Get();
+	Camera* cam = manager->GetCurrentCamera();
+	Camera* cam0 = manager->GetCamera(0);
 
 	input->Update();
 
@@ -136,50 +139,68 @@ bool Game::ProcessInput()
 	// Camera movement
 	if (input->IsKeyDown('A'))
 	{
-		PlayerCameraManager::Get()->GetCurrentCamera()->MoveRight(-0.01f);
+		cam->MoveRight(-0.01f);
 	}
 	if (input->IsKeyDown('D'))
 	{
-		PlayerCameraManager::Get()->GetCurrentCamera()->MoveRight(0.01f);
+		cam->MoveRight(0.01f);
 	}
 	if (input->IsKeyDown('W'))
 	{
-		PlayerCameraManager::Get()->GetCurrentCamera()->MoveForward(0.01f);
+		cam->MoveForward(0.01f);
 	}
 	if (input->IsKeyDown('S'))
 	{
-		PlayerCameraManager::Get()->GetCurrentCamera()->MoveForward(-0.01f);
+		cam->MoveForward(-0.01f);
 	}
 	if (input->IsKeyDown(VK_SPACE))
 	{
-		PlayerCameraManager::Get()->GetCurrentCamera()->MoveUp(0.01f);
+		cam->MoveUp(0.01f);
 	}
 	if (input->IsKeyDown(VK_SHIFT))
 	{
-		PlayerCameraManager::Get()->GetCurrentCamera()->MoveUp(-0.01f);
+		cam->MoveUp(-0.01f);
 	}
 
 	// Switch cameras
 	if (input->IsKeyPressed(VK_RIGHT))
 	{
-		PlayerCameraManager::Get()->ChangeUp();
+		manager->ChangeUp();
 	}
 	if (input->IsKeyPressed(VK_LEFT))
 	{
-		PlayerCameraManager::Get()->ChangeDown();
+		manager->ChangeDown();
 	}
 
 	// Create camera
 	if (input->IsKeyPressed(VK_RETURN))
 	{
 		// Create a new camera as a copy of the current one
-		PlayerCameraManager::Get()->CreateCamera();
+		manager->CreateCamera();
 	}
 
 	// Look at origin
 	if (input->IsKeyDown('R'))
 	{
-		PlayerCameraManager::Get()->GetCurrentCamera()->SetTarget(0.0f, 0.0f, 0.0f);
+		cam->SetTarget(0.0f, 0.0f, 0.0f);
+	}
+
+	// Rotate light camera
+	if (input->IsKeyDown('J'))
+	{
+		cam0->RotateRight(-0.001);
+	}
+	if (input->IsKeyDown('L'))
+	{
+		cam0->RotateRight(0.001);
+	}
+	if (input->IsKeyDown('I'))
+	{
+		cam0->RotateUp(-0.001);
+	}
+	if (input->IsKeyDown('K'))
+	{
+		cam0->RotateUp(0.001);
 	}
 
 	// Turn floor green
@@ -191,16 +212,17 @@ bool Game::ProcessInput()
 	// Toggle depth tests
 	if (input->IsKeyPressed('Z'))
 	{
-		static bool toggle = true;
-		toggle = !toggle;
+		static bool depthTestOn = true;
+		depthTestOn = !depthTestOn;
 
-		if (toggle)
+		switch (depthTestOn)
 		{
+		case true:
 			Direct3D::Get()->EnableZBuffer();
-		}
-		else
-		{
+			break;
+		case false:
 			Direct3D::Get()->DisableZBuffer();
+			break;
 		}
 	}
 
@@ -243,10 +265,10 @@ bool Game::ProcessInput()
 	}
 	else
 	{
-		Vector2f mouseMovement = input->MouseMovement();
+		Vector2f mouseMovement = input->MouseMovement() * 0.015f;
 
-		PlayerCameraManager::Get()->GetCurrentCamera()->RotateUp(mouseMovement.y * 0.015f);
-		PlayerCameraManager::Get()->GetCurrentCamera()->RotateRight(mouseMovement.x * 0.015f);
+		cam->RotateUp(mouseMovement.y);
+		cam->RotateRight(mouseMovement.x);
 	}
 
 	return true;
@@ -277,7 +299,7 @@ void Game::Render()
 		break;
 	case DEFERRED_MODE:
 		RenderDeferredFirstPass();
-		//RenderShadowPass();
+		RenderShadowPass();
 		RenderDeferredLightPass();
 		break;
 	case DEPTH_MODE:
@@ -423,11 +445,13 @@ void Game::RenderShadowPass()
 	Direct3D* d3d = Direct3D::Get();
 	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 	ShaderManager* shaders = ShaderManager::Get();
-	Camera* cam0 = PlayerCameraManager::Get()->GetCurrentCamera();
+	Camera* cam0 = PlayerCameraManager::Get()->GetCamera(0); // PlayerCameraManager::Get()->GetCurrentCamera();
 
 	d3d->SetShadowTarget();
 	d3d->ClearShadowTarget();
 
+	// Set texture shaders, then remove pixel shader
+	shaders->SetShaderType(deviceContext, ShaderType::D_TEXTURE);
 	shaders->SetShaderType(deviceContext, ShaderType::D_SHADOW);
 
 	shaders->SetPerFrameDeferredShadowConstantBuffer(
@@ -440,6 +464,10 @@ void Game::RenderShadowPass()
 		shaders->SetPerObjectDeferredShadowConstantBuffer(deviceContext, m_texturedCubes[i]->GetWorldMatrix());
 		m_texturedCubes[i]->Render(deviceContext);
 	}
+
+	// Set color shaders, then remove pixel shader
+	shaders->SetShaderType(deviceContext, ShaderType::D_SINGLE_COLOR);
+	shaders->SetShaderType(deviceContext, ShaderType::D_SHADOW);
 
 	shaders->SetPerObjectDeferredShadowConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix());
 	m_coloredFloor->Render(deviceContext);
@@ -459,7 +487,8 @@ void Game::RenderDeferredLightPass()
 		deviceContext,
 		cam0->GetViewMatrix(),
 		cam0->GetProjectionMatrix(),
-		m_HUDObject->GetShaderResourceView(),
+		//m_HUDObject->GetShaderResourceView(),
+		d3d->GetShadowShaderResourceView(),
 		cam0->GetPosition(),
 		1.0f);
 
