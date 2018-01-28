@@ -45,65 +45,6 @@ float4 main(VS_OUT input) : SV_Target
 	float diffuse = 0.0f;
 
 
-	//============= Split Screen =========================
-	float2 uv_coords;
-	if (input.uv.x <= 0.5f && input.uv.y <= 0.5f)
-	{
-		// Top left
-		uv_coords = float2(input.uv.x * 2, input.uv.y * 2);
-		return worldPosTexture.Sample(sampleState, uv_coords);
-	}
-	else if (input.uv.x >= 0.5f && input.uv.y <= 0.5f)
-	{
-		// Top right
-		uv_coords = float2(input.uv.x * 2 - 1, input.uv.y * 2);
-		return normalTexture.Sample(sampleState, uv_coords);
-	}
-	else if (input.uv.x <= 0.5f && input.uv.y >= 0.5f)
-	{
-		// Bottom left
-		uv_coords = float2(input.uv.x * 2, input.uv.y * 2 - 1);
-		float depthValue = pow(depthTexture.Sample(sampleState, uv_coords).x, 100);
-		return float4(depthValue, depthValue, depthValue, 1);
-	}
-	else
-	{
-		// Bottom right
-		uv_coords = float2(input.uv.x * 2 - 1, input.uv.y * 2 - 1);
-
-		worldPos = worldPosTexture.Sample(sampleState, uv_coords);
-		normal = normalTexture.Sample(sampleState, uv_coords);
-		color = colorTexture.Sample(sampleState, uv_coords);
-
-		lightPos = lightData.xyz;
-		lightIntensity = lightData.w;
-
-		toLight = normalize(lightPos - worldPos.xyz);
-
-		lightScreenPos = mul(worldPos, mul(lightView, lightProj));
-		lightScreenPos /= lightScreenPos.w;
-
-		// Translate from [-1, 1] to [0, 1]
-		lightScreenUV.x = (lightScreenPos.x + 1) * 0.5f;
-		lightScreenUV.y = 1 - (lightScreenPos.y + 1) * 0.5f;
-
-		if (saturate(lightScreenUV.x) == lightScreenUV.x && saturate(lightScreenUV.y) == lightScreenUV.y)
-		{
-			depthToNearestObject = depthTexture.Sample(sampleState, lightScreenUV).x;
-			depthToThisObject = lightScreenPos.z - 0.0001f;
-
-			if (depthToThisObject < depthToNearestObject)
-			{
-				diffuse += saturate(dot(toLight, normal.xyz));
-			}
-		}
-
-		return float4(color.xyz * saturate(diffuse + 0.1f), 1.0f);
-	}
-	//*/
-
-
-
 	// Retrieve deferred values
 	worldPos = worldPosTexture.Sample(sampleState, input.uv);
 	normal = normalTexture.Sample(sampleState, input.uv);
@@ -116,9 +57,6 @@ float4 main(VS_OUT input) : SV_Target
 	// Vector from object to light
 	toLight = normalize(lightPos - worldPos.xyz);
 
-
-	//diffuse = saturate(dot(toLight, normal.xyz));
-
 	// Object position seen from light
 	lightScreenPos = mul(worldPos, mul(lightView, lightProj));
 	lightScreenPos /= lightScreenPos.w;
@@ -126,11 +64,6 @@ float4 main(VS_OUT input) : SV_Target
 	// Translate from [-1, 1] to [0, 1]
 	lightScreenUV.x = (lightScreenPos.x + 1) * 0.5f;
 	lightScreenUV.y = 1 - (lightScreenPos.y + 1) * 0.5f;
-
-	//if ((projectedUV.x >= 0.0f && projectedUV.x <= 1.0f) && (projectedUV.y >= 0.0f && projectedUV.y <= 1.0f))
-	//{
-	//
-	//}
 	
 	if (saturate(lightScreenUV.x) == lightScreenUV.x && saturate(lightScreenUV.y) == lightScreenUV.y)
 	{

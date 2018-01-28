@@ -168,6 +168,12 @@
     <ClCompile Include="HUDObject.cpp">
       <Filter>Source Files\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="DeferredLightSplitScreenShaderGroup.cpp">
+      <Filter>Source Files\Shaders\ShaderGroups</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredLightMultipleLightsShaderGroup.cpp">
+      <Filter>Source Files\Shaders\ShaderGroups</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.hpp">
@@ -284,6 +290,12 @@
     <ClInclude Include="HUDObject.hpp">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
+    <ClInclude Include="DeferredLightSplitScreenShaderGroup.hpp">
+      <Filter>Header Files\Shaders\ShaderGroups</Filter>
+    </ClInclude>
+    <ClInclude Include="DeferredLightMultipleLightsShaderGroup.hpp">
+      <Filter>Header Files\Shaders\ShaderGroups</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VS_SingleColor.hlsl">
@@ -332,6 +344,18 @@
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PS_HUD.hlsl">
+      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_D_LightSplitScreen.hlsl">
+      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_D_LightSplitScreen.hlsl">
+      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_D_LightMultipleLights.hlsl">
+      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_D_LightMultipleLights.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
   </ItemGroup>

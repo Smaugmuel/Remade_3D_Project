@@ -12,7 +12,7 @@
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
 
-enum BufferType
+enum DeferredBufferType
 {
 	//DEFAULT,
 	D_WORLD_POS,		// Deferred
@@ -86,9 +86,9 @@ private:
 	D3D11_VIEWPORT m_viewPort;
 
 	/* Deferred */
-	ID3D11Texture2D* m_d_renderTargetTextures[BufferType::NR_OF_D_ELEMENTS];
-	ID3D11RenderTargetView* m_d_renderTargetViews[BufferType::NR_OF_D_ELEMENTS];
-	ID3D11ShaderResourceView* m_d_shaderResourceViews[BufferType::NR_OF_D_ELEMENTS];
+	ID3D11Texture2D* m_d_renderTargetTextures[DeferredBufferType::NR_OF_D_ELEMENTS];
+	ID3D11RenderTargetView* m_d_renderTargetViews[DeferredBufferType::NR_OF_D_ELEMENTS];
+	ID3D11ShaderResourceView* m_d_shaderResourceViews[DeferredBufferType::NR_OF_D_ELEMENTS];
 	ID3D11Texture2D* m_d_depthStencilBuffer;
 	ID3D11DepthStencilView* m_d_depthStencilView;
 	D3D11_VIEWPORT m_d_viewPort;

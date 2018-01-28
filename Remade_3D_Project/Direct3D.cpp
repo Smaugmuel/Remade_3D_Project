@@ -55,7 +55,7 @@ Direct3D::~Direct3D()
 		m_d_depthStencilBuffer->Release();
 		m_d_depthStencilBuffer = nullptr;
 	}
-	for (unsigned int i = 0; i < BufferType::NR_OF_D_ELEMENTS; i++)
+	for (unsigned int i = 0; i < DeferredBufferType::NR_OF_D_ELEMENTS; i++)
 	{
 		if (m_d_shaderResourceViews[i])
 		{
@@ -374,7 +374,7 @@ bool Direct3D::InitializeDeferredRenderTargetViews()
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
 
-	for (unsigned int i = 0; i < BufferType::NR_OF_D_ELEMENTS; i++)
+	for (unsigned int i = 0; i < DeferredBufferType::NR_OF_D_ELEMENTS; i++)
 	{
 		if (FAILED(m_device->CreateTexture2D(&textureDesc, nullptr, &m_d_renderTargetTextures[i])))
 			return false;
@@ -384,7 +384,7 @@ bool Direct3D::InitializeDeferredRenderTargetViews()
 	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	for (unsigned int i = 0; i < BufferType::NR_OF_D_ELEMENTS; i++)
+	for (unsigned int i = 0; i < DeferredBufferType::NR_OF_D_ELEMENTS; i++)
 	{
 		if (FAILED(m_device->CreateRenderTargetView(m_d_renderTargetTextures[i], &renderTargetViewDesc, &m_d_renderTargetViews[i])))
 			return false;
@@ -395,7 +395,7 @@ bool Direct3D::InitializeDeferredRenderTargetViews()
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
-	for (unsigned int i = 0; i < BufferType::NR_OF_D_ELEMENTS; i++)
+	for (unsigned int i = 0; i < DeferredBufferType::NR_OF_D_ELEMENTS; i++)
 	{
 		if (FAILED(m_device->CreateShaderResourceView(m_d_renderTargetTextures[i], &shaderResourceViewDesc, &m_d_shaderResourceViews[i])))
 			return false;
@@ -533,7 +533,7 @@ void Direct3D::ClearDefaultTarget()
 void Direct3D::ClearDeferredTargets()
 {
 	float clearColor[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	for (unsigned int i = 0; i < BufferType::NR_OF_D_ELEMENTS; i++)
+	for (unsigned int i = 0; i < DeferredBufferType::NR_OF_D_ELEMENTS; i++)
 	{
 		m_deviceContext->ClearRenderTargetView(m_d_renderTargetViews[i], clearColor);
 	}
@@ -563,7 +563,7 @@ void Direct3D::SetDefaultTarget()
 }
 void Direct3D::SetDeferredTargets()
 {
-	m_deviceContext->OMSetRenderTargets(BufferType::NR_OF_D_ELEMENTS, m_d_renderTargetViews, m_d_depthStencilView);
+	m_deviceContext->OMSetRenderTargets(DeferredBufferType::NR_OF_D_ELEMENTS, m_d_renderTargetViews, m_d_depthStencilView);
 	m_deviceContext->RSSetViewports(1, &m_d_viewPort);
 }
 void Direct3D::SetShadowTarget()

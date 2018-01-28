@@ -297,15 +297,17 @@ void Game::Render()
 	case NORMAL_MODE:
 		RenderNormal();
 		break;
-	case DEFERRED_MODE:
-		RenderDeferredFirstPass();
-		RenderShadowPass();
-		RenderDeferredLightPass();
-		break;
 	case DEPTH_MODE:
 		RenderDepth();
 		break;
+	case DEFERRED_MULTIPLE_LIGHTS_MODE:
+		RenderDeferredFirstPass();
+		RenderDeferredLightPass();
+		break;
 	default:
+		RenderDeferredFirstPass();
+		RenderShadowPass();
+		RenderDeferredLightPass();
 		break;
 	}
 
@@ -327,8 +329,6 @@ void Game::Render()
 		m_HUDObject->SetShaderResourceView(d3d->GetDeferredShaderResourceViews()[2]);
 		RenderHUD();
 		break;
-	//case HUD_OFF:
-		// Do not render HUD at all
 	default:
 		break;
 	}
@@ -481,16 +481,58 @@ void Game::RenderDeferredLightPass()
 
 	d3d->SetDefaultTarget();
 
-	shaders->SetShaderType(deviceContext, ShaderType::D_LIGHT);
 
-	shaders->SetPerFrameDeferredLightConstantBuffer(
-		deviceContext,
-		cam0->GetViewMatrix(),
-		cam0->GetProjectionMatrix(),
-		//m_HUDObject->GetShaderResourceView(),
-		d3d->GetShadowShaderResourceView(),
-		cam0->GetPosition(),
-		1.0f);
+	// Somehow the multiple light shaders are not working
+
+
+	if (m_renderMode == RenderMode::DEFERRED_MODE)
+	{
+		shaders->SetShaderType(deviceContext, ShaderType::D_LIGHT);
+
+		shaders->SetPerFrameDeferredLightConstantBuffer(
+			deviceContext,
+			cam0->GetViewMatrix(),
+			cam0->GetProjectionMatrix(),
+			DeferredBufferType::NR_OF_D_ELEMENTS,
+			d3d->GetDeferredShaderResourceViews(),
+			d3d->GetShadowShaderResourceView(),
+			cam0->GetPosition(),
+			1.0f);
+	}
+	else if (m_renderMode == RenderMode::DEFERRED_MULTIPLE_LIGHTS_MODE)
+	{
+		shaders->SetShaderType(deviceContext, ShaderType::D_MULTIPLE);
+
+		Vector3f lightPos[NR_OF_LIGHTS];
+		float lightIntensity[NR_OF_LIGHTS];
+
+		for (unsigned int i = 0; i < NR_OF_LIGHTS; i++)
+		{
+			lightPos[i] = PlayerCameraManager::Get()->GetCamera(i % PlayerCameraManager::Get()->GetNrOfCameras())->GetPosition();
+			lightIntensity[i] = 1.0f;
+		}
+
+		shaders->SetPerFrameDeferredLightMultipleLightsConstantBuffer(
+			deviceContext,
+			DeferredBufferType::NR_OF_D_ELEMENTS,
+			d3d->GetDeferredShaderResourceViews(),
+			lightPos,
+			lightIntensity);
+	}
+	else
+	{
+		shaders->SetShaderType(deviceContext, ShaderType::D_SPLIT);
+
+		shaders->SetPerFrameDeferredLightSplitScreenConstantBuffer(
+			deviceContext,
+			cam0->GetViewMatrix(),
+			cam0->GetProjectionMatrix(),
+			DeferredBufferType::NR_OF_D_ELEMENTS,
+			d3d->GetDeferredShaderResourceViews(),
+			d3d->GetShadowShaderResourceView(),
+			cam0->GetPosition(),
+			1.0f);
+	}
 
 	DeferredScreenTarget::Get()->Render(deviceContext);
 }
