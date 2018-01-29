@@ -183,10 +183,12 @@ void DeferredLightMultipleLightsShaderGroup::SetupPerFrameBuffer(ID3D11DeviceCon
 	frameDataPS = (PS_PerFrameBuffer*)mappedResource.pData;
 	for (unsigned int i = 0; i < NR_OF_LIGHTS; i++)
 	{
-		frameDataPS->lightPosition[i] = lightPositions[i];
-		frameDataPS->lightIntensity[i] = lightIntensitys[i];
+		frameDataPS->lights[i].position = lightPositions[i];
+		frameDataPS->lights[i].intensity = lightIntensitys[i];
 	}
 
 	deviceContext->Unmap(m_psPerFrameBuffer, 0);
 	deviceContext->PSSetConstantBuffers(0, 1, &m_psPerFrameBuffer);
+
+	deviceContext->PSSetShaderResources(0, nrOfResources, resources);
 }

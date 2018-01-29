@@ -78,7 +78,7 @@ Camera * PlayerCameraManager::GetCurrentCamera()
 
 Camera * PlayerCameraManager::GetCamera(unsigned int i)
 {
-	return (i >= 0 && i < m_cameras.size() ? m_cameras[0].get() : nullptr);
+	return (i >= 0 && i < m_cameras.size() ? m_cameras[i].get() : nullptr);
 }
 
 unsigned int PlayerCameraManager::GetNrOfCameras() const

@@ -481,10 +481,6 @@ void Game::RenderDeferredLightPass()
 
 	d3d->SetDefaultTarget();
 
-
-	// Somehow the multiple light shaders are not working
-
-
 	if (m_renderMode == RenderMode::DEFERRED_MODE)
 	{
 		shaders->SetShaderType(deviceContext, ShaderType::D_LIGHT);
@@ -506,9 +502,10 @@ void Game::RenderDeferredLightPass()
 		Vector3f lightPos[NR_OF_LIGHTS];
 		float lightIntensity[NR_OF_LIGHTS];
 
+		unsigned int nCams = PlayerCameraManager::Get()->GetNrOfCameras();
 		for (unsigned int i = 0; i < NR_OF_LIGHTS; i++)
 		{
-			lightPos[i] = PlayerCameraManager::Get()->GetCamera(i % PlayerCameraManager::Get()->GetNrOfCameras())->GetPosition();
+			lightPos[i] = PlayerCameraManager::Get()->GetCamera(i % nCams)->GetPosition();
 			lightIntensity[i] = 1.0f;
 		}
 

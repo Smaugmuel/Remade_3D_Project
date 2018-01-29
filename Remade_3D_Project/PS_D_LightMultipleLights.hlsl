@@ -6,13 +6,12 @@ SamplerState sampleState : register(s0);
 
 
 // Change in SystemInformation.hpp aswell
-//static const unsigned int NR_OF_LIGHTS = 4;
+static const unsigned int NR_OF_LIGHTS = 4;
 
 
 cbuffer LightBuffer : register(b0)
 {
-	float3 lightPos;//[NR_OF_LIGHTS];
-	float lightIntensity;// [NR_OF_LIGHTS];
+	float4 lightData[NR_OF_LIGHTS];
 };
 
 struct VS_OUT
@@ -23,6 +22,37 @@ struct VS_OUT
 
 float4 main(VS_OUT input) : SV_Target
 {
+	// =======================================
+	// | Explanation of formula (two lights) |
+	// =================================================
+	// | Calculate the distance to each light: A and B |
+	// ===========================================================================
+	// | By dividing each distance by the distance sum, a percentage is achieved |
+	// ---------------------------------------------------------------------------
+	// |    A                 B                                                  |
+	// | -------    and    -------                                               |
+	// | (A + B)           (A + B)                                               |
+	// ===================================================================================
+	// | With A = 1 and B = 3 this would give 0.25 and 0.75 respectively                 |
+	// | However, a nearer light should have a higher weight, not a lower                |
+	// | To achieve this, invert the calculations (far = low weight, near = high weight) |
+	// -----------------------------------------------------------------------------------
+	// | (A + B)           (A + B)                                                       |
+	// | -------    and    -------                                                       |
+	// |    A                 B                                                          |
+	// ===================================================================================
+	// | These values need to add up to 1, which is achieved by normalizing them |
+	// ---------------------------------------------------------------------------
+	// |      (A + B)                           1                                |
+	// |      -------                   (A + B)---                               |
+	// |         A                              A                      1         |
+	// | -----------------    =    --------------------    =    ---------------  |
+	// | (A + B)   (A + B)                 / 1     1 \             / 1     1 \   |
+	// | ------- + -------         (A + B)| --- + --- |         A | --- + --- |  |
+	// |    A         B                    \ A     B /             \ A     B /   |
+	// ===========================================================================
+
+
 	// Deferred first pass values
 	float4 worldPos;
 	float4 normal;
@@ -32,6 +62,15 @@ float4 main(VS_OUT input) : SV_Target
 	float3 toLight;
 
 	float diffuse = 0.0f;
+	
+	// Distance to each light
+	float distance[NR_OF_LIGHTS];
+
+	// Sum of 1 divided by each light distance
+	float divSum = 0.0f;
+
+	// Weight of each light on this pixel
+	float weight[NR_OF_LIGHTS];
 
 
 	// Retrieve deferred values
@@ -39,17 +78,25 @@ float4 main(VS_OUT input) : SV_Target
 	normal = normalTexture.Sample(sampleState, input.uv);
 	color = colorTexture.Sample(sampleState, input.uv);
 
-	//for (unsigned int i = 0; i < 1; i++)
-	//{
-	//	// Vector from object to light
-	//	toLight = normalize(lightPos[i] - worldPos.xyz);
+	// Calculate distances and divSum
+	for (unsigned int i = 0; i < NR_OF_LIGHTS; i++)
+	{
+		distance[i] = length(lightData[i].xyz - worldPos.xyz);
 
-	//	diffuse += saturate(dot(toLight, normal.xyz)) * lightIntensity[i];
-	//}
+		divSum += 1.0f / distance[i];
+	}
 
-	toLight = normalize(lightPos - worldPos.xyz);
+	for (unsigned int i = 0; i < NR_OF_LIGHTS; i++)
+	{
+		// Vector from object to light
+		toLight = normalize(lightData[i].xyz - worldPos.xyz);
 
-	diffuse += saturate(dot(toLight, normal.xyz));
+		// Calculate weights
+		weight[i] = 1.0f / (distance[i] * divSum);
 
-	return float4(color.xyz * saturate(diffuse + 0.1f), 1.0f);
+		// Add diffuse value
+		diffuse += saturate(dot(toLight, normal.xyz)) * lightData[i].w * weight[i];
+	}
+
+	return float4(color.xyz * saturate(diffuse + 0.05f), 1.0f);
 }

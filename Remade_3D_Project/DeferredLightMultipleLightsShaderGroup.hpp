@@ -19,10 +19,15 @@ class Camera;
 
 class DeferredLightMultipleLightsShaderGroup
 {
+	struct Light
+	{
+		Vector3f position;
+		float intensity;
+	};
+
 	struct PS_PerFrameBuffer
 	{
-		Vector3f lightPosition[NR_OF_LIGHTS];
-		float lightIntensity[NR_OF_LIGHTS];
+		Light lights[NR_OF_LIGHTS];
 	};
 
 public:
