@@ -75,9 +75,6 @@
     <ClCompile Include="SingleColorModel.cpp">
       <Filter>Source Files\Objects\Models</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderStorage.cpp">
-      <Filter>Source Files\Not In use</Filter>
-    </ClCompile>
     <ClCompile Include="PlayerCameraManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -174,6 +171,15 @@
     <ClCompile Include="DeferredLightMultipleLightsShaderGroup.cpp">
       <Filter>Source Files\Shaders\ShaderGroups</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderStorage.cpp">
+      <Filter>Source Files\Not In use</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredLightMultipleLightsShadowShaderGroup.cpp">
+      <Filter>Source Files\Shaders\ShaderGroups</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.hpp">
@@ -187,9 +193,6 @@
     </ClInclude>
     <ClInclude Include="SingleColorModel.hpp">
       <Filter>Header Files\Objects\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderStorage.hpp">
-      <Filter>Header Files\Not In Use</Filter>
     </ClInclude>
     <ClInclude Include="PlayerCameraManager.hpp">
       <Filter>Header Files</Filter>
@@ -296,6 +299,15 @@
     <ClInclude Include="DeferredLightMultipleLightsShaderGroup.hpp">
       <Filter>Header Files\Shaders\ShaderGroups</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderStorage.hpp">
+      <Filter>Header Files\Not In Use</Filter>
+    </ClInclude>
+    <ClInclude Include="DeferredLightMultipleLightsShadowShaderGroup.hpp">
+      <Filter>Header Files\Shaders\ShaderGroups</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VS_SingleColor.hlsl">
@@ -356,6 +368,12 @@
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PS_D_LightMultipleLights.hlsl">
+      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_D_LightMultipleShadowLights.hlsl">
+      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_D_LightMultipleShadowLights.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
   </ItemGroup>

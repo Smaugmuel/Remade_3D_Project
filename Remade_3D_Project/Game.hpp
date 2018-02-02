@@ -1,6 +1,7 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 #include "Singleton.hpp"
+#include "SystemInformation.hpp"
 #include <memory>
 #include <vector>
 
@@ -8,13 +9,16 @@ class TextureObject;
 class SingleColorObject;
 class HUDObject;
 
+class PointLight;
+
 enum RenderMode
 {
 	NORMAL_MODE,
+	DEPTH_MODE,
 	DEFERRED_MODE,
 	DEFERRED_SPLIT_MODE,
 	DEFERRED_MULTIPLE_LIGHTS_MODE,
-	DEPTH_MODE,
+	DEFERRED_MULTIPLE_LIGHTS_SHADOW_MODE,
 	NR_OF_RENDER_MODES
 };
 enum HUDMode
@@ -50,16 +54,24 @@ public:
 private:
 	void RenderNormal();
 	void RenderDeferredFirstPass();
-	void RenderDepth();
-	void RenderShadowPass();
 	void RenderDeferredLightPass();
+	void RenderDeferredLightPassSplit();
+	void RenderDeferredLightPassMultipleLights();
+	void RenderDeferredLightPassMultipleLightsShadows();
+
+	void RenderShadowPass();
+	void RenderShadowPassMultipleLightsShadows();
+
+	void RenderDepth();
 	void RenderHUD();
 
 	std::vector<std::unique_ptr<TextureObject>> m_texturedCubes;
 	std::unique_ptr<SingleColorObject> m_coloredFloor;
 	std::unique_ptr<HUDObject> m_HUDObject;
 
-	
+	std::unique_ptr<PointLight> m_pointLights[MAX_NR_OF_LIGHTS];
+	unsigned int m_nrOfLights;
+
 	RenderMode m_renderMode;
 	HUDMode m_HUDMode;
 	OrthogonalCamera m_orthogonal;

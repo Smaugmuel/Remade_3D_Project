@@ -14,6 +14,8 @@
 
 #include "HUDObject.hpp"
 
+#include "PointLight.hpp"
+
 Game* Singleton<Game>::s_instance = nullptr;
 
 Game::Game()
@@ -33,34 +35,22 @@ Game::~Game()
 bool Game::Initialize()
 {
 	if (!Window::Get()->Initialize(Vector2i(WNDW, WNDH)))
-	{
 		return false;
-	}
 	if (!Direct3D::Get()->Initialize(Window::Get()))
-	{
 		return false;
-	}
 	if (!ShaderManager::Get()->Initialize(Direct3D::Get()->GetDevice()))
-	{
 		return false;
-	}
 	if (!DeferredScreenTarget::Get()->Initialize(Direct3D::Get()->GetDevice()))
-	{
 		return false;
-	}
 
 
 	// Cameras
 	if (!PlayerCameraManager::Get()->Initialize())
-	{
 		return false;
-	}
 
 	Camera* cam = PlayerCameraManager::Get()->CreateCamera();
 	if (!cam)
-	{
 		return false;
-	}
 	cam->SetDimensions(Window::Get()->GetDimensions());
 	cam->SetPosition(Vector3f(0, 0, -20));
 	cam->SetTarget(Vector3f(0, 0, 0));
@@ -90,6 +80,20 @@ bool Game::Initialize()
 		return false;
 	m_HUDObject->SetPosition(Vector2i(500, 500));
 	m_HUDObject->SetDimensions(Vector2i(200, 200));
+
+
+	// Point lights
+	for (unsigned int i = 0; i < MAX_NR_OF_LIGHTS; i++)
+	{
+		m_pointLights[i] = std::make_unique<PointLight>();
+		if (!m_pointLights[i]->Initialize(Direct3D::Get()->GetDevice(), Window::Get()->GetDimensions()))
+			return false;
+		m_pointLights[i]->SetPosition(Vector3f(-40.0f + i * 20.0f, 20.0f, -20.0f));
+		m_pointLights[i]->SetTarget(Vector3f(0, 0, 0));
+		m_pointLights[i]->Update();
+	}
+	m_nrOfLights = 1;
+
 
 
 	m_renderMode = RenderMode::NORMAL_MODE;
@@ -253,6 +257,15 @@ bool Game::ProcessInput()
 		}
 	}
 
+	if (input->IsKeyPressed(VK_UP))
+	{
+		m_nrOfLights = min(m_nrOfLights + 1, MAX_NR_OF_LIGHTS);
+	}
+	if (input->IsKeyPressed(VK_DOWN))
+	{
+		m_nrOfLights = max(m_nrOfLights - 1, 1);
+	}
+
 	// Rotate cubes or camera
 	if (input->IsKeyDown(VK_RBUTTON))
 	{
@@ -283,6 +296,16 @@ void Game::Update()
 		m_texturedCubes[i]->Update();
 	}
 	m_coloredFloor->Update();
+
+	static float angle = 0.0f;
+	angle += 0.0003f;
+
+	for (unsigned int i = 0; i < m_nrOfLights; i++)
+	{
+		m_pointLights[i]->SetPosition(Vector3f(std::cos(angle + i * 0.5f) * 30.0f, 30.0f, std::sin(angle + i * 0.5f) * 30.0f));
+		m_pointLights[i]->SetTarget(Vector3f(0, 0, 0));
+		m_pointLights[i]->Update();
+	}
 }
 
 void Game::Render()
@@ -300,14 +323,26 @@ void Game::Render()
 	case DEPTH_MODE:
 		RenderDepth();
 		break;
-	case DEFERRED_MULTIPLE_LIGHTS_MODE:
-		RenderDeferredFirstPass();
-		RenderDeferredLightPass();
-		break;
-	default:
+	case DEFERRED_MODE:
 		RenderDeferredFirstPass();
 		RenderShadowPass();
 		RenderDeferredLightPass();
+		break;
+	case DEFERRED_SPLIT_MODE:
+		RenderDeferredFirstPass();
+		RenderShadowPass();
+		RenderDeferredLightPassSplit();
+		break;
+	case DEFERRED_MULTIPLE_LIGHTS_MODE:
+		RenderDeferredFirstPass();
+		RenderDeferredLightPassMultipleLights();
+		break;
+	case DEFERRED_MULTIPLE_LIGHTS_SHADOW_MODE:
+		RenderDeferredFirstPass();
+		RenderShadowPassMultipleLightsShadows();
+		RenderDeferredLightPassMultipleLightsShadows();
+		break;
+	default:
 		break;
 	}
 
@@ -416,6 +451,7 @@ void Game::RenderDeferredFirstPass()
 
 	m_coloredFloor->Render(deviceContext);
 }
+
 void Game::RenderDepth()
 {
 	Direct3D* d3d = Direct3D::Get();
@@ -458,7 +494,7 @@ void Game::RenderShadowPass()
 		deviceContext,
 		cam0->GetViewMatrix(),
 		cam0->GetProjectionMatrix());
-	
+
 	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
 	{
 		shaders->SetPerObjectDeferredShadowConstantBuffer(deviceContext, m_texturedCubes[i]->GetWorldMatrix());
@@ -472,6 +508,40 @@ void Game::RenderShadowPass()
 	shaders->SetPerObjectDeferredShadowConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix());
 	m_coloredFloor->Render(deviceContext);
 }
+void Game::RenderShadowPassMultipleLightsShadows()
+{
+	Direct3D* d3d = Direct3D::Get();
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	ShaderManager* shaders = ShaderManager::Get();
+
+	for (unsigned int i = 0; i < m_nrOfLights; i++)
+	{
+		m_pointLights[i]->Set(deviceContext);
+		m_pointLights[i]->Clear(deviceContext);
+
+		// Set texture shaders, then remove pixel shader
+		shaders->SetShaderType(deviceContext, ShaderType::D_TEXTURE);
+		shaders->SetShaderType(deviceContext, ShaderType::D_SHADOW);
+
+		shaders->SetPerFrameDeferredShadowConstantBuffer(
+			deviceContext,
+			m_pointLights[i]->GetViewMatrix(),
+			m_pointLights[i]->GetProjectionMatrix());
+
+		for (unsigned int j = 0; j < m_texturedCubes.size(); j++)
+		{
+			shaders->SetPerObjectDeferredShadowConstantBuffer(deviceContext, m_texturedCubes[j]->GetWorldMatrix());
+			m_texturedCubes[j]->Render(deviceContext);
+		}
+
+		// Set color shaders, then remove pixel shader
+		shaders->SetShaderType(deviceContext, ShaderType::D_SINGLE_COLOR);
+		shaders->SetShaderType(deviceContext, ShaderType::D_SHADOW);
+
+		shaders->SetPerObjectDeferredShadowConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix());
+		m_coloredFloor->Render(deviceContext);
+	}
+}
 void Game::RenderDeferredLightPass()
 {
 	Direct3D* d3d = Direct3D::Get();
@@ -481,55 +551,115 @@ void Game::RenderDeferredLightPass()
 
 	d3d->SetDefaultTarget();
 
-	if (m_renderMode == RenderMode::DEFERRED_MODE)
+	shaders->SetShaderType(deviceContext, ShaderType::D_LIGHT);
+
+	/*DirectX::XMMATRIX viewMatrices[NR_OF_LIGHTS];
+	DirectX::XMMATRIX projectionMatrices[NR_OF_LIGHTS];*/
+
+	shaders->SetPerFrameDeferredLightConstantBuffer(
+		deviceContext,
+		cam0->GetViewMatrix(),
+		cam0->GetProjectionMatrix(),
+		/*m_pointLights[m_currentLight]->GetViewMatrix(),
+		m_pointLights[m_currentLight]->GetProjectionMatrix(),*/
+		DeferredBufferType::NR_OF_D_ELEMENTS,
+		d3d->GetDeferredShaderResourceViews(),
+		d3d->GetShadowShaderResourceView(),
+		cam0->GetPosition(),
+		/*m_pointLights[m_currentLight]->GetDepthResourceView(),
+		m_pointLights[m_currentLight]->GetPosition(),*/
+		1.0f);
+
+	DeferredScreenTarget::Get()->Render(deviceContext);
+}
+void Game::RenderDeferredLightPassSplit()
+{
+	Direct3D* d3d = Direct3D::Get();
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	ShaderManager* shaders = ShaderManager::Get();
+	Camera* cam0 = PlayerCameraManager::Get()->GetCamera(0);
+
+	d3d->SetDefaultTarget();
+
+	shaders->SetShaderType(deviceContext, ShaderType::D_LIGHT_SPLIT);
+
+	shaders->SetPerFrameDeferredLightSplitScreenConstantBuffer(
+		deviceContext,
+		cam0->GetViewMatrix(),
+		cam0->GetProjectionMatrix(),
+		DeferredBufferType::NR_OF_D_ELEMENTS,
+		d3d->GetDeferredShaderResourceViews(),
+		d3d->GetShadowShaderResourceView(),
+		cam0->GetPosition(),
+		1.0f);
+
+	DeferredScreenTarget::Get()->Render(deviceContext);
+}
+void Game::RenderDeferredLightPassMultipleLights()
+{
+	Direct3D* d3d = Direct3D::Get();
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	ShaderManager* shaders = ShaderManager::Get();
+	Camera* cam0 = PlayerCameraManager::Get()->GetCamera(0);
+
+	d3d->SetDefaultTarget();
+
+	shaders->SetShaderType(deviceContext, ShaderType::D_LIGHT_MULTIPLE);
+
+	Vector3f lightPos[MAX_NR_OF_LIGHTS];
+	float lightIntensity[MAX_NR_OF_LIGHTS];
+
+	unsigned int nCams = PlayerCameraManager::Get()->GetNrOfCameras();
+	for (unsigned int i = 0; i < MAX_NR_OF_LIGHTS; i++)
 	{
-		shaders->SetShaderType(deviceContext, ShaderType::D_LIGHT);
-
-		shaders->SetPerFrameDeferredLightConstantBuffer(
-			deviceContext,
-			cam0->GetViewMatrix(),
-			cam0->GetProjectionMatrix(),
-			DeferredBufferType::NR_OF_D_ELEMENTS,
-			d3d->GetDeferredShaderResourceViews(),
-			d3d->GetShadowShaderResourceView(),
-			cam0->GetPosition(),
-			1.0f);
+		lightPos[i] = PlayerCameraManager::Get()->GetCamera(i % nCams)->GetPosition();
+		lightIntensity[i] = 1.0f;
 	}
-	else if (m_renderMode == RenderMode::DEFERRED_MULTIPLE_LIGHTS_MODE)
+
+	shaders->SetPerFrameDeferredLightMultipleLightsConstantBuffer(
+		deviceContext,
+		DeferredBufferType::NR_OF_D_ELEMENTS,
+		d3d->GetDeferredShaderResourceViews(),
+		lightPos,
+		lightIntensity);
+
+	DeferredScreenTarget::Get()->Render(deviceContext);
+}
+void Game::RenderDeferredLightPassMultipleLightsShadows()
+{
+	Direct3D* d3d = Direct3D::Get();
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	ShaderManager* shaders = ShaderManager::Get();
+
+	d3d->SetDefaultTarget();
+
+	shaders->SetShaderType(deviceContext, ShaderType::D_LIGHT_MULTIPLE_SHADOWS);
+
+	ID3D11ShaderResourceView* resources[MAX_NR_OF_LIGHTS];
+	DirectX::XMMATRIX viewMatrices[MAX_NR_OF_LIGHTS];
+	DirectX::XMMATRIX projectionMatrices[MAX_NR_OF_LIGHTS];
+	Vector3f positions[MAX_NR_OF_LIGHTS];
+	float intensities[MAX_NR_OF_LIGHTS];
+
+	for (unsigned int i = 0; i < m_nrOfLights; i++)
 	{
-		shaders->SetShaderType(deviceContext, ShaderType::D_MULTIPLE);
-
-		Vector3f lightPos[NR_OF_LIGHTS];
-		float lightIntensity[NR_OF_LIGHTS];
-
-		unsigned int nCams = PlayerCameraManager::Get()->GetNrOfCameras();
-		for (unsigned int i = 0; i < NR_OF_LIGHTS; i++)
-		{
-			lightPos[i] = PlayerCameraManager::Get()->GetCamera(i % nCams)->GetPosition();
-			lightIntensity[i] = 1.0f;
-		}
-
-		shaders->SetPerFrameDeferredLightMultipleLightsConstantBuffer(
-			deviceContext,
-			DeferredBufferType::NR_OF_D_ELEMENTS,
-			d3d->GetDeferredShaderResourceViews(),
-			lightPos,
-			lightIntensity);
+		resources[i] = m_pointLights[i]->GetDepthResourceView();
+		viewMatrices[i] = m_pointLights[i]->GetViewMatrix();
+		projectionMatrices[i] = m_pointLights[i]->GetProjectionMatrix();
+		positions[i] = m_pointLights[i]->GetPosition();
+		intensities[i] = 1.0f;
 	}
-	else
-	{
-		shaders->SetShaderType(deviceContext, ShaderType::D_SPLIT);
 
-		shaders->SetPerFrameDeferredLightSplitScreenConstantBuffer(
-			deviceContext,
-			cam0->GetViewMatrix(),
-			cam0->GetProjectionMatrix(),
-			DeferredBufferType::NR_OF_D_ELEMENTS,
-			d3d->GetDeferredShaderResourceViews(),
-			d3d->GetShadowShaderResourceView(),
-			cam0->GetPosition(),
-			1.0f);
-	}
+	shaders->SetPerFrameDeferredLightMultipleLightsShadowConstantBuffer(
+		deviceContext,
+		DeferredBufferType::NR_OF_D_ELEMENTS,
+		d3d->GetDeferredShaderResourceViews(),
+		resources,
+		viewMatrices,
+		projectionMatrices,
+		positions,
+		intensities,
+		m_nrOfLights);
 
 	DeferredScreenTarget::Get()->Render(deviceContext);
 }

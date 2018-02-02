@@ -1,6 +1,4 @@
 #include "SingleColorShaderGroup.hpp"
-#include "SingleColorObject.hpp"
-#include "Camera.hpp"
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
@@ -293,14 +291,3 @@ void SingleColorShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext* deviceCon
 	deviceContext->VSSetConstantBuffers(1, 1, &m_vsPerObjectBuffer);
 	deviceContext->Unmap(m_vsPerObjectBuffer, 0);
 }
-
-//ShaderGroupNew* DeferredColorShaderGroup::Create(ID3D11Device* device)
-//{
-//	DeferredColorShaderGroup* shader = new DeferredColorShaderGroup;
-//	if (shader->Initialize(device))
-//	{
-//		return shader;
-//	}
-//
-//	return nullptr;
-//}

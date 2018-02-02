@@ -27,7 +27,9 @@ class DeferredLightMultipleLightsShaderGroup
 
 	struct PS_PerFrameBuffer
 	{
-		Light lights[NR_OF_LIGHTS];
+		/*Vector3f position[NR_OF_LIGHTS];
+		float intensity[NR_OF_LIGHTS];*/
+		Light lights[MAX_NR_OF_LIGHTS];
 	};
 
 public:
@@ -37,7 +39,7 @@ public:
 	bool Initialize(ID3D11Device* device);
 
 	void SetupShaders(ID3D11DeviceContext* deviceContext);
-	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources, Vector3f lightPositions[NR_OF_LIGHTS], float lightIntensitys[NR_OF_LIGHTS]);
+	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources, Vector3f lightPositions[MAX_NR_OF_LIGHTS], float lightIntensitys[MAX_NR_OF_LIGHTS]);
 
 private:
 	ID3D11VertexShader* m_vs;

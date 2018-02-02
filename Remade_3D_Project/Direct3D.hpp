@@ -5,9 +5,9 @@
 #include "Vector2.hpp"
 #include "Window.hpp"
 #include <vector>
-
 #include <d3d11.h>
 //#include <d3dcompiler.h>
+#include "SystemInformation.hpp"
 
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "d3dcompiler.lib")
@@ -98,6 +98,12 @@ private:
 	ID3D11Texture2D* m_s_depthStencilBuffer;
 	ID3D11DepthStencilView* m_s_depthStencilView;
 	D3D11_VIEWPORT m_s_viewport;
+
+	/* Multiple shadows */
+	ID3D11ShaderResourceView* m_s_m_shaderResourceView[MAX_NR_OF_LIGHTS];
+	ID3D11Texture2D* m_s_m_depthStencilBuffer[MAX_NR_OF_LIGHTS];
+	ID3D11DepthStencilView* m_s_m_depthStencilView;
+	D3D11_VIEWPORT m_s_m_viewport;
 };
 
 #endif

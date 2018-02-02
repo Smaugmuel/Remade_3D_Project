@@ -8,10 +8,15 @@ SamplerState sampleState : register(s0);
 // Change in SystemInformation.hpp aswell
 static const unsigned int NR_OF_LIGHTS = 4;
 
+struct LightData
+{
+	float3 position;
+	float intensity;
+};
 
 cbuffer LightBuffer : register(b0)
 {
-	float4 lightData[NR_OF_LIGHTS];
+	LightData lights[NR_OF_LIGHTS];
 };
 
 struct VS_OUT
@@ -81,7 +86,7 @@ float4 main(VS_OUT input) : SV_Target
 	// Calculate distances and divSum
 	for (unsigned int i = 0; i < NR_OF_LIGHTS; i++)
 	{
-		distance[i] = length(lightData[i].xyz - worldPos.xyz);
+		distance[i] = length(lights[i].position - worldPos.xyz);
 
 		divSum += 1.0f / distance[i];
 	}
@@ -89,13 +94,13 @@ float4 main(VS_OUT input) : SV_Target
 	for (unsigned int i = 0; i < NR_OF_LIGHTS; i++)
 	{
 		// Vector from object to light
-		toLight = normalize(lightData[i].xyz - worldPos.xyz);
+		toLight = normalize(lights[i].position - worldPos.xyz);
 
 		// Calculate weights
 		weight[i] = 1.0f / (distance[i] * divSum);
 
 		// Add diffuse value
-		diffuse += saturate(dot(toLight, normal.xyz)) * lightData[i].w * weight[i];
+		diffuse += saturate(dot(toLight, normal.xyz)) * lights[i].intensity * weight[i];
 	}
 
 	return float4(color.xyz * saturate(diffuse + 0.05f), 1.0f);

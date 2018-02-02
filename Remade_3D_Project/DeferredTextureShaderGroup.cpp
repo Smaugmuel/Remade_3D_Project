@@ -1,6 +1,4 @@
 #include "DeferredTextureShaderGroup.hpp"
-#include "TextureObject.hpp"
-#include "Camera.hpp"
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
