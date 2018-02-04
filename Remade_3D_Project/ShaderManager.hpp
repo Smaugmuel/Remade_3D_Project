@@ -19,7 +19,7 @@ class HUDShaderGroup;
 class DeferredSingleColorShaderGroup;
 class DeferredTextureShaderGroup;
 class DeferredShadowShaderGroup;
-class DeferredLightShaderGroup;
+class DeferredLightShadowShaderGroup;
 class DeferredLightSplitScreenShaderGroup;
 class DeferredLightMultipleLightsShaderGroup;
 class DeferredLightMultipleLightsShadowShaderGroup;
@@ -79,7 +79,7 @@ private:
 	std::unique_ptr<DeferredSingleColorShaderGroup> m_d_colorShaders;
 	std::unique_ptr<DeferredTextureShaderGroup> m_d_textureShaders;
 	std::unique_ptr<DeferredShadowShaderGroup> m_d_s_shaders;
-	std::unique_ptr<DeferredLightShaderGroup> m_d_lightShaders;
+	std::unique_ptr<DeferredLightShadowShaderGroup> m_d_lightShaders;
 	std::unique_ptr<DeferredLightSplitScreenShaderGroup> m_d_lightSplitScreenShaders;
 	std::unique_ptr<DeferredLightMultipleLightsShaderGroup> m_d_lightMultipleLightsShaders;
 	std::unique_ptr<DeferredLightMultipleLightsShadowShaderGroup> m_d_lightMultipleLightsShadowShaders;

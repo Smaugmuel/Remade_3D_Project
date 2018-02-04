@@ -20,34 +20,10 @@ struct VS_OUT
 
 float4 main(VS_OUT input) : SV_Target
 {
-	// Deferred first pass values
-	float4 worldPos;
-	float4 normal;
-	float4 color;
-
-	// Light values
-	float3 lightPos;
-	float lightIntensity;
-
-	// Vector from object to light
-	float3 toLight;
-
-	// Object position on screen, from light perspective
-	float4 lightScreenPos;
-
-	// UV coords at position above
-	float2 lightScreenUV;
-
-	// Distance to light
-	float depthToNearestObject;
-	float depthToThisObject;
-	float depthValue;
-
-	float diffuse = 0.0f;
-
-	float2 uv_coords;
-
-	float4 finalColor;
+	float4 worldPos, normal, color, lightScreenPos, finalColor;
+	float3 lightPos, toLightDirection;
+	float2 lightScreenUV, uv_coords;
+	float depthToNearestObject, depthToThisObject, depthValue, lightIntensity, diffuse = 0.0f;
 
 	if (input.uv.x <= 0.5f && input.uv.y <= 0.5f)
 	{
@@ -73,31 +49,41 @@ float4 main(VS_OUT input) : SV_Target
 		// Bottom right
 		uv_coords = float2(input.uv.x * 2 - 1, input.uv.y * 2 - 1);
 
+		// Retrieve deferred values
 		worldPos = worldPosTexture.Sample(sampleState, uv_coords);
 		normal = normalTexture.Sample(sampleState, uv_coords);
 		color = colorTexture.Sample(sampleState, uv_coords);
 
+		// Retrieve light values
 		lightPos = lightData.xyz;
 		lightIntensity = lightData.w;
 
-		toLight = normalize(lightPos - worldPos.xyz);
-
+		// Project this position to this light
 		lightScreenPos = mul(worldPos, mul(lightView, lightProj));
 		lightScreenPos /= lightScreenPos.w;
 
-		// Translate from [-1, 1] to [0, 1]
+		// Translate fragment positions from [-1, 1] to [0, 1]
 		lightScreenUV.x = (lightScreenPos.x + 1) * 0.5f;
 		lightScreenUV.y = 1 - (lightScreenPos.y + 1) * 0.5f;
 
-		if (saturate(lightScreenUV.x) == lightScreenUV.x && saturate(lightScreenUV.y) == lightScreenUV.y)
+		if (lightScreenUV.x >= 0.0f && lightScreenUV.x <= 1.0f && lightScreenUV.y >= 0.0f && lightScreenUV.y <= 1.0f)
 		{
+			// This fragment is within this light's frustum
 			depthToNearestObject = depthTexture.Sample(sampleState, lightScreenUV).x;
 			depthToThisObject = lightScreenPos.z - 0.0001f;
 
 			if (depthToThisObject < depthToNearestObject)
 			{
-				diffuse += saturate(dot(toLight, normal.xyz));
+				// This fragment was visible from this light and receives lighting
+				toLightDirection = normalize(lightPos - worldPos.xyz);
+				diffuse += saturate(dot(toLightDirection, normal.xyz)) * lightIntensity;
 			}
+		}
+		else
+		{
+			// This fragment was outside this light's frustum and receives lighting
+			toLightDirection = normalize(lightPos - worldPos.xyz);
+			diffuse += saturate(dot(toLightDirection, normal.xyz)) * lightIntensity;
 		}
 
 		finalColor = float4(color.xyz * saturate(diffuse + 0.1f), 1.0f);

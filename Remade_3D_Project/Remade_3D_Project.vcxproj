@@ -151,6 +151,7 @@
     <ClCompile Include="DeferredLightMultipleLightsShadowShaderGroup.cpp" />
     <ClCompile Include="DeferredLightSplitScreenShaderGroup.cpp" />
     <ClCompile Include="DeferredTextureShaderGroup.cpp" />
+    <ClCompile Include="FPS_Counter.cpp" />
     <ClCompile Include="HUDObject.cpp" />
     <ClCompile Include="Buffers.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -158,6 +159,7 @@
     <ClCompile Include="DeferredSingleColorShaderGroup.cpp" />
     <ClCompile Include="DepthShaderGroup.cpp" />
     <ClCompile Include="HUDShaderGroup.cpp" />
+    <ClCompile Include="HUDText.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="PlayerCameraManager.cpp" />
     <ClCompile Include="DeferredScreenTarget.cpp" />
@@ -166,7 +168,7 @@
     <ClCompile Include="RenderTexture.cpp" />
     <ClCompile Include="ShadowShaderGroup.cpp" />
     <ClCompile Include="SingleColorShaderGroup.cpp" />
-    <ClCompile Include="DeferredLightShaderGroup.cpp" />
+    <ClCompile Include="DeferredLightShadowShaderGroup.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="SingleColorObject.cpp" />
     <ClCompile Include="ShaderFactory.cpp">
@@ -222,6 +224,7 @@
     <ClInclude Include="DeferredLightMultipleLightsShadowShaderGroup.hpp" />
     <ClInclude Include="DeferredLightSplitScreenShaderGroup.hpp" />
     <ClInclude Include="DeferredTextureShaderGroup.hpp" />
+    <ClInclude Include="FPS_Counter.hpp" />
     <ClInclude Include="HUDObject.hpp" />
     <ClInclude Include="Camera.hpp" />
     <ClInclude Include="Buffers.hpp" />
@@ -229,6 +232,7 @@
     <ClInclude Include="DeferredSingleColorShaderGroup.hpp" />
     <ClInclude Include="DepthShaderGroup.hpp" />
     <ClInclude Include="HUDShaderGroup.hpp" />
+    <ClInclude Include="HUDText.hpp" />
     <ClInclude Include="Object.hpp" />
     <ClInclude Include="PlayerCameraManager.hpp" />
     <ClInclude Include="DeferredScreenTarget.hpp" />
@@ -237,7 +241,7 @@
     <ClInclude Include="RenderTexture.hpp" />
     <ClInclude Include="ShadowShaderGroup.hpp" />
     <ClInclude Include="SingleColorShaderGroup.hpp" />
-    <ClInclude Include="DeferredLightShaderGroup.hpp" />
+    <ClInclude Include="DeferredLightShadowShaderGroup.hpp" />
     <ClInclude Include="Input.hpp" />
     <ClInclude Include="SingleColorObject.hpp" />
     <ClInclude Include="ShaderFactory.hpp" />
@@ -301,7 +305,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="PS_D_Light.hlsl">
+    <FxCompile Include="PS_D_LightShadow.hlsl">
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DisableOptimizations>
       <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</EnableDebuggingInformation>
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DisableOptimizations>
@@ -455,7 +459,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="VS_D_Light.hlsl">
+    <FxCompile Include="VS_D_LightShadow.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DisableOptimizations>

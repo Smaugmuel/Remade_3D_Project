@@ -8,8 +8,9 @@
 class TextureObject;
 class SingleColorObject;
 class HUDObject;
-
 class PointLight;
+class HUDText;
+class FPS_Counter;
 
 enum RenderMode
 {
@@ -48,7 +49,7 @@ public:
 	void Run();
 
 	bool ProcessInput();
-	void Update();
+	void Update(double dt);
 	void Render();
 
 private:
@@ -71,6 +72,10 @@ private:
 
 	std::unique_ptr<PointLight> m_pointLights[MAX_NR_OF_LIGHTS];
 	unsigned int m_nrOfLights;
+
+	std::unique_ptr<HUDText> m_hudText;
+
+	std::unique_ptr<FPS_Counter> m_fpsCounter;
 
 	RenderMode m_renderMode;
 	HUDMode m_HUDMode;

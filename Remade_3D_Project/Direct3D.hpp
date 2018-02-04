@@ -47,6 +47,8 @@ public:
 	void EnableZBuffer();
 	void DisableZBuffer();
 
+	void SetDefaultBlendState();
+
 	ID3D11Device* GetDevice() const;
 	ID3D11DeviceContext* GetDeviceContext() const;
 
@@ -69,6 +71,9 @@ private:
 	bool InitializeShadowDepthBufferAndDepthStencilView();
 	bool InitializeShadowShaderResourceView();
 	bool InitializeShadowViewport();
+
+	/* Blend state */
+	bool InitializeBlendState();
 
 
 	HWND m_windowHandle;
@@ -99,11 +104,8 @@ private:
 	ID3D11DepthStencilView* m_s_depthStencilView;
 	D3D11_VIEWPORT m_s_viewport;
 
-	/* Multiple shadows */
-	ID3D11ShaderResourceView* m_s_m_shaderResourceView[MAX_NR_OF_LIGHTS];
-	ID3D11Texture2D* m_s_m_depthStencilBuffer[MAX_NR_OF_LIGHTS];
-	ID3D11DepthStencilView* m_s_m_depthStencilView;
-	D3D11_VIEWPORT m_s_m_viewport;
+	/* For resetting after printing fonts */
+	ID3D11BlendState* m_defaultBlendState;
 };
 
 #endif

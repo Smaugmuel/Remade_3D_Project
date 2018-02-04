@@ -157,7 +157,7 @@ void DeferredLightMultipleLightsShadowShaderGroup::SetupShaders(ID3D11DeviceCont
 	deviceContext->PSSetSamplers(0, 1, &m_samplerState);
 }
 
-void DeferredLightMultipleLightsShadowShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView ** resources, ID3D11ShaderResourceView * depthTextures[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightViewMatrices[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightProjectionMatrices[MAX_NR_OF_LIGHTS], Vector3f lightPositions[MAX_NR_OF_LIGHTS], float lightIntensitys[MAX_NR_OF_LIGHTS], int nrOfLights)
+void DeferredLightMultipleLightsShadowShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView ** resources, ID3D11ShaderResourceView * depthTextures[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightViewMatrices[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightProjectionMatrices[MAX_NR_OF_LIGHTS], Vector3f lightPositions[MAX_NR_OF_LIGHTS], float lightIntensitys[MAX_NR_OF_LIGHTS], unsigned int nrOfLights)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	PS_PerFrameBuffer* frameDataPS;

@@ -30,7 +30,7 @@ class DeferredLightMultipleLightsShadowShaderGroup
 	struct PS_PerFrameBuffer
 	{
 		Light lights[MAX_NR_OF_LIGHTS];
-		int nrOfLights;
+		unsigned int nrOfLights;
 		int padding1;
 		int padding2;
 		int padding3;
@@ -43,7 +43,7 @@ public:
 	bool Initialize(ID3D11Device* device);
 
 	void SetupShaders(ID3D11DeviceContext* deviceContext);
-	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources, ID3D11ShaderResourceView* depthTextures[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightViewMatrices[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightProjectionMatrices[MAX_NR_OF_LIGHTS], Vector3f lightPositions[MAX_NR_OF_LIGHTS], float lightIntensitys[MAX_NR_OF_LIGHTS], int nrOfLights);
+	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources, ID3D11ShaderResourceView* depthTextures[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightViewMatrices[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightProjectionMatrices[MAX_NR_OF_LIGHTS], Vector3f lightPositions[MAX_NR_OF_LIGHTS], float lightIntensitys[MAX_NR_OF_LIGHTS], unsigned int nrOfLights);
 
 private:
 	ID3D11VertexShader* m_vs;

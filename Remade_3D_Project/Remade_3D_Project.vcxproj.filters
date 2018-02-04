@@ -61,6 +61,12 @@
     <Filter Include="Header Files\Helper Files">
       <UniqueIdentifier>{2adc1dcf-6a43-41f6-994f-c2ced7a91cf1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\HUD">
+      <UniqueIdentifier>{24b9594b-6f90-4361-ba90-2b10c099d26b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\HUD">
+      <UniqueIdentifier>{03fd1b6a-970a-4964-927b-f95665f4bbda}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp">
@@ -129,9 +135,6 @@
     <ClCompile Include="TextureShaderGroup.cpp">
       <Filter>Source Files\Shaders\ShaderGroups</Filter>
     </ClCompile>
-    <ClCompile Include="DeferredLightShaderGroup.cpp">
-      <Filter>Source Files\Shaders\ShaderGroups</Filter>
-    </ClCompile>
     <ClCompile Include="DeferredShadowShaderGroup.cpp">
       <Filter>Source Files\Shaders\ShaderGroups</Filter>
     </ClCompile>
@@ -162,9 +165,6 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HUDObject.cpp">
-      <Filter>Source Files\Objects</Filter>
-    </ClCompile>
     <ClCompile Include="DeferredLightSplitScreenShaderGroup.cpp">
       <Filter>Source Files\Shaders\ShaderGroups</Filter>
     </ClCompile>
@@ -179,6 +179,18 @@
     </ClCompile>
     <ClCompile Include="PointLight.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FPS_Counter.cpp">
+      <Filter>Source Files\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="HUDText.cpp">
+      <Filter>Source Files\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="HUDObject.cpp">
+      <Filter>Source Files\HUD</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredLightShadowShaderGroup.cpp">
+      <Filter>Source Files\Shaders\ShaderGroups</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -239,9 +251,6 @@
     <ClInclude Include="Texture.hpp">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="DeferredLightShaderGroup.hpp">
-      <Filter>Header Files\Shaders\ShaderGroups</Filter>
-    </ClInclude>
     <ClInclude Include="DeferredShadowShaderGroup.hpp">
       <Filter>Header Files\Shaders\ShaderGroups</Filter>
     </ClInclude>
@@ -290,9 +299,6 @@
     <ClInclude Include="Vector3.hpp">
       <Filter>Header Files\Helper Files</Filter>
     </ClInclude>
-    <ClInclude Include="HUDObject.hpp">
-      <Filter>Header Files\Objects</Filter>
-    </ClInclude>
     <ClInclude Include="DeferredLightSplitScreenShaderGroup.hpp">
       <Filter>Header Files\Shaders\ShaderGroups</Filter>
     </ClInclude>
@@ -308,6 +314,18 @@
     <ClInclude Include="PointLight.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DeferredLightShadowShaderGroup.hpp">
+      <Filter>Header Files\Shaders\ShaderGroups</Filter>
+    </ClInclude>
+    <ClInclude Include="FPS_Counter.hpp">
+      <Filter>Header Files\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="HUDText.hpp">
+      <Filter>Header Files\HUD</Filter>
+    </ClInclude>
+    <ClInclude Include="HUDObject.hpp">
+      <Filter>Header Files\HUD</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VS_SingleColor.hlsl">
@@ -320,12 +338,6 @@
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
     <FxCompile Include="VS_D_SingleColor.hlsl">
-      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_D_Light.hlsl">
-      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_D_Light.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
     <FxCompile Include="VS_Depth.hlsl">
@@ -374,6 +386,12 @@
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PS_D_LightMultipleShadowLights.hlsl">
+      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_D_LightShadow.hlsl">
+      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_D_LightShadow.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
   </ItemGroup>

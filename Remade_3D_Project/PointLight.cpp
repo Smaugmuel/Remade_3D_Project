@@ -40,8 +40,8 @@ bool PointLight::Initialize(ID3D11Device* device, Vector2f dimensions)
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 
-	depthBufferDesc.Width = dimensions.x;
-	depthBufferDesc.Height = dimensions.y;
+	depthBufferDesc.Width = static_cast<unsigned int>(dimensions.x);
+	depthBufferDesc.Height = static_cast<unsigned int>(dimensions.y);
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
 	depthBufferDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;

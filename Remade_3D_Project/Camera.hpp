@@ -1,12 +1,8 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 #include <DirectXMath.h>
-//#include "Frustum.hpp"
 #include "Vector3.hpp"
 #include "Vector2.hpp"
-
-DirectX::XMVECTOR To_XMVECTOR(DirectX::XMFLOAT3 v);
-DirectX::XMFLOAT3 To_XMFLOAT3(DirectX::XMVECTOR v);
 
 class Camera
 {
@@ -18,6 +14,7 @@ public:
 	void operator=(const Camera& camera);
 
 	void Initialize();
+	void Update();
 
 	void Rotate(const Vector3f& axis, float angle);
 	void RotateUp(float angle);
@@ -38,30 +35,21 @@ public:
 	void SetNearPlane(float nearPlane);
 	void SetFarPlane(float farPlane);
 
-	//void SetUnaltered();
-
-	//void CreateFrustum();
-
 	const Vector3f& GetPosition() const;
 	const Vector3f& GetTarget() const;
-	const Vector3f GetTargetDirection() const;
-	const Vector3f GetForward() const;
-	const Vector3f GetRight() const;
-	
-	const DirectX::XMMATRIX GetViewMatrix() const;
-	const DirectX::XMMATRIX GetProjectionMatrix() const;
-	const DirectX::XMMATRIX GetOrthogonalMatrix() const;
 
-
-	float GetFOV() const;
 	const Vector2f& GetDimensions() const;
+	float GetFOV() const;
 	float GetNearPlane() const;
 	float GetFarPlane() const;
 
-	//bool GetWasAltered() const;
-	//Frustum* GetViewFrustum();
-
-	void Update();
+	Vector3f GetTargetDirection() const;
+	Vector3f GetForward() const;
+	Vector3f GetRight() const;
+	
+	DirectX::XMMATRIX GetViewMatrix() const;
+	DirectX::XMMATRIX GetProjectionMatrix() const;
+	DirectX::XMMATRIX GetOrthogonalMatrix() const;
 
 private:
 	void UpdateViewMatrix();
@@ -73,8 +61,8 @@ private:
 	Vector3f m_target;
 	Vector3f m_up;
 
-	float m_FOV;
 	Vector2f m_dimensions;
+	float m_FOV;
 	float m_nearPlane;
 	float m_farPlane;
 
@@ -82,9 +70,6 @@ private:
 	DirectX::XMFLOAT4X4 m_projection;
 	DirectX::XMFLOAT4X4 m_orthographic;
 
-	//Frustum* m_frustum;
-
-	//bool m_wasAltered;
 	bool m_update_flag_view;
 	bool m_update_flag_proj;
 };

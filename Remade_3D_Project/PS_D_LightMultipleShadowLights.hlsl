@@ -22,7 +22,7 @@ struct LightData
 cbuffer LightBuffer : register(b0)
 {
 	LightData lights[MAX_NR_OF_LIGHTS];
-	int nrOfLights;
+	unsigned int nrOfLights;
 	int3 padding;
 };
 
@@ -34,8 +34,8 @@ struct VS_OUT
 
 float4 main(VS_OUT input) : SV_Target
 {
-	// =======================================
-	// | Explanation of formula (two lights) |
+	// ==============================================
+	// | Explanation of weight formula (two lights) |
 	// =================================================
 	// | Calculate the distance to each light: A and B |
 	// ===========================================================================
@@ -64,30 +64,10 @@ float4 main(VS_OUT input) : SV_Target
 	// |    A         B                    \ A     B /             \ A     B /   |
 	// ===========================================================================
 
-	// Deferred first pass values
-	float4 worldPos;
-	float4 normal;
-	float4 color;
-
-	// Distance to each light
-	float distance[MAX_NR_OF_LIGHTS];
-
-	// Sum of 1 divided by each light distance
-	float divSum = 0.0f;
-
-	// Vector from object to light
-	float3 toLight;
-
-	float4 lightScreenPos;
+	float4 worldPos, normal, color, lightScreenPos;
+	float3 toLightDirection;
 	float2 lightScreenUV;
-	float depthToNearestObject;
-	float depthToThisObject;
-
-	// Weight of each light on this pixel
-	float weight[MAX_NR_OF_LIGHTS];
-	
-	float diffuse = 0.0f;
-
+	float distance[MAX_NR_OF_LIGHTS], depthToNearestObject, depthToThisObject, weight, divSum = 0.0f, diffuse = 0.0f;
 	unsigned int i;
 
 	// Retrieve deferred values
@@ -95,40 +75,44 @@ float4 main(VS_OUT input) : SV_Target
 	normal = normalTexture.Sample(sampleState, input.uv);
 	color = colorTexture.Sample(sampleState, input.uv);
 
-	// Calculate distances and divSum
 	for (i = 0; i < nrOfLights; i++)
 	{
+		// Calculate the distance to this light and add the inverse
 		distance[i] = length(lights[i].position - worldPos.xyz);
-
 		divSum += 1.0f / distance[i];
 	}
 
 	for (i = 0; i < nrOfLights; i++)
 	{
-		// Vector from object to light
-		toLight = normalize(lights[i].position - worldPos.xyz);
-
+		// Project this position to this light
 		lightScreenPos = mul(worldPos, mul(lights[i].view, lights[i].proj));
 		lightScreenPos /= lightScreenPos.w;
 
-		// Translate from [-1, 1] to [0, 1]
+		// Translate fragment positions from [-1, 1] to [0, 1]
 		lightScreenUV.x = (lightScreenPos.x + 1) * 0.5f;
 		lightScreenUV.y = 1 - (lightScreenPos.y + 1) * 0.5f;
 
-		if (saturate(lightScreenUV.x) == lightScreenUV.x && saturate(lightScreenUV.y) == lightScreenUV.y)
+		if (lightScreenUV.x >= 0.0f && lightScreenUV.x <= 1.0f && lightScreenUV.y >= 0.0f && lightScreenUV.y <= 1.0f)
 		{
+			// This fragment is within this light's frustum
+
 			depthToNearestObject = depthTextures[i].Sample(sampleState, lightScreenUV).x;
 			depthToThisObject = lightScreenPos.z - 0.0001f;
 
-			if (depthToThisObject < depthToNearestObject)
+			if (depthToThisObject > depthToNearestObject)
 			{
-				// Calculate weights
-				weight[i] = 1.0f / (distance[i] * divSum);
-
-				// Add diffuse value
-				diffuse += saturate(dot(toLight, normal.xyz)) * lights[i].intensity * weight[i];
+				// This fragment wasn't visible from this light and receives no lighting
+				continue;
 			}
 		}
+
+		// This fragment receives lighting due to one of the following
+		// a) It was visible from this light
+		// b) It was outside this light's frustum
+
+		toLightDirection = normalize(lights[i].position - worldPos.xyz);
+		weight = 1.0f / (distance[i] * divSum);
+		diffuse += saturate(dot(toLightDirection, normal.xyz)) * lights[i].intensity * weight;
 	}
 
 	return float4(color.xyz * saturate(diffuse + 0.05f), 1.0f);

@@ -77,6 +77,8 @@ float4 main(VS_OUT input) : SV_Target
 	// Weight of each light on this pixel
 	float weight[NR_OF_LIGHTS];
 
+	unsigned int i;
+
 
 	// Retrieve deferred values
 	worldPos = worldPosTexture.Sample(sampleState, input.uv);
@@ -84,14 +86,14 @@ float4 main(VS_OUT input) : SV_Target
 	color = colorTexture.Sample(sampleState, input.uv);
 
 	// Calculate distances and divSum
-	for (unsigned int i = 0; i < NR_OF_LIGHTS; i++)
+	for (i = 0; i < NR_OF_LIGHTS; i++)
 	{
 		distance[i] = length(lights[i].position - worldPos.xyz);
 
 		divSum += 1.0f / distance[i];
 	}
 
-	for (unsigned int i = 0; i < NR_OF_LIGHTS; i++)
+	for (i = 0; i < NR_OF_LIGHTS; i++)
 	{
 		// Vector from object to light
 		toLight = normalize(lights[i].position - worldPos.xyz);

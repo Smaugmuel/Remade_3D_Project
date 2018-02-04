@@ -118,6 +118,7 @@ void Camera::MoveUp(float amount)
 {
 	Move(Vector3f(0.0f, amount, 0.0f));
 }
+
 void Camera::Rotate(const Vector3f& axis, float angle)
 {
 	DirectX::XMVECTOR axisVector = axis.XMV();
@@ -134,16 +135,16 @@ void Camera::Rotate(const Vector3f& axis, float angle)
 				axisVector,
 				angle));
 
-	m_target = To_XMFLOAT3(DirectX::XMVectorAdd(m_position.XMV(), newTargetDirection));
+	DirectX::XMFLOAT3 tempFloat3;
+	DirectX::XMStoreFloat3(&tempFloat3, DirectX::XMVectorAdd(m_position.XMV(), newTargetDirection));
+	m_target = tempFloat3;
 
 	m_update_flag_view = true;
 }
-
 void Camera::RotateUp(float angle)
 {
 	Rotate(GetRight(), angle);
 }
-
 void Camera::RotateRight(float angle)
 {
 	Rotate(Vector3f(0.0f, 1.0f, 0.0f), angle);
@@ -181,6 +182,11 @@ void Camera::SetTarget(const Vector3f& target)
 	m_update_flag_view = true;
 }
 
+void Camera::SetDimensions(const Vector2f & dimensions)
+{
+	m_dimensions = dimensions;
+	m_update_flag_proj = true;
+}
 void Camera::SetFOV(float FOV)
 {
 	if (FOV == m_FOV)
@@ -188,11 +194,6 @@ void Camera::SetFOV(float FOV)
 
 	m_FOV = FOV;
 
-	m_update_flag_proj = true;
-}
-void Camera::SetDimensions(const Vector2f & dimensions)
-{
-	m_dimensions = dimensions;
 	m_update_flag_proj = true;
 }
 void Camera::SetNearPlane(float nearPlane)
@@ -214,32 +215,22 @@ void Camera::SetFarPlane(float farPlane)
 	m_update_flag_proj = true;
 }
 
-//void Camera::SetUnaltered()
-//{
-//	m_wasAltered = false;
-//}
-
-//void Camera::CreateFrustum()
-//{
-//	m_frustum->CreateFrustum(m_view, m_projection, m_position, m_FOV, m_farPlane);
-//}
-
-const Vector3f& Camera::GetPosition() const
+const Vector3f & Camera::GetPosition() const
 {
 	return m_position;
 }
-const Vector3f& Camera::GetTarget() const
+const Vector3f & Camera::GetTarget() const
 {
 	return m_target;
 }
 
-float Camera::GetFOV() const
-{
-	return m_FOV;
-}
 const Vector2f & Camera::GetDimensions() const
 {
 	return m_dimensions;
+}
+float Camera::GetFOV() const
+{
+	return m_FOV;
 }
 float Camera::GetNearPlane() const
 {
@@ -250,52 +241,30 @@ float Camera::GetFarPlane() const
 	return m_farPlane;
 }
 
-const Vector3f Camera::GetTargetDirection() const
+Vector3f Camera::GetTargetDirection() const
 {
 	return (m_target - m_position).normalized();
 }
-const Vector3f Camera::GetForward() const
+Vector3f Camera::GetForward() const
 {
 	// DirectX is left handed
 	return Vector3f(0, 1, 0).crossLH(GetRight()).normalized();
 }
-const Vector3f Camera::GetRight() const
+Vector3f Camera::GetRight() const
 {
 	// DirectX is left handed
 	return GetTargetDirection().crossLH(Vector3f(0, 1, 0)).normalized();
 }
 
-const DirectX::XMMATRIX Camera::GetViewMatrix() const
+DirectX::XMMATRIX Camera::GetViewMatrix() const
 {
 	return DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&m_view));
 }
-const DirectX::XMMATRIX Camera::GetProjectionMatrix() const
+DirectX::XMMATRIX Camera::GetProjectionMatrix() const
 {
 	return DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&m_projection));
 }
-
-const DirectX::XMMATRIX Camera::GetOrthogonalMatrix() const
+DirectX::XMMATRIX Camera::GetOrthogonalMatrix() const
 {
 	return DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&m_orthographic));
-}
-
-//bool Camera::GetWasAltered() const
-//{
-//	return m_wasAltered;
-//}
-//
-//Frustum* Camera::GetViewFrustum()
-//{
-//	return m_frustum;
-//}
-
-DirectX::XMVECTOR To_XMVECTOR(DirectX::XMFLOAT3 v)
-{
-	return DirectX::XMLoadFloat3(&v);
-}
-DirectX::XMFLOAT3 To_XMFLOAT3(DirectX::XMVECTOR v)
-{
-	DirectX::XMFLOAT3 temp;
-	DirectX::XMStoreFloat3(&temp, v);
-	return temp;
 }

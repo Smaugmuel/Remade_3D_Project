@@ -23,7 +23,6 @@ bool DebugWindow::Initialize(ID3D11Device * device, Vector2i screenDimensions, V
 {
 	D3D11_BUFFER_DESC vertexBufferDesc;
 	D3D11_SUBRESOURCE_DATA vertexData;
-	unsigned int vertexBufferSize;
 
 	m_screenDimensions = screenDimensions;
 	m_bitMapDimensions = bitMapDimensions;

@@ -11,7 +11,7 @@
 #include "DeferredSingleColorShaderGroup.hpp"
 #include "DeferredTextureShaderGroup.hpp"
 #include "DeferredShadowShaderGroup.hpp"
-#include "DeferredLightShaderGroup.hpp"
+#include "DeferredLightShadowShaderGroup.hpp"
 #include "DeferredLightSplitScreenShaderGroup.hpp"
 #include "DeferredLightMultipleLightsShaderGroup.hpp"
 #include "DeferredLightMultipleLightsShadowShaderGroup.hpp"
@@ -55,7 +55,7 @@ bool ShaderManager::Initialize(ID3D11Device* device)
 	if (!m_d_s_shaders->Initialize(device))
 		return false;
 
-	m_d_lightShaders = std::make_unique<DeferredLightShaderGroup>();
+	m_d_lightShaders = std::make_unique<DeferredLightShadowShaderGroup>();
 	if (!m_d_lightShaders->Initialize(device))
 		return false;
 

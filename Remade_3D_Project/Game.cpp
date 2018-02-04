@@ -9,12 +9,17 @@
 
 #include "SingleColorObject.hpp"
 #include "TextureObject.hpp"
+#include "HUDObject.hpp"
 
 #include "SystemInformation.hpp"
 
-#include "HUDObject.hpp"
-
 #include "PointLight.hpp"
+
+#include "HUDText.hpp"
+#include "FPS_Counter.hpp"
+
+#include <chrono>
+
 
 Game* Singleton<Game>::s_instance = nullptr;
 
@@ -86,7 +91,7 @@ bool Game::Initialize()
 	for (unsigned int i = 0; i < MAX_NR_OF_LIGHTS; i++)
 	{
 		m_pointLights[i] = std::make_unique<PointLight>();
-		if (!m_pointLights[i]->Initialize(Direct3D::Get()->GetDevice(), Window::Get()->GetDimensions()))
+		if (!m_pointLights[i]->Initialize(Direct3D::Get()->GetDevice(), Window::Get()->GetDimensions() * 10))
 			return false;
 		m_pointLights[i]->SetPosition(Vector3f(-40.0f + i * 20.0f, 20.0f, -20.0f));
 		m_pointLights[i]->SetTarget(Vector3f(0, 0, 0));
@@ -94,7 +99,9 @@ bool Game::Initialize()
 	}
 	m_nrOfLights = 1;
 
-
+	m_fpsCounter = std::make_unique<FPS_Counter>();
+	if (!m_fpsCounter->Initialize(Direct3D::Get()->GetDevice(), Direct3D::Get()->GetDeviceContext()))
+		return false;
 
 	m_renderMode = RenderMode::NORMAL_MODE;
 	m_HUDMode = HUDMode::HUD_OFF;
@@ -107,6 +114,9 @@ void Game::Run()
 {
 	MSG msg = { 0 };
 	
+	std::chrono::time_point<std::chrono::steady_clock> t1;
+	std::chrono::time_point<std::chrono::steady_clock> t2;
+
 	while (true)
 	{
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -116,11 +126,16 @@ void Game::Run()
 		}
 		else
 		{
+			t1 = t2;
+			t2 = std::chrono::high_resolution_clock::now();
+			long long nanoSeconds = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count();
+			double seconds = nanoSeconds * 0.000000001;
+
 			if (!ProcessInput())
 			{
 				break;
 			}
-			Update();
+			Update(seconds);
 			Render();
 		}
 	}
@@ -131,7 +146,6 @@ bool Game::ProcessInput()
 	Input* input = Input::Get();
 	PlayerCameraManager* manager = PlayerCameraManager::Get();
 	Camera* cam = manager->GetCurrentCamera();
-	Camera* cam0 = manager->GetCamera(0);
 
 	input->Update();
 
@@ -187,24 +201,6 @@ bool Game::ProcessInput()
 	if (input->IsKeyDown('R'))
 	{
 		cam->SetTarget(0.0f, 0.0f, 0.0f);
-	}
-
-	// Rotate light camera
-	if (input->IsKeyDown('J'))
-	{
-		cam0->RotateRight(-0.001);
-	}
-	if (input->IsKeyDown('L'))
-	{
-		cam0->RotateRight(0.001);
-	}
-	if (input->IsKeyDown('I'))
-	{
-		cam0->RotateUp(-0.001);
-	}
-	if (input->IsKeyDown('K'))
-	{
-		cam0->RotateUp(0.001);
 	}
 
 	// Turn floor green
@@ -266,6 +262,22 @@ bool Game::ProcessInput()
 		m_nrOfLights = max(m_nrOfLights - 1, 1);
 	}
 
+	if (input->IsKeyPressed('H'))
+	{
+		static bool toggle = false;
+		toggle = !toggle;
+
+		if (toggle)
+		{
+			m_hudText->CenterOrigin();
+		}
+		else
+		{
+			m_hudText->SetOrigin(Vector2f(0, 0));
+		}
+	}
+
+
 	// Rotate cubes or camera
 	if (input->IsKeyDown(VK_RBUTTON))
 	{
@@ -287,7 +299,7 @@ bool Game::ProcessInput()
 	return true;
 }
 
-void Game::Update()
+void Game::Update(double dt)
 {
 	PlayerCameraManager::Get()->Update();
 
@@ -297,15 +309,17 @@ void Game::Update()
 	}
 	m_coloredFloor->Update();
 
-	static float angle = 0.0f;
-	angle += 0.0003f;
+	static double angle = 0.0;
+	angle += dt;
 
 	for (unsigned int i = 0; i < m_nrOfLights; i++)
 	{
-		m_pointLights[i]->SetPosition(Vector3f(std::cos(angle + i * 0.5f) * 30.0f, 30.0f, std::sin(angle + i * 0.5f) * 30.0f));
+		m_pointLights[i]->SetPosition(Vector3f(static_cast<float>(std::cos(angle + i * 0.5)), 1.0f, static_cast<float>(std::sin(angle + i * 0.5))) * 30.0f);
 		m_pointLights[i]->SetTarget(Vector3f(0, 0, 0));
 		m_pointLights[i]->Update();
 	}
+
+	m_fpsCounter->Update(dt);
 }
 
 void Game::Render()
@@ -368,6 +382,8 @@ void Game::Render()
 		break;
 	}
 
+	m_fpsCounter->Render(d3d->GetDeviceContext());
+
 	d3d->Present();
 }
 
@@ -413,6 +429,30 @@ void Game::RenderNormal()
 	
 	m_coloredFloor->Render(deviceContext);
 }
+void Game::RenderDepth()
+{
+	Direct3D* d3d = Direct3D::Get();
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	ShaderManager* shaders = ShaderManager::Get();
+	Camera* cam = PlayerCameraManager::Get()->GetCurrentCamera();
+
+	shaders->SetShaderType(deviceContext, ShaderType::DEPTH);
+
+	shaders->SetPerFrameDepthConstantBuffer(
+		deviceContext,
+		cam->GetViewMatrix(),
+		m_orthogonal ? cam->GetOrthogonalMatrix() : cam->GetProjectionMatrix());
+
+	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
+	{
+		shaders->SetPerObjectDepthConstantBuffer(deviceContext, m_texturedCubes[i]->GetWorldMatrix());
+		m_texturedCubes[i]->Render(deviceContext);
+	}
+
+	shaders->SetPerObjectDepthConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix());
+
+	m_coloredFloor->Render(deviceContext);
+}
 void Game::RenderDeferredFirstPass()
 {
 	Direct3D* d3d = Direct3D::Get();
@@ -452,30 +492,6 @@ void Game::RenderDeferredFirstPass()
 	m_coloredFloor->Render(deviceContext);
 }
 
-void Game::RenderDepth()
-{
-	Direct3D* d3d = Direct3D::Get();
-	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
-	ShaderManager* shaders = ShaderManager::Get();
-	Camera* cam = PlayerCameraManager::Get()->GetCurrentCamera();
-
-	shaders->SetShaderType(deviceContext, ShaderType::DEPTH);
-	
-	shaders->SetPerFrameDepthConstantBuffer(
-		deviceContext,
-		cam->GetViewMatrix(),
-		m_orthogonal ? cam->GetOrthogonalMatrix() : cam->GetProjectionMatrix());
-
-	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
-	{
-		shaders->SetPerObjectDepthConstantBuffer(deviceContext, m_texturedCubes[i]->GetWorldMatrix());
-		m_texturedCubes[i]->Render(deviceContext);
-	}
-
-	shaders->SetPerObjectDepthConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix());
-	
-	m_coloredFloor->Render(deviceContext);
-}
 void Game::RenderShadowPass()
 {
 	Direct3D* d3d = Direct3D::Get();

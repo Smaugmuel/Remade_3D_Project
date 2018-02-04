@@ -25,7 +25,7 @@ void Input::Update()
 	for (unsigned int i = 0; i < 256; i++)
 	{
 		m_keysDownPrev[i] = m_keysDown[i];
-		m_keysDown[i] = (bool)(GetAsyncKeyState(i) & 0x8000);
+		m_keysDown[i] = static_cast<bool>(GetAsyncKeyState(i) & 0x8000);
 	}
 
 	// Upper left corner of window
