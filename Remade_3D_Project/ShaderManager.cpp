@@ -14,6 +14,7 @@
 #include "DeferredLightShaderGroup.hpp"
 #include "DeferredLightSplitScreenShaderGroup.hpp"
 #include "DeferredLightMultipleLightsShaderGroup.hpp"
+#include "DeferredLightMultipleShadowLightsShaderGroup.hpp"
 
 ShaderManager* Singleton<ShaderManager>::s_instance = nullptr;
 
@@ -66,6 +67,10 @@ bool ShaderManager::Initialize(ID3D11Device* device)
 	if (!m_d_lightMultipleLightsShaders->Initialize(device))
 		return false;
 
+	m_d_lightMultipleShadowLightsShaders = std::make_unique<DeferredLightMultipleShadowLightsShaderGroup>();
+	if (!m_d_lightMultipleShadowLightsShaders->Initialize(device))
+		return false;
+
 	m_currentShaderType = (ShaderType)-1;
 
 	return true;
@@ -109,6 +114,9 @@ void ShaderManager::SetShaderType(ID3D11DeviceContext* deviceContext, const Shad
 		break;
 	case ShaderType::D_MULTIPLE:
 		m_d_lightMultipleLightsShaders->SetupShaders(deviceContext);
+		break;
+	case ShaderType::D_MULTIPLE_SHADOWS:
+		m_d_lightMultipleShadowLightsShaders->SetupShaders(deviceContext);
 		break;
 	default:
 		break;
@@ -166,9 +174,14 @@ void ShaderManager::SetPerFrameDeferredLightSplitScreenConstantBuffer(ID3D11Devi
 {
 	m_d_lightSplitScreenShaders->SetupPerFrameBuffer(deviceContext, nrOfDeferredBuffers, deferredShaderResourceViews, depthTexture, lightPosition, lightViewMatrix, lightProjectionMatrix, lightIntensity);
 }
-void ShaderManager::SetPerFrameDeferredLightMultipleLightsConstantBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfDeferredBuffers, ID3D11ShaderResourceView ** deferredShaderResourceViews, Vector3f lightPositions[NR_OF_LIGHTS], float lightIntensitys[NR_OF_LIGHTS])
+void ShaderManager::SetPerFrameDeferredLightMultipleLightsConstantBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfDeferredBuffers, ID3D11ShaderResourceView ** deferredShaderResourceViews, Vector3f lightPositions[MAX_NR_OF_LIGHTS], float lightIntensitys[MAX_NR_OF_LIGHTS])
 {
 	m_d_lightMultipleLightsShaders->SetupPerFrameBuffer(deviceContext, nrOfDeferredBuffers, deferredShaderResourceViews, lightPositions, lightIntensitys);
+}
+
+void ShaderManager::SetPerFrameDeferredLightMultipleShadowLightsConstantBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView ** resources, unsigned int nrOfLights, ID3D11ShaderResourceView * depthTextures[MAX_NR_OF_LIGHTS], Vector3f lightPositions[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightViewMatrices[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightProjectionMatrices[MAX_NR_OF_LIGHTS], float lightIntensities[MAX_NR_OF_LIGHTS])
+{
+	m_d_lightMultipleShadowLightsShaders->SetupPerFrameBuffer(deviceContext, nrOfResources, resources, nrOfLights, depthTextures, lightPositions, lightViewMatrices, lightProjectionMatrices, lightIntensities);
 }
 
 void ShaderManager::SetPerObjectSingleColorConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & worldMatrix, Vector3f color)

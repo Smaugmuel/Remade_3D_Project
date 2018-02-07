@@ -22,6 +22,7 @@ class DeferredShadowShaderGroup;
 class DeferredLightShaderGroup;
 class DeferredLightSplitScreenShaderGroup;
 class DeferredLightMultipleLightsShaderGroup;
+class DeferredLightMultipleShadowLightsShaderGroup;
 
 enum ShaderType
 {
@@ -34,7 +35,8 @@ enum ShaderType
 	D_TEXTURE,
 	HUD,
 	D_SPLIT,
-	D_MULTIPLE
+	D_MULTIPLE,
+	D_MULTIPLE_SHADOWS
 };
 
 
@@ -57,7 +59,8 @@ public:
 	void SetPerFrameDeferredShadowConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix);
 	void SetPerFrameDeferredLightConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix, unsigned int nrOfDeferredBuffers, ID3D11ShaderResourceView** deferredShaderResourceViews, ID3D11ShaderResourceView* depthTexture, Vector3f lightPosition, float lightIntensity);
 	void SetPerFrameDeferredLightSplitScreenConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix, unsigned int nrOfDeferredBuffers, ID3D11ShaderResourceView** deferredShaderResourceViews, ID3D11ShaderResourceView* depthTexture, Vector3f lightPosition, float lightIntensity);
-	void SetPerFrameDeferredLightMultipleLightsConstantBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfDeferredBuffers, ID3D11ShaderResourceView** deferredShaderResourceViews, Vector3f lightPosition[NR_OF_LIGHTS], float lightIntensity[NR_OF_LIGHTS]);
+	void SetPerFrameDeferredLightMultipleLightsConstantBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfDeferredBuffers, ID3D11ShaderResourceView** deferredShaderResourceViews, Vector3f lightPosition[MAX_NR_OF_LIGHTS], float lightIntensity[MAX_NR_OF_LIGHTS]);
+	void SetPerFrameDeferredLightMultipleShadowLightsConstantBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources, unsigned int nrOfLights, ID3D11ShaderResourceView* depthTextures[MAX_NR_OF_LIGHTS], Vector3f lightPositions[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightViewMatrices[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightProjectionMatrices[MAX_NR_OF_LIGHTS], float lightIntensities[MAX_NR_OF_LIGHTS]);
 
 	void SetPerObjectSingleColorConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & worldMatrix, Vector3f color);
 	void SetPerObjectTextureConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture);
@@ -78,7 +81,7 @@ private:
 	std::unique_ptr<DeferredLightShaderGroup> m_d_lightShaders;
 	std::unique_ptr<DeferredLightSplitScreenShaderGroup> m_d_lightSplitScreenShaders;
 	std::unique_ptr<DeferredLightMultipleLightsShaderGroup> m_d_lightMultipleLightsShaders;
-
+	std::unique_ptr<DeferredLightMultipleShadowLightsShaderGroup> m_d_lightMultipleShadowLightsShaders;
 
 	ShaderType m_currentShaderType;
 };

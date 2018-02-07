@@ -10,9 +10,9 @@
 #include "SingleColorObject.hpp"
 #include "TextureObject.hpp"
 
-#include "SystemInformation.hpp"
-
 #include "HUDObject.hpp"
+
+#include "PointLight.hpp"
 
 Game* Singleton<Game>::s_instance = nullptr;
 
@@ -90,6 +90,19 @@ bool Game::Initialize()
 		return false;
 	m_HUDObject->SetPosition(Vector2i(500, 500));
 	m_HUDObject->SetDimensions(Vector2i(200, 200));
+
+	
+	for (unsigned int i = 0; i < MAX_NR_OF_LIGHTS; i++)
+	{
+		m_pointLights[i] = std::make_unique<PointLight>();
+		if (!m_pointLights[i]->Initialize(Direct3D::Get()->GetDevice(), Vector2f(WNDW, WNDH)))
+			return false;
+		m_pointLights[i]->SetPosition(Vector3f(-40.0f + 20.0f * i, 20.0f, -20.0f));
+		m_pointLights[i]->SetTarget(Vector3f(0.0f, 0.0f, 0.0f));
+		
+		m_pointLights[i]->Update();
+	}
+	m_nrOfLights = 1;
 
 
 	m_renderMode = RenderMode::NORMAL_MODE;
@@ -185,24 +198,6 @@ bool Game::ProcessInput()
 		cam->SetTarget(0.0f, 0.0f, 0.0f);
 	}
 
-	// Rotate light camera
-	if (input->IsKeyDown('J'))
-	{
-		cam0->RotateRight(-0.001);
-	}
-	if (input->IsKeyDown('L'))
-	{
-		cam0->RotateRight(0.001);
-	}
-	if (input->IsKeyDown('I'))
-	{
-		cam0->RotateUp(-0.001);
-	}
-	if (input->IsKeyDown('K'))
-	{
-		cam0->RotateUp(0.001);
-	}
-
 	// Turn floor green
 	if (input->IsKeyPressed(VK_LBUTTON))
 	{
@@ -253,6 +248,19 @@ bool Game::ProcessInput()
 		}
 	}
 
+	// Change number of cameras
+	if (input->IsKeyPressed(VK_UP))
+	{
+		//m_nrOfLights = min(m_nrOfLights + 1, MAX_NR_OF_LIGHTS);
+		m_nrOfLights = min(m_nrOfLights + 1, MAX_NR_OF_LIGHTS);
+	}
+	if (input->IsKeyPressed(VK_DOWN))
+	{
+		//m_nrOfLights = max(m_nrOfLights - 1, 1);
+		m_nrOfLights = max(m_nrOfLights - 1, 1);
+	}
+
+
 	// Rotate cubes or camera
 	if (input->IsKeyDown(VK_RBUTTON))
 	{
@@ -277,6 +285,16 @@ bool Game::ProcessInput()
 void Game::Update()
 {
 	PlayerCameraManager::Get()->Update();
+
+	static float angle = 0.0f;
+	angle += 0.0005f;
+
+	for (unsigned int i = 0; i < m_nrOfLights; i++)
+	{
+		m_pointLights[i]->SetPosition(Vector3f(std::cos(angle + i * 0.5), 1.0f, std::sin(angle + i * 0.5)) * 30.0f);
+		m_pointLights[i]->SetTarget(Vector3f(0, 0, 0));
+		m_pointLights[i]->Update();
+	}
 
 	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
 	{
@@ -303,6 +321,11 @@ void Game::Render()
 	case DEFERRED_MULTIPLE_LIGHTS_MODE:
 		RenderDeferredFirstPass();
 		RenderDeferredLightPass();
+		break;
+	case DEFERRED_MULTIPLE_SHADOW_LIGHTS_MODE:
+		RenderDeferredFirstPass();
+		RenderMultipleShadowsPass();
+		RenderDeferredLightMultipleShadowsPass();
 		break;
 	default:
 		RenderDeferredFirstPass();
@@ -472,6 +495,40 @@ void Game::RenderShadowPass()
 	shaders->SetPerObjectDeferredShadowConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix());
 	m_coloredFloor->Render(deviceContext);
 }
+void Game::RenderMultipleShadowsPass()
+{
+	Direct3D* d3d = Direct3D::Get();
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	ShaderManager* shaders = ShaderManager::Get();
+
+	for (unsigned int i = 0; i < m_nrOfLights; i++)
+	{
+		m_pointLights[i]->Set(deviceContext);
+		m_pointLights[i]->Clear(deviceContext);
+
+		// Set texture shaders, then remove pixel shader
+		shaders->SetShaderType(deviceContext, ShaderType::D_TEXTURE);
+		shaders->SetShaderType(deviceContext, ShaderType::D_SHADOW);
+
+		shaders->SetPerFrameDeferredShadowConstantBuffer(
+			deviceContext,
+			m_pointLights[i]->GetView(),
+			m_pointLights[i]->GetProjection());
+
+		for (unsigned int j = 0; j < m_texturedCubes.size(); j++)
+		{
+			shaders->SetPerObjectDeferredShadowConstantBuffer(deviceContext, m_texturedCubes[j]->GetWorldMatrix());
+			m_texturedCubes[j]->Render(deviceContext);
+		}
+
+		// Set color shaders, then remove pixel shader
+		shaders->SetShaderType(deviceContext, ShaderType::D_SINGLE_COLOR);
+		shaders->SetShaderType(deviceContext, ShaderType::D_SHADOW);
+
+		shaders->SetPerObjectDeferredShadowConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix());
+		m_coloredFloor->Render(deviceContext);
+	}
+}
 void Game::RenderDeferredLightPass()
 {
 	Direct3D* d3d = Direct3D::Get();
@@ -499,11 +556,11 @@ void Game::RenderDeferredLightPass()
 	{
 		shaders->SetShaderType(deviceContext, ShaderType::D_MULTIPLE);
 
-		Vector3f lightPos[NR_OF_LIGHTS];
-		float lightIntensity[NR_OF_LIGHTS];
+		Vector3f lightPos[MAX_NR_OF_LIGHTS];
+		float lightIntensity[MAX_NR_OF_LIGHTS];
 
 		unsigned int nCams = PlayerCameraManager::Get()->GetNrOfCameras();
-		for (unsigned int i = 0; i < NR_OF_LIGHTS; i++)
+		for (unsigned int i = 0; i < MAX_NR_OF_LIGHTS; i++)
 		{
 			lightPos[i] = PlayerCameraManager::Get()->GetCamera(i % nCams)->GetPosition();
 			lightIntensity[i] = 1.0f;
@@ -530,6 +587,44 @@ void Game::RenderDeferredLightPass()
 			cam0->GetPosition(),
 			1.0f);
 	}
+
+	DeferredScreenTarget::Get()->Render(deviceContext);
+}
+void Game::RenderDeferredLightMultipleShadowsPass()
+{
+	Direct3D* d3d = Direct3D::Get();
+	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
+	ShaderManager* shaders = ShaderManager::Get();
+
+	d3d->SetDefaultTarget();
+
+	shaders->SetShaderType(deviceContext, ShaderType::D_MULTIPLE_SHADOWS);
+
+	Vector3f lightPositions[MAX_NR_OF_LIGHTS];
+	float lightIntensities[MAX_NR_OF_LIGHTS];
+	DirectX::XMMATRIX lightViewMatrices[MAX_NR_OF_LIGHTS];
+	DirectX::XMMATRIX lightProjectionMatrices[MAX_NR_OF_LIGHTS];
+	ID3D11ShaderResourceView* lightDepthTextures[MAX_NR_OF_LIGHTS];
+
+	for (unsigned int i = 0; i < m_nrOfLights; i++)
+	{
+		lightPositions[i] = m_pointLights[i]->GetPosition();
+		lightIntensities[i] = 1.0f;
+		lightViewMatrices[i] = m_pointLights[i]->GetView();
+		lightProjectionMatrices[i] = m_pointLights[i]->GetProjection();
+		lightDepthTextures[i] = m_pointLights[i]->GetResource();
+	}
+
+	shaders->SetPerFrameDeferredLightMultipleShadowLightsConstantBuffer(
+		deviceContext,
+		DeferredBufferType::NR_OF_D_ELEMENTS,
+		d3d->GetDeferredShaderResourceViews(),
+		m_nrOfLights,
+		lightDepthTextures,
+		lightPositions,
+		lightViewMatrices,
+		lightProjectionMatrices,
+		lightIntensities);
 
 	DeferredScreenTarget::Get()->Render(deviceContext);
 }

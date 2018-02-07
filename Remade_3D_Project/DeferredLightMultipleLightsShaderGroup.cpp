@@ -1,9 +1,6 @@
 #include "DeferredLightMultipleLightsShaderGroup.hpp"
 #include <d3d11.h>
 #include <d3dcompiler.h>
-#include "Camera.hpp"
-
-#include "Texture.hpp"
 
 DeferredLightMultipleLightsShaderGroup::DeferredLightMultipleLightsShaderGroup()
 {
@@ -160,7 +157,7 @@ void DeferredLightMultipleLightsShaderGroup::SetupShaders(ID3D11DeviceContext * 
 	deviceContext->PSSetSamplers(0, 1, &m_samplerState);
 }
 
-void DeferredLightMultipleLightsShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView ** resources, Vector3f lightPositions[NR_OF_LIGHTS], float lightIntensitys[NR_OF_LIGHTS])
+void DeferredLightMultipleLightsShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView ** resources, Vector3f lightPositions[MAX_NR_OF_LIGHTS], float lightIntensitys[MAX_NR_OF_LIGHTS])
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	PS_PerFrameBuffer* frameDataPS;
@@ -181,7 +178,7 @@ void DeferredLightMultipleLightsShaderGroup::SetupPerFrameBuffer(ID3D11DeviceCon
 	}
 
 	frameDataPS = (PS_PerFrameBuffer*)mappedResource.pData;
-	for (unsigned int i = 0; i < NR_OF_LIGHTS; i++)
+	for (unsigned int i = 0; i < MAX_NR_OF_LIGHTS; i++)
 	{
 		frameDataPS->lights[i].position = lightPositions[i];
 		frameDataPS->lights[i].intensity = lightIntensitys[i];

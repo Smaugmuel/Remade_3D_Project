@@ -13,8 +13,6 @@ struct ID3D11DeviceContext;
 struct ID3D11SamplerState;
 struct ID3D11ShaderResourceView;
 
-class Camera;
-
 class DeferredLightShaderGroup
 {
 	struct PS_PerFrameBuffer
