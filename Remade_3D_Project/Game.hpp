@@ -4,11 +4,16 @@
 #include "SystemInformation.hpp"
 #include <memory>
 #include <vector>
+#include <chrono>
 
 class TextureObject;
 class SingleColorObject;
 class HUDObject;
 class PointLight;
+class FPSCounter;
+class Character;
+
+template<typename StateCategory> class StateMachine;
 
 enum RenderMode
 {
@@ -29,7 +34,7 @@ enum HUDMode
 	DEFERRED_COLORS,
 	NR_OF_HUD_MODES
 };
-enum OrthogonalCamera
+enum OrthogonalMode
 {
 	ORTHOGONAL_OFF,
 	ORTHOGONAL_ON
@@ -37,6 +42,9 @@ enum OrthogonalCamera
 
 class Game final : public Singleton<Game>
 {
+	typedef std::chrono::high_resolution_clock Clock;
+	typedef std::chrono::time_point<std::chrono::steady_clock> Time;
+
 	friend class Singleton<Game>;
 
 	Game();
@@ -47,7 +55,7 @@ public:
 	void Run();
 
 	bool ProcessInput();
-	void Update();
+	void Update(double dt);
 	void Render();
 
 private:
@@ -59,6 +67,8 @@ private:
 	void RenderDeferredLightPass();
 	void RenderDeferredLightMultipleShadowsPass();
 	void RenderHUD();
+	void RenderHUDText();
+
 
 	std::vector<std::unique_ptr<TextureObject>> m_texturedCubes;
 	std::unique_ptr<SingleColorObject> m_coloredFloor;
@@ -68,9 +78,17 @@ private:
 	unsigned int m_nrOfLights;
 	unsigned int m_currentLight;
 
+	std::unique_ptr<FPSCounter> m_fpsCounter;
+
+
+	
+
 	RenderMode m_renderMode;
 	HUDMode m_HUDMode;
-	OrthogonalCamera m_orthogonal;
+	OrthogonalMode m_orthogonal;
+
+
+	std::unique_ptr<Character> m_player;
 };
 
 #endif

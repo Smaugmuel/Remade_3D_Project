@@ -44,6 +44,8 @@ public:
 	void SetDeferredTargets();
 	void SetShadowTarget();
 
+	void SetDefaultBlendState();
+
 	void EnableZBuffer();
 	void DisableZBuffer();
 
@@ -59,6 +61,7 @@ private:
 	bool InitializeDefaultRenderTargetView();
 	bool InitializeDefaultDepthBufferAndDepthStencilView();
 	bool InitializeDefaultViewport();
+	bool InitializeDefaultBlendState();
 
 	/* Deferred */
 	bool InitializeDeferredRenderTargetViews();
@@ -98,6 +101,9 @@ private:
 	ID3D11Texture2D* m_s_depthStencilBuffer;
 	ID3D11DepthStencilView* m_s_depthStencilView;
 	D3D11_VIEWPORT m_s_viewport;
+
+	
+	ID3D11BlendState* m_defaultBlendState;
 };
 
 #endif

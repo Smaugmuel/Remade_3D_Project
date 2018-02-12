@@ -107,6 +107,11 @@ void Object::SetScale(float x, float y, float z)
 	SetScale(Vector3f(x, y, z));
 }
 
+void Object::SetModelName(const std::string & modelName)
+{
+	m_modelName = modelName;
+}
+
 const Vector3f& Object::GetPosition() const
 {
 	return m_position;
@@ -122,9 +127,14 @@ const Vector3f& Object::GetScale() const
 	return m_scale;
 }
 
-const DirectX::XMMATRIX Object::GetWorldMatrix() const
+DirectX::XMMATRIX Object::GetWorldMatrix() const
 {
 	return DirectX::XMLoadFloat4x4(&m_worldMatrix);
+}
+
+const std::string & Object::GetModelName() const
+{
+	return m_modelName;
 }
 
 void Object::UpdateWorldMatrix()

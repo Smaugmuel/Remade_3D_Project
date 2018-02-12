@@ -2,11 +2,7 @@
 #define OBJECT_HPP
 #include <DirectXMath.h>
 #include "Vector3.hpp"
-#include <memory>
-
-struct ID3D11Device;
-struct ID3D11DeviceContext;
-struct ID3D11ShaderResourceView;
+#include <string>
 
 class Object
 {
@@ -14,8 +10,7 @@ public:
 	Object();
 	virtual ~Object();
 
-	virtual bool Initialize(ID3D11Device* device, const char* modelName) = 0;
-	virtual void Render(ID3D11DeviceContext* deviceContext) = 0;
+	virtual bool Initialize() = 0;
 
 	void Update();
 
@@ -31,14 +26,20 @@ public:
 	void SetScale(const Vector3f& scale);
 	void SetScale(float x, float y, float z);
 
+	void SetModelName(const std::string& modelName);
+
 	const Vector3f& GetPosition() const;
 	const Vector3f& GetRotation() const;
 	const Vector3f& GetScale() const;
 
-	const DirectX::XMMATRIX GetWorldMatrix() const;
+	DirectX::XMMATRIX GetWorldMatrix() const;
+
+	const std::string& GetModelName() const;
 
 protected:
 	void InitializeBaseClass();
+
+	std::string m_modelName;
 
 private:
 	void UpdateWorldMatrix();

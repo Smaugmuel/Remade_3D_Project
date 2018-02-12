@@ -8,6 +8,12 @@ Direct3D::Direct3D() : Singleton<Direct3D>()
 }
 Direct3D::~Direct3D()
 {
+	if (m_defaultBlendState)
+	{
+		m_defaultBlendState->Release();
+		m_defaultBlendState = nullptr;
+	}
+
 	/* Shadow */
 	if (m_s_shaderResourceView)
 	{
@@ -355,6 +361,26 @@ bool Direct3D::InitializeDefaultViewport()
 	return true;
 }
 
+bool Direct3D::InitializeDefaultBlendState()
+{
+	D3D11_BLEND_DESC blendDesc;
+	ZeroMemory(&blendDesc, sizeof(D3D11_BLEND_DESC));
+	blendDesc.AlphaToCoverageEnable = true;
+	blendDesc.IndependentBlendEnable = true;
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	HRESULT result = m_device->CreateBlendState(&blendDesc, &m_defaultBlendState);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	SetDefaultBlendState();
+
+	return true;
+}
+
 bool Direct3D::InitializeDeferredRenderTargetViews()
 {
 	D3D11_TEXTURE2D_DESC textureDesc;
@@ -570,6 +596,14 @@ void Direct3D::SetShadowTarget()
 {
 	m_deviceContext->OMSetRenderTargets(0, nullptr, m_s_depthStencilView);
 	m_deviceContext->RSSetViewports(1, &m_s_viewport);
+}
+
+void Direct3D::SetDefaultBlendState()
+{
+	const float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	const UINT sampleMask = 0xfffffff;
+
+	m_deviceContext->OMSetBlendState(m_defaultBlendState, blendFactor, sampleMask);
 }
 
 void Direct3D::EnableZBuffer()

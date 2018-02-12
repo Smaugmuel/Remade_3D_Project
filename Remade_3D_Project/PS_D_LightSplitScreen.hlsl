@@ -99,6 +99,10 @@ float4 main(VS_OUT input) : SV_Target
 				diffuse += saturate(dot(toLight, normal.xyz));
 			}
 		}
+		else
+		{
+			diffuse += saturate(dot(toLight, normal.xyz));
+		}
 
 		finalColor = float4(color.xyz * saturate(diffuse + 0.1f), 1.0f);
 	}

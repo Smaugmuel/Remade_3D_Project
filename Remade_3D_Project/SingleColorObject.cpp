@@ -1,6 +1,4 @@
 #include "SingleColorObject.hpp"
-#include "SingleColorModel.hpp"
-#include <d3d11.h>
 
 SingleColorObject::SingleColorObject()
 {
@@ -10,11 +8,11 @@ SingleColorObject::~SingleColorObject()
 {
 }
 
-bool SingleColorObject::Initialize(ID3D11Device* device, const char* modelName)
+bool SingleColorObject::Initialize()
 {
 	//m_model = std::unique_ptr<Model>(ModelFactory::Create(modelName, device));
 
-	m_model = std::make_unique<SingleColorModel>();
+	/*m_model = std::make_unique<SingleColorModel>();
 
 	if (!m_model->LoadFromFile(modelName))
 	{
@@ -23,7 +21,7 @@ bool SingleColorObject::Initialize(ID3D11Device* device, const char* modelName)
 	if (!m_model->CreateVertexBuffer(device))
 	{
 		return false;
-	}
+	}*/
 
 	m_color = Vector3f(1, 0, 0);
 
@@ -32,10 +30,10 @@ bool SingleColorObject::Initialize(ID3D11Device* device, const char* modelName)
 	return true;
 }
 
-void SingleColorObject::Render(ID3D11DeviceContext* deviceContext)
-{
-	m_model->Render(deviceContext);
-}
+//void SingleColorObject::Render(ID3D11DeviceContext* deviceContext)
+//{
+//	//m_model->Render(deviceContext);
+//}
 
 void SingleColorObject::SetColor(const Vector3f & color)
 {

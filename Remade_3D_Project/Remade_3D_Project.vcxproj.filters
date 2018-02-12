@@ -61,6 +61,24 @@
     <Filter Include="Header Files\Helper Files">
       <UniqueIdentifier>{2adc1dcf-6a43-41f6-994f-c2ced7a91cf1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\States">
+      <UniqueIdentifier>{5f8c9082-9e2d-4d6c-8c98-41d94e623f54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Events">
+      <UniqueIdentifier>{2d967a85-8414-4260-8cc8-3b4270cb294e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Events">
+      <UniqueIdentifier>{47d02075-cab0-457d-8dfd-b73ccd6b844a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Textures">
+      <UniqueIdentifier>{be761211-5c9e-43be-9d90-dc417ce3aefd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Storages">
+      <UniqueIdentifier>{fc6eeef0-c947-4535-a573-3f98d83a5750}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Storages">
+      <UniqueIdentifier>{cdf9c74c-c0f7-4051-8173-edf704f9d69f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp">
@@ -132,9 +150,6 @@
     <ClCompile Include="TextureShaderGroup.cpp">
       <Filter>Source Files\Shaders\ShaderGroups</Filter>
     </ClCompile>
-    <ClCompile Include="DeferredLightShaderGroup.cpp">
-      <Filter>Source Files\Shaders\ShaderGroups</Filter>
-    </ClCompile>
     <ClCompile Include="DeferredShadowShaderGroup.cpp">
       <Filter>Source Files\Shaders\ShaderGroups</Filter>
     </ClCompile>
@@ -180,6 +195,27 @@
     <ClCompile Include="PointLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FPS_Counter.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="HUDText.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredLightShadowShaderGroup.cpp">
+      <Filter>Source Files\Shaders\ShaderGroups</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EventDispatcher.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelStorage.cpp">
+      <Filter>Source Files\Storages</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureStorage.cpp">
+      <Filter>Source Files\Storages</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.hpp">
@@ -215,9 +251,6 @@
     <ClInclude Include="SingleColorObject.hpp">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="TextureObject.hpp">
-      <Filter>Header Files\Objects</Filter>
-    </ClInclude>
     <ClInclude Include="Object.hpp">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
@@ -238,12 +271,6 @@
     </ClInclude>
     <ClInclude Include="DeferredScreenTarget.hpp">
       <Filter>Header Files\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.hpp">
-      <Filter>Header Files\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="DeferredLightShaderGroup.hpp">
-      <Filter>Header Files\Shaders\ShaderGroups</Filter>
     </ClInclude>
     <ClInclude Include="DeferredShadowShaderGroup.hpp">
       <Filter>Header Files\Shaders\ShaderGroups</Filter>
@@ -307,6 +334,42 @@
     </ClInclude>
     <ClInclude Include="PointLight.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HUDText.hpp">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="FPS_Counter.hpp">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="DeferredLightShadowShaderGroup.hpp">
+      <Filter>Header Files\Shaders\ShaderGroups</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachine.hpp">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.hpp">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="EventDispatcher.hpp">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="EventReceiver.hpp">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.hpp">
+      <Filter>Header Files\Objects\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureObject.hpp">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureStorage.hpp">
+      <Filter>Header Files\Storages</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelStorage.hpp">
+      <Filter>Header Files\Storages</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

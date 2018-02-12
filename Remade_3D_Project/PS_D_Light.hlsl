@@ -65,9 +65,9 @@ float4 main(VS_OUT input) : SV_Target
 	lightScreenUV.x = (lightScreenPos.x + 1) * 0.5f;
 	lightScreenUV.y = 1 - (lightScreenPos.y + 1) * 0.5f;
 	
-	if (saturate(lightScreenUV.x) == lightScreenUV.x && saturate(lightScreenUV.y) == lightScreenUV.y)
+	if (lightScreenUV.x >= 0.0f && lightScreenUV.x <= 1.0f && lightScreenUV.y >= 0.0f && lightScreenUV.y <= 1.0f)
 	{
-		// Object position fit into light frustum (was visible from light
+		// Object position fit into light frustum (was visible from light)
 
 		depthToNearestObject = depthTexture.Sample(sampleState, lightScreenUV).x;
 		depthToThisObject = lightScreenPos.z - 0.0001f;
@@ -79,6 +79,13 @@ float4 main(VS_OUT input) : SV_Target
 			// Add diffuse lighting
 			diffuse += saturate(dot(toLight, normal.xyz));
 		}
+	}
+	else
+	{
+		// This object was outside light frustum
+
+		// Add diffuse lighting
+		diffuse += saturate(dot(toLight, normal.xyz));
 	}
 
 	return float4(color.xyz * saturate(diffuse + 0.1f), 1.0f);

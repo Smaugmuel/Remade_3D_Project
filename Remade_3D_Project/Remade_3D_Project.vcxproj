@@ -147,10 +147,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Character.cpp" />
     <ClCompile Include="DeferredLightMultipleLightsShaderGroup.cpp" />
     <ClCompile Include="DeferredLightMultipleShadowLightsShaderGroup.cpp" />
     <ClCompile Include="DeferredLightSplitScreenShaderGroup.cpp" />
     <ClCompile Include="DeferredTextureShaderGroup.cpp" />
+    <ClCompile Include="EventDispatcher.cpp" />
+    <ClCompile Include="FPS_Counter.cpp" />
     <ClCompile Include="HUDObject.cpp" />
     <ClCompile Include="Buffers.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -158,6 +161,8 @@
     <ClCompile Include="DeferredSingleColorShaderGroup.cpp" />
     <ClCompile Include="DepthShaderGroup.cpp" />
     <ClCompile Include="HUDShaderGroup.cpp" />
+    <ClCompile Include="HUDText.cpp" />
+    <ClCompile Include="ModelStorage.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="PlayerCameraManager.cpp" />
     <ClCompile Include="DeferredScreenTarget.cpp" />
@@ -166,7 +171,7 @@
     <ClCompile Include="RenderTexture.cpp" />
     <ClCompile Include="ShadowShaderGroup.cpp" />
     <ClCompile Include="SingleColorShaderGroup.cpp" />
-    <ClCompile Include="DeferredLightShaderGroup.cpp" />
+    <ClCompile Include="DeferredLightShadowShaderGroup.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="SingleColorObject.cpp" />
     <ClCompile Include="ShaderFactory.cpp">
@@ -209,6 +214,7 @@
     <ClCompile Include="TextureObject.cpp" />
     <ClCompile Include="TextureModel.cpp" />
     <ClCompile Include="TextureShaderGroup.cpp" />
+    <ClCompile Include="TextureStorage.cpp" />
     <ClCompile Include="VertexShader.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -218,10 +224,15 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Character.hpp" />
     <ClInclude Include="DeferredLightMultipleLightsShaderGroup.hpp" />
     <ClInclude Include="DeferredLightMultipleShadowLightsShaderGroup.hpp" />
     <ClInclude Include="DeferredLightSplitScreenShaderGroup.hpp" />
     <ClInclude Include="DeferredTextureShaderGroup.hpp" />
+    <ClInclude Include="Event.hpp" />
+    <ClInclude Include="EventDispatcher.hpp" />
+    <ClInclude Include="EventReceiver.hpp" />
+    <ClInclude Include="FPS_Counter.hpp" />
     <ClInclude Include="HUDObject.hpp" />
     <ClInclude Include="Camera.hpp" />
     <ClInclude Include="Buffers.hpp" />
@@ -229,6 +240,8 @@
     <ClInclude Include="DeferredSingleColorShaderGroup.hpp" />
     <ClInclude Include="DepthShaderGroup.hpp" />
     <ClInclude Include="HUDShaderGroup.hpp" />
+    <ClInclude Include="HUDText.hpp" />
+    <ClInclude Include="ModelStorage.hpp" />
     <ClInclude Include="Object.hpp" />
     <ClInclude Include="PlayerCameraManager.hpp" />
     <ClInclude Include="DeferredScreenTarget.hpp" />
@@ -237,7 +250,7 @@
     <ClInclude Include="RenderTexture.hpp" />
     <ClInclude Include="ShadowShaderGroup.hpp" />
     <ClInclude Include="SingleColorShaderGroup.hpp" />
-    <ClInclude Include="DeferredLightShaderGroup.hpp" />
+    <ClInclude Include="DeferredLightShadowShaderGroup.hpp" />
     <ClInclude Include="Input.hpp" />
     <ClInclude Include="SingleColorObject.hpp" />
     <ClInclude Include="ShaderFactory.hpp" />
@@ -271,11 +284,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Singleton.hpp" />
+    <ClInclude Include="StateMachine.hpp" />
     <ClInclude Include="SystemInformation.hpp" />
     <ClInclude Include="Texture.hpp" />
     <ClInclude Include="TextureObject.hpp" />
     <ClInclude Include="TextureModel.hpp" />
     <ClInclude Include="TextureShaderGroup.hpp" />
+    <ClInclude Include="TextureStorage.hpp" />
     <ClInclude Include="Vector2.hpp" />
     <ClInclude Include="Vector3.hpp" />
     <ClInclude Include="VertexShader.hpp">
