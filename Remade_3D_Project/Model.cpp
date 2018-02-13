@@ -194,7 +194,9 @@
 //	
 //}
 
-Model::Model()
+Model::Model() :
+	m_vertexBuffer(nullptr),
+	m_nrOfVerts(0)
 {
 }
 
@@ -205,4 +207,9 @@ Model::~Model()
 		m_vertexBuffer->Release();
 		m_vertexBuffer = nullptr;
 	}
+}
+
+void Model::Render(ID3D11DeviceContext * deviceContext)
+{
+	deviceContext->Draw(m_nrOfVerts, 0);
 }

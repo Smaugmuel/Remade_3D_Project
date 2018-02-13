@@ -10,7 +10,6 @@
 
 SingleColorModel::SingleColorModel() :
 	Model(),
-	m_nrOfVerts(0),
 	m_vertices(nullptr)
 {
 }
@@ -113,15 +112,13 @@ bool SingleColorModel::CreateVertexBuffer(ID3D11Device* device)
 	return true;
 }
 
-void SingleColorModel::Render(ID3D11DeviceContext* deviceContext)
+void SingleColorModel::SetupRender(ID3D11DeviceContext * deviceContext)
 {
 	unsigned int vertexSize = sizeof(SingleColorVertex);
 	unsigned int offset = 0;
 
 	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &vertexSize, &offset);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	deviceContext->Draw(m_nrOfVerts, 0);
 }
 
 Model* SingleColorModel::Create(ID3D11Device* device, const char* fileName)

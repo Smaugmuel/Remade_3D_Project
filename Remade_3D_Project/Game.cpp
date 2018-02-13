@@ -430,6 +430,7 @@ void Game::RenderNormal()
 	ModelStorage* modelStorage = ModelStorage::Get();
 	TextureStorage* textureStorage = TextureStorage::Get();
 	TextureModel* textureModel;
+	SingleColorModel* singleColorModel;
 	ID3D11ShaderResourceView* texture;
 
 
@@ -446,6 +447,8 @@ void Game::RenderNormal()
 	/* ------------------------- Render cubes ------------------------- */
 	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0]->GetModelName());
 	texture = textureStorage->GetTexture(m_texturedCubes[0]->GetTextureName());
+	textureModel->SetupRender(deviceContext);
+
 	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
 	{
 		shaders->SetPerObjectTextureConstantBuffer(deviceContext, m_texturedCubes[i]->GetWorldMatrix(), texture);
@@ -466,8 +469,11 @@ void Game::RenderNormal()
 		1.0f);
 
 	/* ------------------------- Render floor ------------------------- */
+	singleColorModel = modelStorage->GetSingleColorModel(m_coloredFloor->GetModelName());
+
 	shaders->SetPerObjectSingleColorConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix(), m_coloredFloor->GetColor());
-	modelStorage->GetSingleColorModel(m_coloredFloor->GetModelName())->Render(deviceContext);
+	singleColorModel->SetupRender(deviceContext);
+	singleColorModel->Render(deviceContext);
 }
 void Game::RenderDeferredFirstPass()
 {
@@ -479,6 +485,7 @@ void Game::RenderDeferredFirstPass()
 	ModelStorage* modelStorage = ModelStorage::Get();
 	TextureStorage* textureStorage = TextureStorage::Get();
 	TextureModel* textureModel;
+	SingleColorModel* singleColorModel;
 	ID3D11ShaderResourceView* texture;
 
 	d3d->SetDeferredTargets();
@@ -495,6 +502,8 @@ void Game::RenderDeferredFirstPass()
 	/* ------------------------- Render cubes ------------------------- */
 	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0]->GetModelName());
 	texture = textureStorage->GetTexture(m_texturedCubes[0]->GetTextureName());
+	textureModel->SetupRender(deviceContext);
+
 	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
 	{
 		shaders->SetPerObjectDeferredTextureConstantBuffer(deviceContext, m_texturedCubes[i]->GetWorldMatrix(), texture);
@@ -511,8 +520,11 @@ void Game::RenderDeferredFirstPass()
 		cam->GetProjectionMatrix());
 
 	/* ------------------------- Render floor ------------------------- */
+	singleColorModel = modelStorage->GetSingleColorModel(m_coloredFloor->GetModelName());
+
 	shaders->SetPerObjectDeferredSingleColorConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix(), m_coloredFloor->GetColor());
-	modelStorage->GetSingleColorModel(m_coloredFloor->GetModelName())->Render(deviceContext);
+	singleColorModel->SetupRender(deviceContext);
+	singleColorModel->Render(deviceContext);
 }
 void Game::RenderDepth()
 {
@@ -523,7 +535,7 @@ void Game::RenderDepth()
 
 	ModelStorage* modelStorage = ModelStorage::Get();
 	TextureModel* textureModel;
-
+	SingleColorModel* singleColorModel;
 
 	/* ========================= Render texture objects ========================== */
 	shaders->SetShaderType(deviceContext, ShaderType::DEPTH);
@@ -535,6 +547,8 @@ void Game::RenderDepth()
 
 	/* ------------------------- Render cubes ------------------------- */
 	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0]->GetModelName());
+	textureModel->SetupRender(deviceContext);
+
 	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
 	{
 		shaders->SetPerObjectDepthConstantBuffer(deviceContext, m_texturedCubes[i]->GetWorldMatrix());
@@ -543,8 +557,11 @@ void Game::RenderDepth()
 
 	/* ========================= Render single color objects ========================== */
 	/* ------------------------- Render floor ------------------------- */
+	singleColorModel = modelStorage->GetSingleColorModel(m_coloredFloor->GetModelName());
+
 	shaders->SetPerObjectDepthConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix());
-	modelStorage->GetSingleColorModel(m_coloredFloor->GetModelName())->Render(deviceContext);
+	singleColorModel->SetupRender(deviceContext);
+	singleColorModel->Render(deviceContext);
 }
 void Game::RenderShadowPass()
 {
@@ -555,6 +572,7 @@ void Game::RenderShadowPass()
 
 	ModelStorage* modelStorage = ModelStorage::Get();
 	TextureModel* textureModel;
+	SingleColorModel* singleColorModel;
 
 	d3d->SetShadowTarget();
 	d3d->ClearShadowTarget();
@@ -571,6 +589,8 @@ void Game::RenderShadowPass()
 
 	/* ------------------------- Render cubes ------------------------- */
 	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0]->GetModelName());
+	textureModel->SetupRender(deviceContext);
+
 	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
 	{
 		shaders->SetPerObjectDeferredShadowConstantBuffer(deviceContext, m_texturedCubes[i]->GetWorldMatrix());
@@ -583,8 +603,11 @@ void Game::RenderShadowPass()
 	shaders->SetShaderType(deviceContext, ShaderType::D_SHADOW);
 
 	/* ------------------------- Render floor ------------------------- */
+	singleColorModel = modelStorage->GetSingleColorModel(m_coloredFloor->GetModelName());
+
 	shaders->SetPerObjectDeferredShadowConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix());
-	modelStorage->GetSingleColorModel(m_coloredFloor->GetModelName())->Render(deviceContext);
+	singleColorModel->SetupRender(deviceContext);
+	singleColorModel->Render(deviceContext);
 }
 void Game::RenderMultipleShadowsPass()
 {
@@ -594,6 +617,7 @@ void Game::RenderMultipleShadowsPass()
 
 	ModelStorage* modelStorage = ModelStorage::Get();
 	TextureModel* textureModel;
+	SingleColorModel* singleColorModel;
 
 	for (unsigned int i = 0; i < m_nrOfLights; i++)
 	{
@@ -612,9 +636,11 @@ void Game::RenderMultipleShadowsPass()
 
 		/* ------------------------- Render cubes ------------------------- */
 		textureModel = modelStorage->GetTextureModel(m_texturedCubes[0]->GetModelName());
+		//textureModel->SetupRenderCall(deviceContext);
+
 		for (unsigned int j = 0; j < m_texturedCubes.size(); j++)
 		{
-			shaders->SetPerObjectDeferredShadowConstantBuffer(deviceContext, m_texturedCubes[i]->GetWorldMatrix());
+			shaders->SetPerObjectDeferredShadowConstantBuffer(deviceContext, m_texturedCubes[j]->GetWorldMatrix());
 			textureModel->Render(deviceContext);
 		}
 
@@ -624,8 +650,11 @@ void Game::RenderMultipleShadowsPass()
 		shaders->SetShaderType(deviceContext, ShaderType::D_SHADOW);
 
 		/* ------------------------- Render floor ------------------------- */
+		singleColorModel = modelStorage->GetSingleColorModel(m_coloredFloor->GetModelName());
+		
 		shaders->SetPerObjectDeferredShadowConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix());
-		modelStorage->GetSingleColorModel(m_coloredFloor->GetModelName())->Render(deviceContext);
+		singleColorModel->SetupRender(deviceContext);
+		singleColorModel->Render(deviceContext);
 	}
 }
 void Game::RenderDeferredLightPass()

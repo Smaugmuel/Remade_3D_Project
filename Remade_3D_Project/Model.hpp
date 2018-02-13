@@ -42,10 +42,13 @@ public:
 
 	virtual bool LoadFromFile(const char* fileName) = 0;
 	virtual bool CreateVertexBuffer(ID3D11Device* device) = 0;
-	virtual void Render(ID3D11DeviceContext* deviceContext) = 0;
+
+	virtual void SetupRender(ID3D11DeviceContext* deviceContext) = 0;
+	void Render(ID3D11DeviceContext* deviceContext);
 
 protected:
 	ID3D11Buffer* m_vertexBuffer;
+	unsigned int m_nrOfVerts;
 
 	//Material* m_material;
 };
