@@ -34,9 +34,6 @@
     <Filter Include="Source Files\Objects">
       <UniqueIdentifier>{bb717e9e-54d0-4861-bff2-f4e0ec9225ec}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Not In use\RasterTekShadowMap">
-      <UniqueIdentifier>{3d8e149b-f1e6-42ec-ac2e-a34533cf7547}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\System">
       <UniqueIdentifier>{3d4dbb6a-97a5-435c-8163-5e842fe3a6f6}</UniqueIdentifier>
     </Filter>
@@ -45,9 +42,6 @@
     </Filter>
     <Filter Include="Source Files\Objects\Models">
       <UniqueIdentifier>{278a866d-dbfc-4eba-9592-6c1d7aabcdfb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Not In Use\RasterTekShadowMap">
-      <UniqueIdentifier>{4ff8cef5-0eb9-453c-a44e-a13a9bfb6339}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Objects\Models">
       <UniqueIdentifier>{91fa7207-d78a-4ea2-ba8e-87fb25906ccb}</UniqueIdentifier>
@@ -93,20 +87,8 @@
     <ClCompile Include="SingleColorModel.cpp">
       <Filter>Source Files\Objects\Models</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderStorage.cpp">
-      <Filter>Source Files\Not In use</Filter>
-    </ClCompile>
     <ClCompile Include="PlayerCameraManager.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShadowShaderGroup.cpp">
-      <Filter>Source Files\Not In use\RasterTekShadowMap</Filter>
-    </ClCompile>
-    <ClCompile Include="DebugWindow.cpp">
-      <Filter>Source Files\Not In use\RasterTekShadowMap</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderTexture.cpp">
-      <Filter>Source Files\Not In use\RasterTekShadowMap</Filter>
     </ClCompile>
     <ClCompile Include="TextureModel.cpp">
       <Filter>Source Files\Objects\Models</Filter>
@@ -119,18 +101,6 @@
     </ClCompile>
     <ClCompile Include="Object.cpp">
       <Filter>Source Files\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="VertexShader.cpp">
-      <Filter>Source Files\Not In use</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files\Not In use</Filter>
-    </ClCompile>
-    <ClCompile Include="PixelShader.cpp">
-      <Filter>Source Files\Not In use</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderFactory.cpp">
-      <Filter>Source Files\Not In use</Filter>
     </ClCompile>
     <ClCompile Include="ModelFactory.cpp">
       <Filter>Source Files\Not In use</Filter>
@@ -216,6 +186,9 @@
     <ClCompile Include="TextureStorage.cpp">
       <Filter>Source Files\Storages</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderStorage.cpp">
+      <Filter>Source Files\Storages</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.hpp">
@@ -230,20 +203,8 @@
     <ClInclude Include="SingleColorModel.hpp">
       <Filter>Header Files\Objects\Models</Filter>
     </ClInclude>
-    <ClInclude Include="ShaderStorage.hpp">
-      <Filter>Header Files\Not In Use</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerCameraManager.hpp">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ShadowShaderGroup.hpp">
-      <Filter>Header Files\Not In Use\RasterTekShadowMap</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderTexture.hpp">
-      <Filter>Header Files\Not In Use\RasterTekShadowMap</Filter>
-    </ClInclude>
-    <ClInclude Include="DebugWindow.hpp">
-      <Filter>Header Files\Not In Use\RasterTekShadowMap</Filter>
     </ClInclude>
     <ClInclude Include="TextureModel.hpp">
       <Filter>Header Files\Objects\Models</Filter>
@@ -254,19 +215,7 @@
     <ClInclude Include="Object.hpp">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="PixelShader.hpp">
-      <Filter>Header Files\Not In Use</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.hpp">
-      <Filter>Header Files\Not In Use</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexShader.hpp">
-      <Filter>Header Files\Not In Use</Filter>
-    </ClInclude>
     <ClInclude Include="ModelFactory.hpp">
-      <Filter>Header Files\Not In Use</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderFactory.hpp">
       <Filter>Header Files\Not In Use</Filter>
     </ClInclude>
     <ClInclude Include="DeferredScreenTarget.hpp">
@@ -371,6 +320,9 @@
     <ClInclude Include="ModelStorage.hpp">
       <Filter>Header Files\Storages</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderStorage.hpp">
+      <Filter>Header Files\Storages</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="VS_SingleColor.hlsl">
@@ -385,9 +337,6 @@
     <FxCompile Include="VS_D_SingleColor.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="VS_D_Light.hlsl">
-      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="PS_D_Light.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
@@ -396,12 +345,6 @@
     </FxCompile>
     <FxCompile Include="PS_Depth.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Shadow.hlsl">
-      <Filter>Source Files\Not In use\RasterTekShadowMap</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Shadow.hlsl">
-      <Filter>Source Files\Not In use\RasterTekShadowMap</Filter>
     </FxCompile>
     <FxCompile Include="VS_Texture.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
@@ -415,28 +358,22 @@
     <FxCompile Include="PS_D_Texture.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="VS_HUD.hlsl">
-      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="PS_HUD.hlsl">
-      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_D_LightSplitScreen.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PS_D_LightSplitScreen.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="VS_D_LightMultipleLights.hlsl">
-      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="PS_D_LightMultipleLights.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="VS_D_LightMultipleShadowLights.hlsl">
+    <FxCompile Include="PS_D_LightMultipleShadowLights.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="PS_D_LightMultipleShadowLights.hlsl">
+    <FxCompile Include="VS_PosUV.hlsl">
+      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_PosNormColor.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
   </ItemGroup>

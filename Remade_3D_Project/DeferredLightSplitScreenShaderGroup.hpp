@@ -3,10 +3,8 @@
 
 #include "Vector3.hpp"
 #include <DirectXMath.h>
+#include <string>
 
-struct ID3D11VertexShader;
-struct ID3D11PixelShader;
-struct ID3D11InputLayout;
 struct ID3D11Buffer;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -35,10 +33,8 @@ public:
 	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources, ID3D11ShaderResourceView* depthTexture, Vector3f lightPosition, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix, float lightIntensity);
 
 private:
-	ID3D11VertexShader* m_vs;
-	ID3D11PixelShader* m_ps;
-
-	ID3D11InputLayout* m_layout;
+	std::string m_vertexShaderName;
+	std::string m_pixelShaderName;
 
 	ID3D11Buffer* m_psPerFrameBuffer;
 

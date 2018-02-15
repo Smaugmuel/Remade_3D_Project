@@ -2,10 +2,11 @@
 #define SINGLE_COLOR_SHADER_GROUP_HPP
 #include <DirectXMath.h>
 #include "Vector3.hpp"
+#include <string>
 
-struct ID3D11VertexShader;
-struct ID3D11PixelShader;
-struct ID3D11InputLayout;
+//struct ID3D11VertexShader;
+//struct ID3D11PixelShader;
+//struct ID3D11InputLayout;
 struct ID3D11Buffer;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -44,10 +45,12 @@ public:
 	void SetupPerObjectBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & worldMatrix, Vector3f color);
 
 private:
-	ID3D11VertexShader* m_vs;
+	std::string m_vertexShaderName;
+	std::string m_pixelShaderName;
+	
+	/*ID3D11VertexShader* m_vs;
 	ID3D11PixelShader* m_ps;
-
-	ID3D11InputLayout* m_layout;
+	ID3D11InputLayout* m_layout;*/
 
 	//ID3D11Buffer** m_vsBuffers;
 	ID3D11Buffer* m_vsPerObjectBuffer;

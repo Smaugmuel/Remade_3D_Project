@@ -1,9 +1,9 @@
 struct VS_OUT
 {
 	float4 position : SV_POSITION;
-	float4 worldPosition : POSITION;
-	float4 normal : NORMAL;
-	float4 color : COLOR;
+	float3 worldPosition : POSITION;
+	float3 normal : NORMAL;
+	float3 color : COLOR;
 };
 
 struct PS_OUT
@@ -17,9 +17,9 @@ PS_OUT main(VS_OUT input)
 {
 	PS_OUT output;
 
-	output.worldPosition = input.worldPosition;
-	output.normal = input.normal;
-	output.color = input.color;
+	output.worldPosition = float4(input.worldPosition, 1.0f);
+	output.normal = float4(input.normal, 0.0f);
+	output.color = float4(input.color, 1.0f);
 
 	return output;
 }

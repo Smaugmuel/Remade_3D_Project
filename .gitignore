@@ -34,6 +34,8 @@
 # Added by Samuel
 *.sdf
 *.opensdf
+*.cso
+*.ipch
 .vs/Remade_3D_Project/v15/Browse.VC.db
 .vs/Remade_3D_Project/v15/Browse.VC.opendb
 .vs/Remade_3D_Project/v15/Browse.VC.db

@@ -1,6 +1,5 @@
 #include "ShadowShaderGroup.hpp"
 #include <d3d11.h>
-#include <d3dcompiler.h>
 #include "Object.hpp"
 #include "Camera.hpp"
 

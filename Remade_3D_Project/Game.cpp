@@ -24,6 +24,8 @@
 #include "SingleColorModel.hpp"
 #include "TextureModel.hpp"
 
+#include "ShaderStorage.hpp"
+
 Game* Singleton<Game>::s_instance = nullptr;
 
 Game::Game()
@@ -40,6 +42,7 @@ Game::~Game()
 	DeferredScreenTarget::Delete();
 	ModelStorage::Delete();
 	TextureStorage::Delete();
+	ShaderStorage::Delete();
 }
 
 bool Game::Initialize()
