@@ -20,9 +20,9 @@ void Character::Update(float dt)
 {
 	float movementAmount = 20.0f * dt;
 	Vector3f movements;
-	movements += GetRight() * (m_isMovingRight - m_isMovingLeft);
-	movements += GetForward() * (m_isMovingForward - m_isMovingBackward);
-	movements += Vector3f(0, 1, 0) * (m_isMovingUp - m_isMovingDown);
+	movements += GetRight() * static_cast<float>(m_isMovingRight - m_isMovingLeft);
+	movements += GetForward() * static_cast<float>(m_isMovingForward - m_isMovingBackward);
+	movements += Vector3f(0, 1, 0) * static_cast<float>(m_isMovingUp - m_isMovingDown);
 
 	movements.normalize();
 	movements *= movementAmount;

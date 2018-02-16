@@ -1,7 +1,4 @@
 #include "DeferredShadowShaderGroup.hpp"
-#include "Object.hpp"
-#include "Camera.hpp"
-
 #include <d3d11.h>
 
 DeferredShadowShaderGroup::DeferredShadowShaderGroup()

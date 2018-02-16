@@ -1,7 +1,6 @@
 #include "DepthShaderGroup.hpp"
 #include <d3d11.h>
-#include "Camera.hpp"
-#include "Object.hpp"
+
 #include "ShaderStorage.hpp"
 
 DepthShaderGroup::DepthShaderGroup()
@@ -24,7 +23,6 @@ DepthShaderGroup::~DepthShaderGroup()
 
 bool DepthShaderGroup::Initialize(ID3D11Device * device)
 {
-	HRESULT result;
 	D3D11_BUFFER_DESC vs_perObjectDesc;
 	D3D11_BUFFER_DESC vs_perFrameDesc;
 

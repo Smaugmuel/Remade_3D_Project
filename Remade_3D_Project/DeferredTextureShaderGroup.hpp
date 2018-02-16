@@ -7,11 +7,7 @@
 struct ID3D11Buffer;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
-struct ID3D11SamplerState;
 struct ID3D11ShaderResourceView;
-
-class Camera;
-class Object;
 
 class DeferredTextureShaderGroup
 {
@@ -39,11 +35,11 @@ private:
 	std::string m_vertexShaderName;
 	std::string m_pixelShaderName;
 
+	std::string m_samplerName;
+
 	//ID3D11Buffer** m_vsBuffers;
 	ID3D11Buffer* m_vsPerFrameBuffer;
 	ID3D11Buffer* m_vsPerObjectBuffer;
-
-	ID3D11SamplerState* m_samplerState;
 };
 
 #endif

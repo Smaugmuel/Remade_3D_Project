@@ -1,7 +1,6 @@
 #include "DeferredSingleColorShaderGroup.hpp"
-#include "SingleColorObject.hpp"
 #include <d3d11.h>
-#include "Camera.hpp"
+
 #include "ShaderStorage.hpp"
 
 DeferredSingleColorShaderGroup::DeferredSingleColorShaderGroup()
@@ -24,7 +23,6 @@ DeferredSingleColorShaderGroup::~DeferredSingleColorShaderGroup()
 
 bool DeferredSingleColorShaderGroup::Initialize(ID3D11Device * device)
 {
-	HRESULT result;
 	D3D11_BUFFER_DESC vs_perObjectDesc;
 	D3D11_BUFFER_DESC vs_perFrameDesc;
 

@@ -15,16 +15,16 @@
 
 #include "Character.hpp"
 
-#include "ModelStorage.hpp"
-#include "TextureStorage.hpp"
-
 #include "SingleColorObject.hpp"
 #include "TextureObject.hpp"
 
 #include "SingleColorModel.hpp"
 #include "TextureModel.hpp"
 
+#include "ModelStorage.hpp"
+#include "TextureStorage.hpp"
 #include "ShaderStorage.hpp"
+#include "SamplerStorage.hpp"
 
 Game* Singleton<Game>::s_instance = nullptr;
 
@@ -40,9 +40,11 @@ Game::~Game()
 	PlayerCameraManager::Delete();
 	ShaderManager::Delete();
 	DeferredScreenTarget::Delete();
+
 	ModelStorage::Delete();
 	TextureStorage::Delete();
 	ShaderStorage::Delete();
+	SamplerStorage::Delete();
 }
 
 bool Game::Initialize()
@@ -82,6 +84,10 @@ bool Game::Initialize()
 	cam->Update();
 
 
+	if (!SamplerStorage::Get()->Initialize(Direct3D::Get()->GetDevice()))
+	{
+		return false;
+	}
 
 	if (!ModelStorage::Get()->LoadTextureModel(Direct3D::Get()->GetDevice(), "cube_uv.obj"))
 	{
@@ -96,6 +102,7 @@ bool Game::Initialize()
 	{
 		return false;
 	}
+
 
 
 	// Cubes
@@ -119,7 +126,7 @@ bool Game::Initialize()
 				m_texturedCubes[i]->SetModelName("cube_uv.obj");
 				m_texturedCubes[i]->SetTextureName("../Textures/Torgue.png");
 
-				m_texturedCubes[i]->SetPosition(startPos + Vector3f(x, y, z) * distance);
+				m_texturedCubes[i]->SetPosition(startPos + Vector3f(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)) * distance);
 				i++;
 			}
 		}
@@ -196,7 +203,7 @@ void Game::Run()
 			t1 = t2;
 			t2 = Clock::now();
 
-			int nanoSeconds = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count();
+			long long nanoSeconds = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count();
 			double seconds = nanoSeconds * 0.000000001;
 
 			Update(seconds);
@@ -350,7 +357,7 @@ void Game::Update(double dt)
 
 	for (unsigned int i = 0; i < m_nrOfLights; i++)
 	{
-		m_pointLights[i]->SetPosition(Vector3f(std::cosf(angle + i * 0.5f), 1.0f, std::sinf(angle + i * 0.5f)) * 30.0f);
+		m_pointLights[i]->SetPosition(Vector3f(std::cosf(angle + i * 0.5f), 1.0f, std::sinf(angle + i * 0.5f)) * 50.0f);
 		m_pointLights[i]->SetTarget(Vector3f(0, 0, 0));
 		m_pointLights[i]->Update();
 	}

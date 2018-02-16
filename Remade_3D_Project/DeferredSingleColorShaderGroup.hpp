@@ -8,9 +8,6 @@ struct ID3D11Buffer;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 
-class Camera;
-class Object;
-
 class DeferredSingleColorShaderGroup
 {
 	struct VS_PerObjectBuffer

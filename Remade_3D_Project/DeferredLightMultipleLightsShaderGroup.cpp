@@ -2,6 +2,9 @@
 #include <d3d11.h>
 
 #include "ShaderStorage.hpp"
+#include "SamplerStorage.hpp"
+
+//#include "ConstantBufferStorage.hpp"
 
 DeferredLightMultipleLightsShaderGroup::DeferredLightMultipleLightsShaderGroup()
 {
@@ -13,38 +16,21 @@ DeferredLightMultipleLightsShaderGroup::~DeferredLightMultipleLightsShaderGroup(
 
 bool DeferredLightMultipleLightsShaderGroup::Initialize(ID3D11Device* device)
 {
-	HRESULT result;
 	D3D11_BUFFER_DESC ps_perFrameDesc;
-	D3D11_SAMPLER_DESC samplerDesc;
+	HRESULT result;
 
 	m_vertexShaderName = "VS_PosUV.hlsl";
 	m_pixelShaderName = "PS_D_LightMultipleLights.hlsl";
+	m_samplerName = "PointClamp";
 
 	if (!ShaderStorage::Get()->CreateVertexShader(device, m_vertexShaderName))
 		return false;
 	if (!ShaderStorage::Get()->CreatePixelShader(device, m_pixelShaderName))
 		return false;
 
-
-	// Create sampler state =======================================================================
-	samplerDesc.Filter = /*D3D11_FILTER_MIN_MAG_MIP_LINEAR*/ D3D11_FILTER_MIN_MAG_MIP_POINT;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.MipLODBias = 0.0f;
-	samplerDesc.MaxAnisotropy = 1;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
-	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	if (FAILED(device->CreateSamplerState(&samplerDesc, &m_samplerState)))
-	{
-		return false;
-	}
+	/*m_ps_per_frame_buffer = new ConstantBuffer<PS_PerFrameBuffer>();
+	if (!m_ps_per_frame_buffer->Initialize(device))
+		return false;*/
 
 
 	// Create per-frame constant buffer ===========================================================
@@ -55,7 +41,7 @@ bool DeferredLightMultipleLightsShaderGroup::Initialize(ID3D11Device* device)
 	ps_perFrameDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	ps_perFrameDesc.MiscFlags = 0;
 	ps_perFrameDesc.StructureByteStride = 0;
-
+	
 	result = device->CreateBuffer(&ps_perFrameDesc, nullptr, &m_psPerFrameBuffer);
 	if (FAILED(result))
 	{
@@ -77,7 +63,8 @@ void DeferredLightMultipleLightsShaderGroup::SetupShaders(ID3D11DeviceContext * 
 
 	deviceContext->IASetInputLayout(storage->GetInputLayout(m_vertexShaderName));
 
-	deviceContext->PSSetSamplers(0, 1, &m_samplerState);
+	ID3D11SamplerState* sampler = SamplerStorage::Get()->GetSampler(m_samplerName);
+	deviceContext->PSSetSamplers(0, 1, &sampler);
 }
 
 void DeferredLightMultipleLightsShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView ** resources, Vector3f lightPositions[MAX_NR_OF_LIGHTS], float lightIntensitys[MAX_NR_OF_LIGHTS])
@@ -109,6 +96,17 @@ void DeferredLightMultipleLightsShaderGroup::SetupPerFrameBuffer(ID3D11DeviceCon
 
 	deviceContext->Unmap(m_psPerFrameBuffer, 0);
 	deviceContext->PSSetConstantBuffers(0, 1, &m_psPerFrameBuffer);
+
+
+	/*for (unsigned int i = 0; i < MAX_NR_OF_LIGHTS; i++)
+	{
+		m_ps_per_frame_buffer->m_data.lights[i].position = lightPositions[i];
+		m_ps_per_frame_buffer->m_data.lights[i].intensity = lightIntensitys[i];
+	}
+
+	m_ps_per_frame_buffer->MapData(deviceContext);
+	deviceContext->PSSetConstantBuffers(0, 1, &m_ps_per_frame_buffer->m_buffer);*/
+
 
 	deviceContext->PSSetShaderResources(0, nrOfResources, resources);
 }

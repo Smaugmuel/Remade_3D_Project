@@ -189,6 +189,9 @@
     <ClCompile Include="ShaderStorage.cpp">
       <Filter>Source Files\Storages</Filter>
     </ClCompile>
+    <ClCompile Include="SamplerStorage.cpp">
+      <Filter>Source Files\Storages</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.hpp">
@@ -323,18 +326,21 @@
     <ClInclude Include="ShaderStorage.hpp">
       <Filter>Header Files\Storages</Filter>
     </ClInclude>
+    <ClInclude Include="ConstantBufferStorage.hpp">
+      <Filter>Header Files\Storages</Filter>
+    </ClInclude>
+    <ClInclude Include="SamplerStorage.hpp">
+      <Filter>Header Files\Storages</Filter>
+    </ClInclude>
+    <ClInclude Include="AABB.hpp">
+      <Filter>Header Files\Helper Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="VS_SingleColor.hlsl">
-      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="PS_SingleColor.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PS_D_SingleColor.hlsl">
-      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_D_SingleColor.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PS_D_Light.hlsl">

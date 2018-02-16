@@ -1,7 +1,4 @@
 #include "SingleColorShaderGroup.hpp"
-#include "SingleColorObject.hpp"
-#include "Camera.hpp"
-
 #include <d3d11.h>
 
 #include "ShaderStorage.hpp"

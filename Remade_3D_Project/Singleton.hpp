@@ -7,13 +7,18 @@
 How to inherit correctly from Singleton
 ---------------------------------------
 
-1) Inherit from Singleton<SubClassName>
+1) Inherit from "public Singleton<SubClassName>"
 
 2) Type "friend class Singleton<SubClassName>;" at the top of sub class
 
 3) Make the sub class's default constructor and destructor private
 
 4) At the top of the .cpp file of the sub class, type "SubClassName* Singleton<SubClassName>::s_instance = nullptr;"
+
+
+             Known errors
+---------------------------------------
+If an "Unresolved external" error appears, it means (4) above was forgotten
 
 
 */

@@ -20,7 +20,7 @@ struct PointLight
 cbuffer LightBuffer : register(b0)
 {
 	PointLight lights[MAX_NR_OF_LIGHTS];
-	int nrOfLights;
+	unsigned int nrOfLights;
 	int3 padding;
 };
 
@@ -91,6 +91,8 @@ float4 main(VS_OUT input) : SV_Target
 	float depthToNearestObject;
 	float depthToThisObject;
 
+	unsigned int i;
+
 
 	// Retrieve deferred values
 	worldPos = worldPosTexture.Sample(sampleState, input.uv);
@@ -98,14 +100,14 @@ float4 main(VS_OUT input) : SV_Target
 	color = colorTexture.Sample(sampleState, input.uv);
 
 	// Calculate distances and divSum
-	for (unsigned int i = 0; i < nrOfLights; i++)
+	for (i = 0; i < nrOfLights; i++)
 	{
 		distance[i] = length(lights[i].position - worldPos.xyz);
 	
 		divSum += 1.0f / distance[i];
 	}
 
-	for (unsigned int i = 0; i < nrOfLights; i++)
+	for (i = 0; i < nrOfLights; i++)
 	{
 		// Vector from object to light
 		toLight = normalize(lights[i].position - worldPos.xyz);

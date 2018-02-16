@@ -44,7 +44,6 @@ ShaderStorage::ShaderStorage()
 	m_linker["VS_D_Texture.hlsl"] = "PNU";
 
 	m_linker["VS_PosNormColor.hlsl"] = "PNC";
-	//m_linker["VS_D_SingleColor.hlsl"] = "PNC";
 
 	m_linker["VS_PosUV.hlsl"] = "PU";
 

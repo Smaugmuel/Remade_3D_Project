@@ -1,16 +1,16 @@
 #ifndef DEFERRED_LIGHT_MULTIPLE_LIGHTS_SHADER_GROUP_HPP
 #define DEFERRED_LIGHT_MULTIPLE_LIGHTS_SHADER_GROUP_HPP
-
 #include "Vector3.hpp"
 #include <DirectXMath.h>
 #include "SystemInformation.hpp"
 
 #include <string>
 
+//template<typename BufferData> struct ConstantBuffer;
+
 struct ID3D11Buffer;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
-struct ID3D11SamplerState;
 struct ID3D11ShaderResourceView;
 
 class DeferredLightMultipleLightsShaderGroup
@@ -39,9 +39,11 @@ private:
 	std::string m_vertexShaderName;
 	std::string m_pixelShaderName;
 
-	ID3D11Buffer* m_psPerFrameBuffer;
+	std::string m_samplerName;
 
-	ID3D11SamplerState* m_samplerState;
+	//ConstantBuffer<PS_PerFrameBuffer>* m_ps_per_frame_buffer;
+
+	ID3D11Buffer* m_psPerFrameBuffer;
 };
 
 #endif

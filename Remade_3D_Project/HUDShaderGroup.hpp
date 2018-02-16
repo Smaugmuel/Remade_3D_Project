@@ -4,7 +4,6 @@
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
-struct ID3D11SamplerState;
 struct ID3D11ShaderResourceView;
 
 class HUDShaderGroup
@@ -22,7 +21,7 @@ private:
 	std::string m_vertexShaderName;
 	std::string m_pixelShaderName;
 
-	ID3D11SamplerState* m_samplerState;
+	std::string m_samplerName;
 };
 
 #endif

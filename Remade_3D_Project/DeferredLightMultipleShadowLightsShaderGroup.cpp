@@ -2,6 +2,9 @@
 #include <d3d11.h>
 
 #include "ShaderStorage.hpp"
+#include "SamplerStorage.hpp"
+
+#include "ConstantBufferStorage.hpp"
 
 DeferredLightMultipleShadowLightsShaderGroup::DeferredLightMultipleShadowLightsShaderGroup()
 {
@@ -15,39 +18,16 @@ bool DeferredLightMultipleShadowLightsShaderGroup::Initialize(ID3D11Device * dev
 {
 	HRESULT result;
 	D3D11_BUFFER_DESC ps_perFrameDesc;
-	D3D11_SAMPLER_DESC samplerDesc;
-
 
 	m_vertexShaderName = "VS_PosUV.hlsl";
 	m_pixelShaderName = "PS_D_LightMultipleShadowLights.hlsl";
+	m_samplerName = "PointClamp";
 
 	if (!ShaderStorage::Get()->CreateVertexShader(device, m_vertexShaderName))
 		return false;
 	if (!ShaderStorage::Get()->CreatePixelShader(device, m_pixelShaderName))
 		return false;
 	
-
-
-	// Create sampler state =======================================================================
-	samplerDesc.Filter = /*D3D11_FILTER_MIN_MAG_MIP_LINEAR*/ D3D11_FILTER_MIN_MAG_MIP_POINT;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.MipLODBias = 0.0f;
-	samplerDesc.MaxAnisotropy = 1;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	samplerDesc.BorderColor[0] = 0;
-	samplerDesc.BorderColor[1] = 0;
-	samplerDesc.BorderColor[2] = 0;
-	samplerDesc.BorderColor[3] = 0;
-	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	if (FAILED(device->CreateSamplerState(&samplerDesc, &m_samplerState)))
-	{
-		return false;
-	}
-
 
 	// Create per-frame constant buffer ===========================================================
 	memset(&ps_perFrameDesc, 0, sizeof(ps_perFrameDesc));
@@ -57,7 +37,7 @@ bool DeferredLightMultipleShadowLightsShaderGroup::Initialize(ID3D11Device * dev
 	ps_perFrameDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	ps_perFrameDesc.MiscFlags = 0;
 	ps_perFrameDesc.StructureByteStride = 0;
-
+	
 	result = device->CreateBuffer(&ps_perFrameDesc, nullptr, &m_psPerFrameBuffer);
 	if (FAILED(result))
 	{
@@ -79,7 +59,8 @@ void DeferredLightMultipleShadowLightsShaderGroup::SetupShaders(ID3D11DeviceCont
 
 	deviceContext->IASetInputLayout(storage->GetInputLayout(m_vertexShaderName));
 
-	deviceContext->PSSetSamplers(0, 1, &m_samplerState);
+	ID3D11SamplerState* sampler = SamplerStorage::Get()->GetSampler(m_samplerName);
+	deviceContext->PSSetSamplers(0, 1, &sampler);
 }
 
 void DeferredLightMultipleShadowLightsShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView ** resources, unsigned int nrOfLights, ID3D11ShaderResourceView * depthTextures[MAX_NR_OF_LIGHTS], Vector3f lightPositions[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightViewMatrices[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightProjectionMatrices[MAX_NR_OF_LIGHTS], float lightIntensities[MAX_NR_OF_LIGHTS])
@@ -87,7 +68,7 @@ void DeferredLightMultipleShadowLightsShaderGroup::SetupPerFrameBuffer(ID3D11Dev
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	PS_PerFrameBuffer* frameDataPS;
 	HRESULT result;
-
+	
 	// Pixel Shader ===========================================================================
 	// Mapping and updating buffer
 	result = deviceContext->Map(
@@ -111,9 +92,24 @@ void DeferredLightMultipleShadowLightsShaderGroup::SetupPerFrameBuffer(ID3D11Dev
 		frameDataPS->lights[i].proj = lightProjectionMatrices[i];
 	}
 	frameDataPS->nrOfLights = nrOfLights;
-
 	deviceContext->Unmap(m_psPerFrameBuffer, 0);
+
 	deviceContext->PSSetConstantBuffers(0, 1, &m_psPerFrameBuffer);
+
+
+	/*for (unsigned int i = 0; i < nrOfLights; i++)
+	{
+		m_ps_per_frame_buffer->m_data.lights[i].position = lightPositions[i];
+		m_ps_per_frame_buffer->m_data.lights[i].intensity = lightIntensities[i];
+		m_ps_per_frame_buffer->m_data.lights[i].view = lightViewMatrices[i];
+		m_ps_per_frame_buffer->m_data.lights[i].proj = lightProjectionMatrices[i];
+	}
+	m_ps_per_frame_buffer->m_data.nrOfLights = nrOfLights;
+
+	m_ps_per_frame_buffer->MapData(deviceContext);
+	deviceContext->PSSetConstantBuffers(0, 1, &m_ps_per_frame_buffer->m_buffer);*/
+
+
 
 	deviceContext->PSSetShaderResources(0, nrOfResources, resources);
 	deviceContext->PSSetShaderResources(nrOfResources, nrOfLights, depthTextures);

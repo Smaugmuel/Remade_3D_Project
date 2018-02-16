@@ -1,6 +1,5 @@
 #ifndef DEFERRED_LIGHT_SPLIT_SCREEN_SHADER_GROUP_HPP
 #define DEFERRED_LIGHT_SPLIT_SCREEN_SHADER_GROUP_HPP
-
 #include "Vector3.hpp"
 #include <DirectXMath.h>
 #include <string>
@@ -8,10 +7,7 @@
 struct ID3D11Buffer;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
-struct ID3D11SamplerState;
 struct ID3D11ShaderResourceView;
-
-class Camera;
 
 class DeferredLightSplitScreenShaderGroup
 {
@@ -36,9 +32,9 @@ private:
 	std::string m_vertexShaderName;
 	std::string m_pixelShaderName;
 
-	ID3D11Buffer* m_psPerFrameBuffer;
+	std::string m_samplerName;
 
-	ID3D11SamplerState* m_samplerState;
+	ID3D11Buffer* m_psPerFrameBuffer;
 };
 
 #endif
