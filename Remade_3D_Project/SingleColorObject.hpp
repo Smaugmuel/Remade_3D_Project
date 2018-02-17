@@ -9,6 +9,7 @@ public:
 	~SingleColorObject();
 
 	bool Initialize() override;
+	bool Initialize(const std::string& modelName, const Vector3f& color);
 
 	void SetColor(const Vector3f& color);
 	void SetColor(float r, float g, float b);

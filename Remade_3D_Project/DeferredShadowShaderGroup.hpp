@@ -1,13 +1,13 @@
 #ifndef DEFERRED_SHADOW_SHADER_GROUP_HPP
 #define DEFERRED_SHADOW_SHADER_GROUP_HPP
+#include "ShaderGroup.hpp"
+
 #include <DirectXMath.h>
 #include "Vector3.hpp"
 
-struct ID3D11Device;
-struct ID3D11DeviceContext;
 struct ID3D11Buffer;
 
-class DeferredShadowShaderGroup
+class DeferredShadowShaderGroup : public ShaderGroup
 {
 	struct VS_PerFrameBuffer
 	{
@@ -29,9 +29,9 @@ public:
 	DeferredShadowShaderGroup();
 	~DeferredShadowShaderGroup();
 
-	bool Initialize(ID3D11Device* device);
+	bool Initialize(ID3D11Device* device) override;
 
-	void SetupShaders(ID3D11DeviceContext* deviceContext);
+	void SetupShaders(ID3D11DeviceContext* deviceContext) override;
 	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix);
 	void SetupPerObjectBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & worldMatrix);
 

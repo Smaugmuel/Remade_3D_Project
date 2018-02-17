@@ -1,18 +1,17 @@
 #ifndef DEFERRED_LIGHT_MULTIPLE_SHADOW_LIGHTS_SHADER_GROUP_HPP
 #define DEFERRED_LIGHT_MULTIPLE_SHADOW_LIGHTS_SHADER_GROUP_HPP
+#include "ShaderGroup.hpp"
+
 #include "Vector3.hpp"
 #include <DirectXMath.h>
 #include "SystemInformation.hpp"
-#include <string>
 
 struct ID3D11Buffer;
-struct ID3D11Device;
-struct ID3D11DeviceContext;
 struct ID3D11ShaderResourceView;
 
 //template<typename BufferData> struct ConstantBuffer;
 
-class DeferredLightMultipleShadowLightsShaderGroup
+class DeferredLightMultipleShadowLightsShaderGroup : public ShaderGroup
 {
 	struct PointLight
 	{
@@ -35,15 +34,12 @@ public:
 	DeferredLightMultipleShadowLightsShaderGroup();
 	~DeferredLightMultipleShadowLightsShaderGroup();
 
-	bool Initialize(ID3D11Device* device);
+	bool Initialize(ID3D11Device* device) override;
 
-	void SetupShaders(ID3D11DeviceContext* deviceContext);
+	void SetupShaders(ID3D11DeviceContext* deviceContext) override;
 	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources, unsigned int nrOfLights, ID3D11ShaderResourceView* depthTextures[MAX_NR_OF_LIGHTS], Vector3f lightPositions[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightViewMatrices[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightProjectionMatrices[MAX_NR_OF_LIGHTS], float lightIntensities[MAX_NR_OF_LIGHTS]);
 
 private:
-	std::string m_vertexShaderName;
-	std::string m_pixelShaderName;
-
 	std::string m_samplerName;
 
 	//ConstantBuffer<PS_PerFrameBuffer>* m_ps_per_frame_buffer;

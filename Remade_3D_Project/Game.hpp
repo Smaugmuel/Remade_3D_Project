@@ -59,6 +59,10 @@ public:
 	void Render();
 
 private:
+	void MapProjectionMatrix();
+
+	//void CreatePickingVector(float x, float y);
+
 	void RenderNormal();
 	void RenderDeferredFirstPass();
 	void RenderDepth();
@@ -79,9 +83,6 @@ private:
 	unsigned int m_currentLight;
 
 	std::unique_ptr<FPSCounter> m_fpsCounter;
-
-
-	
 
 	RenderMode m_renderMode;
 	HUDMode m_HUDMode;

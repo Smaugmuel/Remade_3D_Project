@@ -57,7 +57,7 @@ public:
 
 
 private:
-	std::wstring ToWideString(std::string str) const;
+	std::wstring ToWideString(const std::string& str) const;
 
 	VertexShaderMap m_vertexShaders;
 	GeometryShaderMap m_geometryShaders;

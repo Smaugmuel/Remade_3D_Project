@@ -10,21 +10,19 @@ TextureObject::~TextureObject()
 
 bool TextureObject::Initialize()
 {
-	//m_model = std::unique_ptr<Model>(ModelFactory::Create(modelName, device));
-	
-	//m_model = std::make_unique<TextureModel>();
-	//m_texture = std::make_unique<Texture>();
-	//
-	//if (!m_model->LoadFromFile(modelName))
-	//{
-	//	return false;
-	//}
-	//if (!m_model->CreateVertexBuffer(device))
-	//{
-	//	return false;
-	//}
+	if (!Object::Initialize())
+		return false;
 
-	InitializeBaseClass();
+	return true;
+}
+
+bool TextureObject::Initialize(const std::string & modelName, const std::string & textureName)
+{
+	if (!Object::Initialize())
+		return false;
+
+	m_modelName = modelName;
+	m_textureName = textureName;
 
 	return true;
 }

@@ -7,14 +7,15 @@ Object::Object()
 Object::~Object()
 {
 }
-
-void Object::InitializeBaseClass()
+bool Object::Initialize()
 {
 	m_position = Vector3f(0, 0, 0);
 	m_rotation = Vector3f(0, 0, 0);
 	m_scale = Vector3f(1, 1, 1);
 
 	UpdateWorldMatrix();
+
+	return true;
 }
 
 void Object::Update()
@@ -145,4 +146,6 @@ void Object::UpdateWorldMatrix()
 		DirectX::XMMatrixTranspose(DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z));
 
 	DirectX::XMStoreFloat4x4(&m_worldMatrix, transformation);
+
+	m_update_flag_world = false;
 }

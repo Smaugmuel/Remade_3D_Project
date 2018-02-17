@@ -10,30 +10,25 @@ SingleColorObject::~SingleColorObject()
 
 bool SingleColorObject::Initialize()
 {
-	//m_model = std::unique_ptr<Model>(ModelFactory::Create(modelName, device));
-
-	/*m_model = std::make_unique<SingleColorModel>();
-
-	if (!m_model->LoadFromFile(modelName))
-	{
+	if (!Object::Initialize())
 		return false;
-	}
-	if (!m_model->CreateVertexBuffer(device))
-	{
-		return false;
-	}*/
 
 	m_color = Vector3f(1, 0, 0);
 
-	InitializeBaseClass();
 
 	return true;
 }
 
-//void SingleColorObject::Render(ID3D11DeviceContext* deviceContext)
-//{
-//	//m_model->Render(deviceContext);
-//}
+bool SingleColorObject::Initialize(const std::string & modelName, const Vector3f & color)
+{
+	if (!Object::Initialize())
+		return false;
+
+	m_modelName = modelName;
+	m_color = color;
+
+	return true;
+}
 
 void SingleColorObject::SetColor(const Vector3f & color)
 {

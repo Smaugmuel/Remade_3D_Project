@@ -1,13 +1,21 @@
-cbuffer PerFrame : register(b0)
-{
-	matrix<float, 4, 4> view;
-	matrix<float, 4, 4> proj;
-	float3 lightPosition;
-	float padding;
-};
-cbuffer PerObject : register(b1)
+cbuffer World : register(b0)
 {
 	matrix<float, 4, 4> world;
+};
+
+cbuffer View : register(b1)
+{
+	matrix<float, 4, 4> view;
+};
+
+cbuffer Projection : register(b2)
+{
+	matrix<float, 4, 4> proj;
+};
+
+cbuffer PointLight : register(b3)
+{
+	float4 lightData;
 };
 
 struct VS_IN
@@ -31,7 +39,7 @@ VS_OUT main(VS_IN input)
 
 	output.position = mul(float4(input.position, 1.0f), world);
 
-	output.toLight = normalize(lightPosition - output.position.xyz);
+	output.toLight = normalize(lightData.xyz - output.position.xyz);
 
 	output.position = mul(output.position, view);
 	output.position = mul(output.position, proj);

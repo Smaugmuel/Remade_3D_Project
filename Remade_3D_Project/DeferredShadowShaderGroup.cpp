@@ -14,6 +14,8 @@ bool DeferredShadowShaderGroup::Initialize(ID3D11Device * device)
 	D3D11_BUFFER_DESC vs_perFrameDesc;
 	D3D11_BUFFER_DESC vs_perObjectDesc;
 
+	// Don't call ShaderGroup::Initialize(), since this class has no vertex or pixel shaders
+
 	// Create per-frame vertex shader constant buffer ===========================================================
 	memset(&vs_perFrameDesc, 0, sizeof(vs_perFrameDesc));
 	vs_perFrameDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -47,6 +49,8 @@ bool DeferredShadowShaderGroup::Initialize(ID3D11Device * device)
 
 void DeferredShadowShaderGroup::SetupShaders(ID3D11DeviceContext * deviceContext)
 {
+	// Don't call ShaderGroup::SetupShaders(), since this class has no vertex or pixel shaders
+
 	deviceContext->PSSetShader(nullptr, nullptr, 0);
 }
 

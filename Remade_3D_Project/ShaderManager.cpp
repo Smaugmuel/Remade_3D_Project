@@ -146,9 +146,9 @@ void ShaderManager::SetPerFrameSingleColorConstantBuffer(ID3D11DeviceContext * d
 {
 	m_colorShaders->SetupPerFrameBuffer(deviceContext, viewMatrix, projectionMatrix, lightPosition, lightViewMatrix, lightProjectionMatrix, lightIntensity);
 }
-void ShaderManager::SetPerFrameTextureConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix, Vector3f lightPosition, float lightIntensity)
+void ShaderManager::SetPerFrameTextureConstantBuffer(ID3D11DeviceContext * deviceContext, Vector3f lightPosition, float lightIntensity)
 {
-	m_textureShaders->SetupPerFrameBuffer(deviceContext, viewMatrix, projectionMatrix, lightPosition, lightIntensity);
+	m_textureShaders->SetupPerFrameBuffer(deviceContext, lightPosition, lightIntensity);
 }
 void ShaderManager::SetPerFrameDepthConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix)
 {
@@ -188,9 +188,9 @@ void ShaderManager::SetPerObjectSingleColorConstantBuffer(ID3D11DeviceContext * 
 {
 	m_colorShaders->SetupPerObjectBuffer(deviceContext, worldMatrix, color);
 }
-void ShaderManager::SetPerObjectTextureConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX& worldMatrix, ID3D11ShaderResourceView* bitMapTexture)
+void ShaderManager::SetPerObjectTextureConstantBuffer(ID3D11DeviceContext * deviceContext, ID3D11ShaderResourceView* bitMapTexture)
 {
-	m_textureShaders->SetupPerObjectBuffer(deviceContext, worldMatrix, bitMapTexture);
+	m_textureShaders->SetupPerObjectBuffer(deviceContext, bitMapTexture);
 }
 void ShaderManager::SetPerObjectDepthConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & worldMatrix)
 {

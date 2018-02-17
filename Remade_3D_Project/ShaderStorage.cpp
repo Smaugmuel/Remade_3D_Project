@@ -10,6 +10,8 @@ ShaderStorage::ShaderStorage()
 {
 	Description* desc;
 
+	/* ================================ Create input layout descriptions ================================ */
+
 	// Position, Normal, Color
 	desc = &m_descriptions["PNC"];
 	desc->n = 3;
@@ -39,14 +41,11 @@ ShaderStorage::ShaderStorage()
 	desc->elements = new D3D11_INPUT_ELEMENT_DESC[1];
 	desc->elements[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 };
 
-	// Set up linker
+	/* =================================== Set up input layout linker =================================== */
 	m_linker["VS_Texture.hlsl"] = "PNU";
 	m_linker["VS_D_Texture.hlsl"] = "PNU";
-
 	m_linker["VS_PosNormColor.hlsl"] = "PNC";
-
 	m_linker["VS_PosUV.hlsl"] = "PU";
-
 	m_linker["VS_Depth.hlsl"] = "P";
 }
 ShaderStorage::~ShaderStorage()
@@ -222,7 +221,7 @@ bool ShaderStorage::HasPixelShader(std::string name) const
 	return m_pixelShaders.find(name) != m_pixelShaders.end();
 }
 
-std::wstring ShaderStorage::ToWideString(std::string str) const
+std::wstring ShaderStorage::ToWideString(const std::string& str) const
 {
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 	return converter.from_bytes(str);

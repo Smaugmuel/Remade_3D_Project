@@ -192,6 +192,15 @@
     <ClCompile Include="SamplerStorage.cpp">
       <Filter>Source Files\Storages</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderGroup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstantBufferStorage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.hpp">
@@ -326,14 +335,23 @@
     <ClInclude Include="ShaderStorage.hpp">
       <Filter>Header Files\Storages</Filter>
     </ClInclude>
-    <ClInclude Include="ConstantBufferStorage.hpp">
-      <Filter>Header Files\Storages</Filter>
-    </ClInclude>
     <ClInclude Include="SamplerStorage.hpp">
       <Filter>Header Files\Storages</Filter>
     </ClInclude>
     <ClInclude Include="AABB.hpp">
       <Filter>Header Files\Helper Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBufferStorage.hpp">
+      <Filter>Header Files\Not In Use</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderGroup.hpp">
+      <Filter>Header Files\Shaders\ShaderGroups</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBufferTypes.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

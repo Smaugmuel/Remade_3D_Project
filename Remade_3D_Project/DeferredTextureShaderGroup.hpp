@@ -1,15 +1,15 @@
 #ifndef DEFERRED_TEXTURE_SHADER_GROUP_HPP
 #define DEFERRED_TEXTURE_SHADER_GROUP_HPP
+#include "ShaderGroup.hpp"
+
 #include <DirectXMath.h>
 #include "Vector3.hpp"
 #include <string>
 
 struct ID3D11Buffer;
-struct ID3D11Device;
-struct ID3D11DeviceContext;
 struct ID3D11ShaderResourceView;
 
-class DeferredTextureShaderGroup
+class DeferredTextureShaderGroup : public ShaderGroup
 {
 	struct VS_PerObjectBuffer
 	{
@@ -25,16 +25,13 @@ public:
 	DeferredTextureShaderGroup();
 	~DeferredTextureShaderGroup();
 
-	bool Initialize(ID3D11Device* device);
+	bool Initialize(ID3D11Device* device) override;
 
-	void SetupShaders(ID3D11DeviceContext* deviceContext);
+	void SetupShaders(ID3D11DeviceContext* deviceContext) override;
 	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX& viewMatrix, const DirectX::XMMATRIX& projectionMatrix);
 	void SetupPerObjectBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture);
 
 private:
-	std::string m_vertexShaderName;
-	std::string m_pixelShaderName;
-
 	std::string m_samplerName;
 
 	//ID3D11Buffer** m_vsBuffers;

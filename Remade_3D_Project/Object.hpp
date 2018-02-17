@@ -6,11 +6,12 @@
 
 class Object
 {
-public:
+protected:
 	Object();
 	virtual ~Object();
 
-	virtual bool Initialize() = 0;
+public:
+	virtual bool Initialize();
 
 	void Update();
 
@@ -37,8 +38,6 @@ public:
 	const std::string& GetModelName() const;
 
 protected:
-	void InitializeBaseClass();
-
 	std::string m_modelName;
 
 private:

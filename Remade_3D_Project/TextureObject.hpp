@@ -9,6 +9,7 @@ public:
 	~TextureObject();
 
 	bool Initialize() override;
+	bool Initialize(const std::string& modelName, const std::string& textureName);
 
 	void SetTextureName(const std::string& name);
 

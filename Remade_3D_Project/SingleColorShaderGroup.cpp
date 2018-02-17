@@ -1,8 +1,6 @@
 #include "SingleColorShaderGroup.hpp"
 #include <d3d11.h>
 
-#include "ShaderStorage.hpp"
-
 SingleColorShaderGroup::SingleColorShaderGroup()
 {
 }
@@ -23,7 +21,6 @@ SingleColorShaderGroup::~SingleColorShaderGroup()
 
 bool SingleColorShaderGroup::Initialize(ID3D11Device* device)
 {
-	HRESULT result;
 	D3D11_BUFFER_DESC vs_perObjectDesc;
 	D3D11_BUFFER_DESC vs_perFrameDesc;
 	D3D11_BUFFER_DESC ps_perFrameDesc;
@@ -31,11 +28,8 @@ bool SingleColorShaderGroup::Initialize(ID3D11Device* device)
 	m_vertexShaderName = "VS_PosNormColor.hlsl";
 	m_pixelShaderName = "PS_SingleColor.hlsl";
 
-	if (!ShaderStorage::Get()->CreateVertexShader(device, m_vertexShaderName))
+	if (!ShaderGroup::Initialize(device))
 		return false;
-	if (!ShaderStorage::Get()->CreatePixelShader(device, m_pixelShaderName))
-		return false;
-
 
 	// Create per-object vertex shader constant buffer ==========================================================
 	memset(&vs_perObjectDesc, 0, sizeof(vs_perObjectDesc));
@@ -46,8 +40,7 @@ bool SingleColorShaderGroup::Initialize(ID3D11Device* device)
 	vs_perObjectDesc.MiscFlags = 0;
 	vs_perObjectDesc.StructureByteStride = 0;
 
-	result = device->CreateBuffer(&vs_perObjectDesc, nullptr, &m_vsPerObjectBuffer);//&m_vsBuffers[1]);
-	if (FAILED(result))
+	if (FAILED(device->CreateBuffer(&vs_perObjectDesc, nullptr, &m_vsPerObjectBuffer)))
 	{
 		return false;
 	}
@@ -61,8 +54,7 @@ bool SingleColorShaderGroup::Initialize(ID3D11Device* device)
 	vs_perFrameDesc.MiscFlags = 0;
 	vs_perFrameDesc.StructureByteStride = 0;
 
-	result = device->CreateBuffer(&vs_perFrameDesc, nullptr, &m_vsPerFrameBuffer);//&m_vsBuffers[0]);
-	if (FAILED(result))
+	if (FAILED(device->CreateBuffer(&vs_perFrameDesc, nullptr, &m_vsPerFrameBuffer)))
 	{
 		return false;
 	}
@@ -76,8 +68,7 @@ bool SingleColorShaderGroup::Initialize(ID3D11Device* device)
 	ps_perFrameDesc.MiscFlags = 0;
 	ps_perFrameDesc.StructureByteStride = 0;
 
-	result = device->CreateBuffer(&ps_perFrameDesc, nullptr, &m_psPerFrameBuffer);//&m_vsBuffers[1]);
-	if (FAILED(result))
+	if (FAILED(device->CreateBuffer(&ps_perFrameDesc, nullptr, &m_psPerFrameBuffer)))
 	{
 		return false;
 	}
@@ -87,15 +78,7 @@ bool SingleColorShaderGroup::Initialize(ID3D11Device* device)
 
 void SingleColorShaderGroup::SetupShaders(ID3D11DeviceContext* deviceContext)
 {
-	ShaderStorage* storage = ShaderStorage::Get();
-
-	deviceContext->VSSetShader(storage->GetVertexShader(m_vertexShaderName), nullptr, 0);
-	deviceContext->HSSetShader(nullptr, nullptr, 0);
-	deviceContext->DSSetShader(nullptr, nullptr, 0);
-	deviceContext->GSSetShader(nullptr, nullptr, 0);
-	deviceContext->PSSetShader(storage->GetPixelShader(m_pixelShaderName), nullptr, 0);
-
-	deviceContext->IASetInputLayout(storage->GetInputLayout(m_vertexShaderName));
+	ShaderGroup::SetupShaders(deviceContext);
 }
 void SingleColorShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix, Vector3f lightPosition, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix, float lightIntensity)
 {
