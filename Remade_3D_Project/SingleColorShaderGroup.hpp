@@ -10,17 +10,6 @@ struct ID3D11Buffer;
 
 class SingleColorShaderGroup : public ShaderGroup
 {
-	struct VS_PerObjectBuffer
-	{
-		DirectX::XMMATRIX world;
-		Vector3f color;
-		float padding;
-	};
-	struct VS_PerFrameBuffer
-	{
-		DirectX::XMMATRIX view;
-		DirectX::XMMATRIX projection;
-	};
 	struct PS_PerFrameBuffer
 	{
 		// Stored as a float4 in shader to prevent (?) automatic padding
@@ -35,13 +24,10 @@ public:
 	bool Initialize(ID3D11Device* device) override;
 
 	void SetupShaders(ID3D11DeviceContext* deviceContext) override;
-	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix, Vector3f lightPosition, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix, float lightIntensity);
-	void SetupPerObjectBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & worldMatrix, Vector3f color);
+	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext);
+	void SetupPerObjectBuffer(ID3D11DeviceContext* deviceContext);
 
 private:
-	//ID3D11Buffer** m_vsBuffers;
-	ID3D11Buffer* m_vsPerObjectBuffer;
-	ID3D11Buffer* m_vsPerFrameBuffer;
 	ID3D11Buffer* m_psPerFrameBuffer;
 };
 

@@ -20,7 +20,7 @@ bool Object::Initialize()
 
 void Object::Update()
 {
-	if (m_update_flag_world)
+	if (m_update_world_flag)
 	{
 		UpdateWorldMatrix();
 	}
@@ -35,7 +35,7 @@ void Object::Move(const Vector3f& offset)
 
 	m_position += offset;
 
-	m_update_flag_world = true;
+	m_update_world_flag = true;
 }
 
 void Object::Move(float x, float y, float z)
@@ -50,7 +50,7 @@ void Object::Rotate(const Vector3f& rotation)
 		return;
 	}
 	m_rotation += rotation;
-	m_update_flag_world = true;
+	m_update_world_flag = true;
 }
 
 void Object::Rotate(float x, float y, float z)
@@ -66,7 +66,7 @@ void Object::SetPosition(const Vector3f& position)
 	}
 
 	m_position = position;
-	m_update_flag_world = true;
+	m_update_world_flag = true;
 }
 
 void Object::SetPosition(float x, float y, float z)
@@ -83,7 +83,7 @@ void Object::SetRotation(const Vector3f& rotation)
 
 	m_rotation = rotation;
 
-	m_update_flag_world = true;
+	m_update_world_flag = true;
 }
 
 void Object::SetRotation(float x, float y, float z)
@@ -100,7 +100,7 @@ void Object::SetScale(const Vector3f& scale)
 
 	m_scale = scale;
 
-	m_update_flag_world = true;
+	m_update_world_flag = true;
 }
 
 void Object::SetScale(float x, float y, float z)
@@ -147,5 +147,5 @@ void Object::UpdateWorldMatrix()
 
 	DirectX::XMStoreFloat4x4(&m_worldMatrix, transformation);
 
-	m_update_flag_world = false;
+	m_update_world_flag = false;
 }

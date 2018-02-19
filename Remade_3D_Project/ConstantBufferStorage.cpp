@@ -40,6 +40,10 @@ bool ConstantBufferStorage::Initialize(ID3D11Device * device)
 		return false;
 
 	desc.ByteWidth = sizeof(Float4);
+	if (FAILED(device->CreateBuffer(&desc, nullptr, &m_ps_pointLightBuffer)))
+		return false;
+
+	desc.ByteWidth = sizeof(Float4);
 	if (FAILED(device->CreateBuffer(&desc, nullptr, &m_colorBuffer)))
 		return false;
 
@@ -94,7 +98,6 @@ bool ConstantBufferStorage::SetProjectionMatrix(ID3D11DeviceContext * deviceCont
 
 	return true;
 }
-
 bool ConstantBufferStorage::SetPointLight(ID3D11DeviceContext * deviceContext, const Vector3f & position, float intensity)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -114,7 +117,25 @@ bool ConstantBufferStorage::SetPointLight(ID3D11DeviceContext * deviceContext, c
 
 	return true;
 }
+bool ConstantBufferStorage::SetPixelPointLight(ID3D11DeviceContext * deviceContext, const Vector3f & position, float intensity)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	Float4* data;
 
+	if (FAILED(deviceContext->Map(m_ps_pointLightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+		return false;
+
+	data = static_cast<Float4*>(mappedResource.pData);
+	data->f[0] = position.x;
+	data->f[1] = position.y;
+	data->f[2] = position.z;
+	data->f[3] = intensity;
+
+	deviceContext->Unmap(m_ps_pointLightBuffer, 0);
+	deviceContext->PSSetConstantBuffers(0, 1, &m_ps_pointLightBuffer);
+
+	return true;
+}
 bool ConstantBufferStorage::SetColor(ID3D11DeviceContext * deviceContext, const Vector3f & color)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;

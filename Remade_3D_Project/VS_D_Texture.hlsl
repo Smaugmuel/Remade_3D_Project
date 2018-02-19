@@ -8,6 +8,19 @@ cbuffer PerObject : register(b1)
 	matrix<float, 4, 4> world;
 };
 
+//cbuffer World : register(b0)
+//{
+//	matrix<float, 4, 4> world;
+//};
+//cbuffer View : register(b1)
+//{
+//	matrix<float, 4, 4> view;
+//};
+//cbuffer Projection : register(b2)
+//{
+//	matrix<float, 4, 4> projection;
+//};
+
 struct VS_IN
 {
 	float3 position : POSITION;

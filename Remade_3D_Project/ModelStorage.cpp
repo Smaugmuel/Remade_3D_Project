@@ -46,16 +46,16 @@ bool ModelStorage::LoadTextureModel(ID3D11Device* device, const std::string& nam
 
 SingleColorModel * ModelStorage::GetSingleColorModel(const std::string& name)
 {
-	if (!HasSingleColorModel(name))
-		return nullptr;
+	/*if (!HasSingleColorModel(name))
+		return nullptr;*/
 
 	return m_singleColorModels[name].get();
 }
 
 TextureModel * ModelStorage::GetTextureModel(const std::string& name)
 {
-	if (!HasTextureModel(name))
-		return nullptr;
+	/*if (!HasTextureModel(name))
+		return nullptr;*/
 
 	return m_textureModels[name].get();
 }

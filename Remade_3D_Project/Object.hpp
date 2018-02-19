@@ -48,8 +48,7 @@ private:
 	Vector3f m_scale;
 
 	DirectX::XMFLOAT4X4 m_worldMatrix;
-
-	bool m_update_flag_world;
+	bool m_update_world_flag;
 };
 
 #endif

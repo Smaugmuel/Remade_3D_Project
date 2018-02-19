@@ -122,5 +122,5 @@ void DeferredSingleColorShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * 
 	objectData->padding = 0.0f;
 
 	deviceContext->Unmap(m_vsPerObjectBuffer, 0);
-	deviceContext->VSSetConstantBuffers(1, 1, &m_vsPerObjectBuffer);
+	deviceContext->VSSetConstantBuffers(0, 1, &m_vsPerObjectBuffer);
 }

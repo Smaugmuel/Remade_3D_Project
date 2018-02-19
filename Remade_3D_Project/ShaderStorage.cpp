@@ -175,29 +175,29 @@ bool ShaderStorage::CreatePixelShader(ID3D11Device * device, std::string name)
 
 ID3D11VertexShader * ShaderStorage::GetVertexShader(std::string name)
 {
-	if (!HasVertexShader(name))
-		return nullptr;
+	/*if (!HasVertexShader(name))
+		return nullptr;*/
 
 	return m_vertexShaders.at(name);
 }
 ID3D11GeometryShader * ShaderStorage::GetGeometryShader(std::string name)
 {
-	if (!HasGeometryShader(name))
-		return nullptr;
+	/*if (!HasGeometryShader(name))
+		return nullptr;*/
 
 	return m_geometryShaders.at(name);
 }
 ID3D11PixelShader * ShaderStorage::GetPixelShader(std::string name)
 {
-	if (!HasPixelShader(name))
-		return nullptr;
+	/*if (!HasPixelShader(name))
+		return nullptr;*/
 
 	return m_pixelShaders.at(name);
 }
 
 ID3D11InputLayout * ShaderStorage::GetInputLayout(std::string name)
 {
-	LinkerMap::iterator it = m_linker.find(name);
+	/*LinkerMap::iterator it = m_linker.find(name);
 	if (it == m_linker.end())
 		return nullptr;
 
@@ -205,7 +205,9 @@ ID3D11InputLayout * ShaderStorage::GetInputLayout(std::string name)
 	if (it2 == m_layouts.end())
 		return nullptr;
 
-	return it2->second;
+	return it2->second;*/
+
+	return m_layouts[m_linker[name]];
 }
 
 bool ShaderStorage::HasVertexShader(std::string name) const

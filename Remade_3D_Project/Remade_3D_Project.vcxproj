@@ -225,6 +225,7 @@
     <ClInclude Include="HUDShaderGroup.hpp" />
     <ClInclude Include="HUDText.hpp" />
     <ClInclude Include="ModelStorage.hpp" />
+    <ClInclude Include="OBB.hpp" />
     <ClInclude Include="Object.hpp" />
     <ClInclude Include="PlayerCameraManager.hpp" />
     <ClInclude Include="DeferredScreenTarget.hpp" />

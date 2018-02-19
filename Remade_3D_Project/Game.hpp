@@ -62,6 +62,7 @@ private:
 	void MapProjectionMatrix();
 
 	//void CreatePickingVector(float x, float y);
+	void CubeIntersection();
 
 	void RenderNormal();
 	void RenderDeferredFirstPass();

@@ -28,10 +28,10 @@ bool TextureStorage::LoadTexture(ID3D11Device * device, const std::string & name
 
 ID3D11ShaderResourceView * TextureStorage::GetTexture(const std::string & name)
 {
-	if (!HasTexture(name))
+	/*if (!HasTexture(name))
 	{
 		return nullptr;
-	}
+	}*/
 	return m_textures[name]->GetShaderResourceView();
 }
 

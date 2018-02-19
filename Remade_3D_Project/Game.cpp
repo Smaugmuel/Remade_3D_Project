@@ -28,6 +28,9 @@
 
 #include "ConstantBufferStorage.hpp"
 
+#include "OBB.hpp"
+#include "Collision.hpp"
+
 Game* Singleton<Game>::s_instance = nullptr;
 
 Game::Game()
@@ -90,6 +93,7 @@ bool Game::Initialize()
 
 	/* ============================================= Objects ============================================= */
 	// Cubes
+	//unsigned int nX = 20, nY = 25, nZ = 20;
 	unsigned int nX = 20, nY = 25, nZ = 20;
 	float distance = 4;
 
@@ -237,11 +241,13 @@ bool Game::ProcessInput()
 		manager->GetCurrentCamera()->SetTarget(0.0f, 0.0f, 0.0f);
 	}
 
-	/*if (input->IsKeyPressed(VK_LBUTTON))
+	if (input->IsKeyPressed(VK_LBUTTON))
 	{
-		Vector2f mousePos = input->MousePosition();
-		CreatePickingVector(mousePos.x, mousePos.y);
-	}*/
+		CubeIntersection();
+
+		/*Vector2f mousePos = input->MousePosition();
+		CreatePickingVector(mousePos.x, mousePos.y);*/
+	}
 
 	// Change cube texture and turn floor green
 	if (input->IsKeyPressed('T'))
@@ -251,18 +257,12 @@ bool Game::ProcessInput()
 
 		if (toggle)
 		{
-			for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
-			{
-				m_texturedCubes[i].get()->SetTextureName("../Textures/BrickWallRaw.jpg");
-			}
+			m_texturedCubes[0].get()->SetTextureName("../Textures/BrickWallRaw.jpg");
 			m_coloredFloor->SetColor(0.0f, 1.0f, 0.0f);
 		}
 		else
 		{
-			for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
-			{
-				m_texturedCubes[i].get()->SetTextureName("../Textures/Torgue.png");
-			}
+			m_texturedCubes[0].get()->SetTextureName("../Textures/Torgue.png");
 			m_coloredFloor->SetColor(1.0f, 0.0f, 0.0f);
 		}
 	}
@@ -468,6 +468,29 @@ void Game::MapProjectionMatrix()
 //
 //}
 
+void Game::CubeIntersection()
+{
+	OBB obb;
+	obb.halfSides[0] = 1;
+	obb.halfSides[1] = 1;
+	obb.halfSides[2] = 1;
+	obb.vectors[0] = Vector3f(1, 0, 0);
+	obb.vectors[1] = Vector3f(0, 1, 0);
+	obb.vectors[2] = Vector3f(0, 0, 1);
+
+	Vector3f origin = m_player->GetPosition();
+	Vector3f direction = m_player->GetLookDirection();
+
+	IntersectionData data;
+
+	obb.center = m_texturedCubes[0]->GetPosition();
+	data = RayVsOBB(origin, direction, obb);
+	if (data.intersection)
+	{
+		m_texturedCubes[0]->SetTextureName("../Textures/BrickWallRaw.jpg");
+	}
+}
+
 void Game::Render()
 {
 	Direct3D* d3d = Direct3D::Get();
@@ -535,6 +558,7 @@ void Game::RenderNormal()
 	
 	ModelStorage* modelStorage = ModelStorage::Get();
 	TextureStorage* textureStorage = TextureStorage::Get();
+	ConstantBufferStorage* bufferStorage = ConstantBufferStorage::Get();
 	TextureModel* textureModel;
 	SingleColorModel* singleColorModel;
 	ID3D11ShaderResourceView* texture;
@@ -544,20 +568,17 @@ void Game::RenderNormal()
 	/* ========================= Render texture objects ========================== */
 	shaders->SetShaderType(deviceContext, ShaderType::TEXTURE);
 
-	shaders->SetPerFrameTextureConstantBuffer(
-		deviceContext,
-		cam0->GetPosition(),
-		1.0f);
+	bufferStorage->SetPointLight(deviceContext, cam0->GetPosition(), 1.0f);
 
 	/* ------------------------- Render cubes ------------------------- */
 	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0]->GetModelName());
 	texture = textureStorage->GetTexture(m_texturedCubes[0]->GetTextureName());
 	textureModel->SetupRender(deviceContext);
+	shaders->SetPerObjectTextureConstantBuffer(deviceContext, texture);
 
 	for (unsigned int i = 0; i < nrOfCubes; i++)
 	{
-		ConstantBufferStorage::Get()->SetWorldMatrix(deviceContext, m_texturedCubes[i].get()->GetWorldMatrix());
-		shaders->SetPerObjectTextureConstantBuffer(deviceContext, texture);
+		bufferStorage->SetWorldMatrix(deviceContext, m_texturedCubes[i].get()->GetWorldMatrix());
 		textureModel->Render(deviceContext);
 	}
 
@@ -565,19 +586,14 @@ void Game::RenderNormal()
 	/* ========================= Render single color objects ========================== */
 	shaders->SetShaderType(deviceContext, ShaderType::SINGLE_COLOR);
 
-	shaders->SetPerFrameSingleColorConstantBuffer(
-		deviceContext,
-		cam->GetViewMatrix(),
-		cam->GetProjectionMatrix(),
-		cam0->GetViewMatrix(),
-		cam0->GetProjectionMatrix(),
-		cam0->GetPosition(),
-		1.0f);
+	bufferStorage->SetPixelPointLight(deviceContext, cam0->GetPosition(), 1.0f);
 
 	/* ------------------------- Render floor ------------------------- */
 	singleColorModel = modelStorage->GetSingleColorModel(m_coloredFloor->GetModelName());
 
-	shaders->SetPerObjectSingleColorConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix(), m_coloredFloor->GetColor());
+	bufferStorage->SetWorldMatrix(deviceContext, m_coloredFloor->GetWorldMatrix());
+	bufferStorage->SetColor(deviceContext, m_coloredFloor->GetColor());
+
 	singleColorModel->SetupRender(deviceContext);
 	singleColorModel->Render(deviceContext);
 }
@@ -590,6 +606,7 @@ void Game::RenderDeferredFirstPass()
 
 	ModelStorage* modelStorage = ModelStorage::Get();
 	TextureStorage* textureStorage = TextureStorage::Get();
+	ConstantBufferStorage* bufferStorage = ConstantBufferStorage::Get();
 	TextureModel* textureModel;
 	SingleColorModel* singleColorModel;
 	ID3D11ShaderResourceView* texture;
@@ -620,15 +637,18 @@ void Game::RenderDeferredFirstPass()
 	/* ========================= Render single color objects ========================== */
 	shaders->SetShaderType(deviceContext, ShaderType::D_SINGLE_COLOR);
 
-	shaders->SetPerFrameDeferredSingleColorConstantBuffer(
+	/*shaders->SetPerFrameDeferredSingleColorConstantBuffer(
 		deviceContext,
 		cam->GetViewMatrix(),
-		cam->GetProjectionMatrix());
+		cam->GetProjectionMatrix());*/
 
 	/* ------------------------- Render floor ------------------------- */
 	singleColorModel = modelStorage->GetSingleColorModel(m_coloredFloor->GetModelName());
 
-	shaders->SetPerObjectDeferredSingleColorConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix(), m_coloredFloor->GetColor());
+	//shaders->SetPerObjectDeferredSingleColorConstantBuffer(deviceContext, m_coloredFloor->GetWorldMatrix(), m_coloredFloor->GetColor());
+	bufferStorage->SetWorldMatrix(deviceContext, m_coloredFloor->GetWorldMatrix());
+	bufferStorage->SetColor(deviceContext, m_coloredFloor->GetColor());
+	
 	singleColorModel->SetupRender(deviceContext);
 	singleColorModel->Render(deviceContext);
 }

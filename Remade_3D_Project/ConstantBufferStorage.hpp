@@ -87,9 +87,6 @@ class ConstantBufferStorage : public Singleton<ConstantBufferStorage>
 {
 	friend class Singleton<ConstantBufferStorage>;
 
-	/*typedef std::map<std::string, ID3D11Buffer*> Buffers;
-	typedef std::map<std::string, unsigned int> BufferSizes;*/
-
 	ConstantBufferStorage();
 	~ConstantBufferStorage();
 
@@ -100,6 +97,7 @@ public:
 	bool SetViewMatrix(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX& matrix);
 	bool SetProjectionMatrix(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX& matrix);
 	bool SetPointLight(ID3D11DeviceContext* deviceContext, const Vector3f& position, float intensity);
+	bool SetPixelPointLight(ID3D11DeviceContext* deviceContext, const Vector3f& position, float intensity);
 	bool SetColor(ID3D11DeviceContext* deviceContext, const Vector3f& color);
 
 private:
@@ -107,10 +105,8 @@ private:
 	ID3D11Buffer* m_viewBuffer;
 	ID3D11Buffer* m_projectionBuffer;
 	ID3D11Buffer* m_pointLightBuffer;
+	ID3D11Buffer* m_ps_pointLightBuffer;
 	ID3D11Buffer* m_colorBuffer;
-
-	/*Buffers m_buffers;
-	BufferSizes m_bufferSizes;*/
 };
 
 #endif

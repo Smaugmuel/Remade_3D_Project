@@ -5,8 +5,6 @@
 #include "Vector3.hpp"
 #include <string>
 
-struct ID3D11Buffer;
-struct ID3D11SamplerState;
 struct ID3D11ShaderResourceView;
 
 class TextureShaderGroup : public ShaderGroup
@@ -23,8 +21,6 @@ public:
 
 private:
 	std::string m_samplerName;
-
-	ID3D11Buffer* m_pointLightBuffer;
 };
 
 #endif

@@ -1,14 +1,28 @@
-cbuffer PerFrame : register(b0)
-{
-	matrix<float, 4, 4> view;
-	matrix<float, 4, 4> projection;
-};
-cbuffer Perobject : register(b1)
+cbuffer World : register(b0)
 {
 	matrix<float, 4, 4> world;
+};
+cbuffer View : register(b1)
+{
+	matrix<float, 4, 4> view;
+};
+cbuffer Projection : register(b2)
+{
+	matrix<float, 4, 4> projection;
+};
+
+cbuffer Color : register(b4)
+{
 	float3 color;
 	float padding;
 };
+
+//cbuffer Perobject : register(b0)
+//{
+//	matrix<float, 4, 4> world;
+//	float3 color;
+//	float padding;
+//};
 
 struct VS_IN
 {

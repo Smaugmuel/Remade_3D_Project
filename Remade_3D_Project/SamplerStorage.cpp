@@ -40,8 +40,8 @@ bool SamplerStorage::Initialize(ID3D11Device * device)
 
 ID3D11SamplerState * SamplerStorage::GetSampler(const std::string & name) const
 {
-	if (!HasSampler(name))
-		return nullptr;
+	/*if (!HasSampler(name))
+		return nullptr;*/
 
 	return m_samplers.at(name);
 }
