@@ -9,7 +9,7 @@ SamplerState sampleState : register(s0);
 static const unsigned int NR_OF_LIGHTS = 4;
 
 
-cbuffer LightBuffer : register(b0)
+cbuffer PointLightArray : register(b3)
 {
 	float4 lightData[NR_OF_LIGHTS];
 };

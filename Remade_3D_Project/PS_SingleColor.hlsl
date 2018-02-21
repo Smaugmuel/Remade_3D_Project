@@ -1,4 +1,4 @@
-cbuffer PerFrame : register(b0)
+cbuffer PerFrame : register(b2)
 {
 	float4 lightData;
 }

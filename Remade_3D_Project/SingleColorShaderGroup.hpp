@@ -2,21 +2,8 @@
 #define SINGLE_COLOR_SHADER_GROUP_HPP
 #include "ShaderGroup.hpp"
 
-#include <DirectXMath.h>
-#include "Vector3.hpp"
-#include <string>
-
-struct ID3D11Buffer;
-
 class SingleColorShaderGroup : public ShaderGroup
 {
-	struct PS_PerFrameBuffer
-	{
-		// Stored as a float4 in shader to prevent (?) automatic padding
-		Vector3f lightPosition;
-		float lightIntensity;
-	};
-
 public:
 	SingleColorShaderGroup();
 	~SingleColorShaderGroup();
@@ -28,7 +15,6 @@ public:
 	void SetupPerObjectBuffer(ID3D11DeviceContext* deviceContext);
 
 private:
-	ID3D11Buffer* m_psPerFrameBuffer;
 };
 
 #endif

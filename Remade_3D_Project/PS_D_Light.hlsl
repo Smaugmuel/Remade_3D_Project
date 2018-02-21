@@ -5,12 +5,27 @@ Texture2D depthTexture : register(t3);
 
 SamplerState sampleState : register(s0);
 
-cbuffer LightBuffer : register(b0)
+
+cbuffer View : register(b0)
 {
-	float4 lightData;
 	matrix<float, 4, 4> lightView;
+};
+cbuffer Projection : register(b1)
+{
 	matrix<float, 4, 4> lightProj;
 };
+cbuffer PointLight : register(b2)
+{
+	float4 lightData;
+};
+
+
+//cbuffer LightBuffer : register(b0)
+//{
+//	float4 lightData;
+//	matrix<float, 4, 4> lightView;
+//	matrix<float, 4, 4> lightProj;
+//};
 
 struct VS_OUT
 {
@@ -40,7 +55,7 @@ float4 main(VS_OUT input) : SV_Target
 
 	// Distance to light
 	float depthToNearestObject;
-	float depthToThisObject;	
+	float depthToThisObject;
 
 	float diffuse = 0.0f;
 
