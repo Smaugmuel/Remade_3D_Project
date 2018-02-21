@@ -617,19 +617,24 @@ void Game::RenderDeferredFirstPass()
 	/* ========================= Render texture objects ========================== */
 	shaders->SetShaderType(deviceContext, ShaderType::D_TEXTURE);
 
-	shaders->SetPerFrameDeferredTextureConstantBuffer(
+	/*shaders->SetPerFrameDeferredTextureConstantBuffer(
 		deviceContext,
 		cam->GetViewMatrix(),
-		m_orthogonal ? cam->GetOrthogonalMatrix() : cam->GetProjectionMatrix());
+		m_orthogonal ? cam->GetOrthogonalMatrix() : cam->GetProjectionMatrix());*/
+
+	bufferStorage->SetViewMatrix(deviceContext, cam->GetViewMatrix());
+	bufferStorage->SetProjectionMatrix(deviceContext, cam->GetProjectionMatrix());
 
 	/* ------------------------- Render cubes ------------------------- */
 	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0]->GetModelName());
-	texture = textureStorage->GetTexture(m_texturedCubes[0]->GetTextureName());
 	textureModel->SetupRender(deviceContext);
+
+	texture = textureStorage->GetTexture(m_texturedCubes[0]->GetTextureName());
+	shaders->SetPerObjectDeferredTextureConstantBuffer(deviceContext, /*m_texturedCubes[i].get()->GetWorldMatrix(),*/ texture);
 
 	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
 	{
-		shaders->SetPerObjectDeferredTextureConstantBuffer(deviceContext, m_texturedCubes[i].get()->GetWorldMatrix(), texture);
+		bufferStorage->SetWorldMatrix(deviceContext, m_texturedCubes[i].get()->GetWorldMatrix());
 		textureModel->Render(deviceContext);
 	}
 

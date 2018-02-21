@@ -204,9 +204,9 @@ void ShaderManager::SetPerObjectDeferredSingleColorConstantBuffer(ID3D11DeviceCo
 {
 	m_d_colorShaders->SetupPerObjectBuffer(deviceContext, worldMatrix, color);
 }
-void ShaderManager::SetPerObjectDeferredTextureConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & worldMatrix, ID3D11ShaderResourceView * texture)
+void ShaderManager::SetPerObjectDeferredTextureConstantBuffer(ID3D11DeviceContext * deviceContext, /*const DirectX::XMMATRIX & worldMatrix,*/ ID3D11ShaderResourceView * texture)
 {
-	m_d_textureShaders->SetupPerObjectBuffer(deviceContext, worldMatrix, texture);
+	m_d_textureShaders->SetupPerObjectBuffer(deviceContext, /*worldMatrix,*/ texture);
 }
 void ShaderManager::SetPerObjectDeferredShadowConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & worldMatrix)
 {

@@ -29,7 +29,7 @@ public:
 
 	void SetupShaders(ID3D11DeviceContext* deviceContext) override;
 	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX& viewMatrix, const DirectX::XMMATRIX& projectionMatrix);
-	void SetupPerObjectBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX& worldMatrix, ID3D11ShaderResourceView* texture);
+	void SetupPerObjectBuffer(ID3D11DeviceContext* deviceContext, /*const DirectX::XMMATRIX& worldMatrix,*/ ID3D11ShaderResourceView* texture);
 
 private:
 	std::string m_samplerName;

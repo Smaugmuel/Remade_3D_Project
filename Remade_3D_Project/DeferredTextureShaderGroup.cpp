@@ -139,31 +139,31 @@ void DeferredTextureShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * devic
 	//deviceContext->PSSetConstantBuffers(0, 1, &m_psPerFrameBuffer);
 }
 
-void DeferredTextureShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & worldMatrix, ID3D11ShaderResourceView * texture)
+void DeferredTextureShaderGroup::SetupPerObjectBuffer(ID3D11DeviceContext * deviceContext, /*const DirectX::XMMATRIX & worldMatrix,*/ ID3D11ShaderResourceView * texture)
 {
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	HRESULT result;
-	VS_PerObjectBuffer* objectData;
+	//D3D11_MAPPED_SUBRESOURCE mappedResource;
+	//HRESULT result;
+	//VS_PerObjectBuffer* objectData;
 
-	// Mapping and updating PerObjectConstantBuffer
-	result = deviceContext->Map(
-		m_vsPerObjectBuffer,//m_vsBuffers[0],
-		0,
-		D3D11_MAP_WRITE_DISCARD,
-		0,
-		&mappedResource
-		);
-	if (FAILED(result))
-	{
-		return;
-	}
+	//// Mapping and updating PerObjectConstantBuffer
+	//result = deviceContext->Map(
+	//	m_vsPerObjectBuffer,//m_vsBuffers[0],
+	//	0,
+	//	D3D11_MAP_WRITE_DISCARD,
+	//	0,
+	//	&mappedResource
+	//	);
+	//if (FAILED(result))
+	//{
+	//	return;
+	//}
 
 
-	objectData = (VS_PerObjectBuffer*)mappedResource.pData;
-	objectData->world = worldMatrix;
+	//objectData = (VS_PerObjectBuffer*)mappedResource.pData;
+	//objectData->world = worldMatrix;
 
-	deviceContext->Unmap(m_vsPerObjectBuffer, 0);
-	deviceContext->VSSetConstantBuffers(1, 1, &m_vsPerObjectBuffer);
+	//deviceContext->Unmap(m_vsPerObjectBuffer, 0);
+	//deviceContext->VSSetConstantBuffers(1, 1, &m_vsPerObjectBuffer);
 
 	deviceContext->PSSetShaderResources(0, 1, &texture);
 }
