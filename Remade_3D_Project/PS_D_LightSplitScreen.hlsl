@@ -5,11 +5,18 @@ Texture2D depthTexture : register(t3);
 
 SamplerState sampleState : register(s0);
 
-cbuffer LightBuffer : register(b0)
+
+cbuffer View : register(b0)
+{
+	matrix<float, 4, 4> lightView;
+};
+cbuffer Projection : register(b1)
+{
+	matrix<float, 4, 4> lightProj;
+};
+cbuffer PointLight : register(b2)
 {
 	float4 lightData;
-	matrix<float, 4, 4> lightView;
-	matrix<float, 4, 4> lightProj;
 };
 
 struct VS_OUT
@@ -34,6 +41,7 @@ float4 main(VS_OUT input) : SV_Target
 
 	// Object position on screen, from light perspective
 	float4 lightScreenPos;
+	float w;
 
 	// UV coords at position above
 	float2 lightScreenUV;
@@ -83,13 +91,14 @@ float4 main(VS_OUT input) : SV_Target
 		toLight = normalize(lightPos - worldPos.xyz);
 
 		lightScreenPos = mul(worldPos, mul(lightView, lightProj));
+		w = lightScreenPos.w;
 		lightScreenPos /= lightScreenPos.w;
 
 		// Translate from [-1, 1] to [0, 1]
 		lightScreenUV.x = (lightScreenPos.x + 1) * 0.5f;
 		lightScreenUV.y = 1 - (lightScreenPos.y + 1) * 0.5f;
 
-		if (saturate(lightScreenUV.x) == lightScreenUV.x && saturate(lightScreenUV.y) == lightScreenUV.y)
+		if (w > 0.0f && saturate(lightScreenUV.x) == lightScreenUV.x && saturate(lightScreenUV.y) == lightScreenUV.y)
 		{
 			depthToNearestObject = depthTexture.Sample(sampleState, lightScreenUV).x;
 			depthToThisObject = lightScreenPos.z - 0.0001f;

@@ -4,12 +4,10 @@
 
 #include "Vector3.hpp"
 #include <DirectXMath.h>
-#include "SystemInformation.hpp"
+#include "LightSettings.hpp"
 
 struct ID3D11Buffer;
 struct ID3D11ShaderResourceView;
-
-//template<typename BufferData> struct ConstantBuffer;
 
 class DeferredLightMultipleShadowLightsShaderGroup : public ShaderGroup
 {
@@ -37,12 +35,10 @@ public:
 	bool Initialize(ID3D11Device* device) override;
 
 	void SetupShaders(ID3D11DeviceContext* deviceContext) override;
-	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources, unsigned int nrOfLights, ID3D11ShaderResourceView* depthTextures[MAX_NR_OF_LIGHTS], Vector3f lightPositions[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightViewMatrices[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightProjectionMatrices[MAX_NR_OF_LIGHTS], float lightIntensities[MAX_NR_OF_LIGHTS]);
+	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources, ID3D11ShaderResourceView** depthTextures);
 
 private:
 	std::string m_samplerName;
-
-	//ConstantBuffer<PS_PerFrameBuffer>* m_ps_per_frame_buffer;
 
 	ID3D11Buffer* m_psPerFrameBuffer;
 };

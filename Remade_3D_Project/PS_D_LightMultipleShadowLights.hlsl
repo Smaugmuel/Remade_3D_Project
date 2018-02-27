@@ -4,25 +4,45 @@ Texture2D colorTexture : register(t2);
 
 SamplerState sampleState : register(s0);
 
-
 // Change in SystemInformation.hpp aswell
 static const unsigned int MAX_NR_OF_LIGHTS = 8;
+
 Texture2D depthTextures[MAX_NR_OF_LIGHTS];
 
-struct PointLight
-{
-	float3 position;
-	float intensity;
-	matrix<float, 4, 4> view;
-	matrix<float, 4, 4> proj;
-};
 
-cbuffer LightBuffer : register(b0)
+//struct PointLight
+//{
+//	float3 position;
+//	float intensity;
+//	matrix<float, 4, 4> view;
+//	matrix<float, 4, 4> proj;
+//};
+
+
+cbuffer PointLightArray : register(b3)
 {
-	PointLight lights[MAX_NR_OF_LIGHTS];
-	unsigned int nrOfLights;
+	float4 lightData[MAX_NR_OF_LIGHTS];
+};
+cbuffer ViewArray : register(b4)
+{
+	matrix<float, 4, 4> view[MAX_NR_OF_LIGHTS];
+};
+cbuffer ProjectionArray : register(b5)
+{
+	matrix<float, 4, 4> proj[MAX_NR_OF_LIGHTS];
+};
+cbuffer NrOfLights : register(b6)
+{
+	int nrOfLights;
 	int3 padding;
 };
+
+//cbuffer LightBuffer : register(b0)
+//{
+//	PointLight lights[MAX_NR_OF_LIGHTS];
+//	unsigned int nrOfLights;
+//	int3 padding;
+//};
 
 struct VS_OUT
 {
@@ -83,6 +103,7 @@ float4 main(VS_OUT input) : SV_Target
 
 	// Object position on screen, from light perspective
 	float4 lightScreenPos;
+	float w;
 
 	// UV coords at position above
 	float2 lightScreenUV;
@@ -102,7 +123,7 @@ float4 main(VS_OUT input) : SV_Target
 	// Calculate distances and divSum
 	for (i = 0; i < nrOfLights; i++)
 	{
-		distance[i] = length(lights[i].position - worldPos.xyz);
+		distance[i] = length(lightData[i].xyz - worldPos.xyz);
 	
 		divSum += 1.0f / distance[i];
 	}
@@ -110,17 +131,18 @@ float4 main(VS_OUT input) : SV_Target
 	for (i = 0; i < nrOfLights; i++)
 	{
 		// Vector from object to light
-		toLight = normalize(lights[i].position - worldPos.xyz);
+		toLight = normalize(lightData[i].xyz - worldPos.xyz);
 	
 		// Object position seen from light
-		lightScreenPos = mul(worldPos, mul(lights[i].view, lights[i].proj));
+		lightScreenPos = mul(worldPos, mul(view[i], proj[i]));
+		w = lightScreenPos.w;
 		lightScreenPos /= lightScreenPos.w;
 
 		// Translate from [-1, 1] to [0, 1]
 		lightScreenUV.x = (lightScreenPos.x + 1) * 0.5f;
 		lightScreenUV.y = 1 - (lightScreenPos.y + 1) * 0.5f;
 
-		if (saturate(lightScreenUV.x) == lightScreenUV.x && saturate(lightScreenUV.y) == lightScreenUV.y)
+		if (w > 0.0f && saturate(lightScreenUV.x) == lightScreenUV.x && saturate(lightScreenUV.y) == lightScreenUV.y)
 		{
 			// Object position fit into light frustum (was visible from light)
 

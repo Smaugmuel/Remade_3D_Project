@@ -1,6 +1,7 @@
 #ifndef CONSTANT_BUFFER_TYPES_HPP
 #define CONSTANT_BUFFER_TYPES_HPP
-#include "SystemInformation.hpp"
+#include "LightSettings.hpp"
+#include "ChunkRenderSettings.hpp"
 #include <DirectXMath.h>
 
 struct Float4
@@ -25,7 +26,17 @@ struct Matrix
 
 struct Matrix2
 {
-	Matrix matrices[2];
+	DirectX::XMMATRIX matrices[2];
+};
+
+struct MatrixArray
+{
+	DirectX::XMMATRIX matrices[MAX_NR_OF_LIGHTS];
+};
+
+struct MatrixChunk
+{
+	DirectX::XMMATRIX matrices[CHUNK_SIZE];
 };
 
 #endif

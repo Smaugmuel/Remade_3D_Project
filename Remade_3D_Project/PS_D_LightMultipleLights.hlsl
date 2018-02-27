@@ -6,12 +6,12 @@ SamplerState sampleState : register(s0);
 
 
 // Change in SystemInformation.hpp aswell
-static const unsigned int NR_OF_LIGHTS = 4;
+static const unsigned int MAX_NR_OF_LIGHTS = 4;
 
 
 cbuffer PointLightArray : register(b3)
 {
-	float4 lightData[NR_OF_LIGHTS];
+	float4 lightData[MAX_NR_OF_LIGHTS];
 };
 
 struct VS_OUT
@@ -64,13 +64,13 @@ float4 main(VS_OUT input) : SV_Target
 	float diffuse = 0.0f;
 	
 	// Distance to each light
-	float distance[NR_OF_LIGHTS];
+	float distance[MAX_NR_OF_LIGHTS];
 
 	// Sum of 1 divided by each light distance
 	float divSum = 0.0f;
 
 	// Weight of each light on this pixel
-	float weight[NR_OF_LIGHTS];
+	float weight[MAX_NR_OF_LIGHTS];
 	
 	unsigned int i;
 
@@ -80,14 +80,14 @@ float4 main(VS_OUT input) : SV_Target
 	color = colorTexture.Sample(sampleState, input.uv);
 
 	// Calculate distances and divSum
-	for (i = 0; i < NR_OF_LIGHTS; i++)
+	for (i = 0; i < MAX_NR_OF_LIGHTS; i++)
 	{
 		distance[i] = length(lightData[i].xyz - worldPos.xyz);
 
 		divSum += 1.0f / distance[i];
 	}
 
-	for (i = 0; i < NR_OF_LIGHTS; i++)
+	for (i = 0; i < MAX_NR_OF_LIGHTS; i++)
 	{
 		// Vector from object to light
 		toLight = normalize(lightData[i].xyz - worldPos.xyz);

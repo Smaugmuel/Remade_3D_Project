@@ -1,11 +1,11 @@
 Texture2D tex : register(t0);
 SamplerState sampleState : register(s0);
 
-struct VS_OUT
+struct PS_IN
 {
 	float4 position : SV_POSITION;
-	float4 worldPosition : POSITION;
-	float4 normal : NORMAL;
+	float3 worldPosition : POSITION;
+	float3 normal : NORMAL;
 	float2 uv : TEXCOORD;
 };
 
@@ -16,12 +16,16 @@ struct PS_OUT
 	float4 color : SV_Target2;
 };
 
-PS_OUT main(VS_OUT input)
+PS_OUT main(PS_IN input)
 {
 	PS_OUT output;
 
-	output.worldPosition = input.worldPosition;
-	output.normal = input.normal;
+	output.worldPosition = float4(input.worldPosition, 1.0f);
+	
+	// Recreate the z-value
+	//float z = sqrt(1 - (input.normal.x * input.normal.x + input.normal.y * input.normal.y));
+	output.normal = float4(input.normal, 0.0f);
+
 	output.color = tex.Sample(sampleState, input.uv);
 
 	return output;

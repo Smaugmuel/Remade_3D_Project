@@ -25,6 +25,7 @@ bool DepthShaderGroup::Initialize(ID3D11Device * device)
 	D3D11_BUFFER_DESC vs_perFrameDesc;
 
 	m_vertexShaderName = "VS_Depth.hlsl";
+	m_geometryShaderName = "NULL";
 	m_pixelShaderName = "PS_Depth.hlsl";
 
 	if (!ShaderGroup::Initialize(device))

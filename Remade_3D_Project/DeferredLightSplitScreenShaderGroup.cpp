@@ -16,6 +16,7 @@ bool DeferredLightSplitScreenShaderGroup::Initialize(ID3D11Device* device)
 	D3D11_BUFFER_DESC ps_perFrameDesc;
 
 	m_vertexShaderName = "VS_PosUV.hlsl";
+	m_geometryShaderName = "NULL";
 	m_pixelShaderName = "PS_D_LightSplitScreen.hlsl";
 
 	if (!ShaderGroup::Initialize(device))
@@ -48,34 +49,34 @@ void DeferredLightSplitScreenShaderGroup::SetupShaders(ID3D11DeviceContext * dev
 	deviceContext->PSSetSamplers(0, 1, &sampler);
 }
 
-void DeferredLightSplitScreenShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView ** resources, ID3D11ShaderResourceView * depthTexture, Vector3f lightPosition, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix, float lightIntensity)
+void DeferredLightSplitScreenShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView ** resources, ID3D11ShaderResourceView * depthTexture/*, Vector3f lightPosition, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix, float lightIntensity*/)
 {
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	PS_PerFrameBuffer* frameDataPS;
-	HRESULT result;
+	//D3D11_MAPPED_SUBRESOURCE mappedResource;
+	//PS_PerFrameBuffer* frameDataPS;
+	//HRESULT result;
 
-	// Pixel Shader ===========================================================================
-	// Mapping and updating buffer
-	result = deviceContext->Map(
-		m_psPerFrameBuffer,
-		0,
-		D3D11_MAP_WRITE_DISCARD,
-		0,
-		&mappedResource
-		);
-	if (FAILED(result))
-	{
-		return;
-	}
+	//// Pixel Shader ===========================================================================
+	//// Mapping and updating buffer
+	//result = deviceContext->Map(
+	//	m_psPerFrameBuffer,
+	//	0,
+	//	D3D11_MAP_WRITE_DISCARD,
+	//	0,
+	//	&mappedResource
+	//	);
+	//if (FAILED(result))
+	//{
+	//	return;
+	//}
 
-	frameDataPS = (PS_PerFrameBuffer*)mappedResource.pData;
-	frameDataPS->lightView = lightViewMatrix;
-	frameDataPS->lightProj = lightProjectionMatrix;
-	frameDataPS->lightPosition = lightPosition;
-	frameDataPS->lightIntensity = lightIntensity;
+	//frameDataPS = (PS_PerFrameBuffer*)mappedResource.pData;
+	//frameDataPS->lightView = lightViewMatrix;
+	//frameDataPS->lightProj = lightProjectionMatrix;
+	//frameDataPS->lightPosition = lightPosition;
+	//frameDataPS->lightIntensity = lightIntensity;
 
-	deviceContext->Unmap(m_psPerFrameBuffer, 0);
-	deviceContext->PSSetConstantBuffers(0, 1, &m_psPerFrameBuffer);
+	//deviceContext->Unmap(m_psPerFrameBuffer, 0);
+	//deviceContext->PSSetConstantBuffers(0, 1, &m_psPerFrameBuffer);
 
 	deviceContext->PSSetShaderResources(0, nrOfResources, resources);
 	deviceContext->PSSetShaderResources(nrOfResources, 1, &depthTexture);

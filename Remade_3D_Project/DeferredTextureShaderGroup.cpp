@@ -14,6 +14,7 @@ DeferredTextureShaderGroup::~DeferredTextureShaderGroup()
 bool DeferredTextureShaderGroup::Initialize(ID3D11Device * device)
 {
 	m_vertexShaderName = "VS_D_Texture.hlsl";
+	m_geometryShaderName = "NULL";
 	m_pixelShaderName = "PS_D_Texture.hlsl";
 
 	if (!ShaderGroup::Initialize(device))

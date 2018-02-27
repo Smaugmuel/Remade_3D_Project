@@ -95,20 +95,32 @@ public:
 	bool SetVSPointLight(ID3D11DeviceContext* deviceContext, const Vector3f& position, float intensity);
 	bool SetVSColor(ID3D11DeviceContext* deviceContext, const Vector3f& color);
 
+	bool SetGSViewMatrix(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX& matrix);
+	bool SetGSProjectionMatrix(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX& matrix);
+	bool SetGSPointLight(ID3D11DeviceContext* deviceContext, const Vector3f& position, float intensity);
+	bool SetGSWorldMatrixArray(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX* matrices);
+	bool SetGSNrOfObjects(ID3D11DeviceContext* deviceContext, int nrOfObjects);
+
 	bool SetPSViewMatrix(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX& matrix);
 	bool SetPSProjectionMatrix(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX& matrix);
 	bool SetPSPointLight(ID3D11DeviceContext* deviceContext, const Vector3f& position, float intensity);
-	bool SetPSPointLightArray(ID3D11DeviceContext* deviceContext, Vector3f positions[MAX_NR_OF_LIGHTS], float intensities[MAX_NR_OF_LIGHTS]);
-
+	bool SetPSPointLightArray(ID3D11DeviceContext* deviceContext, Vector3f* positions, float* intensities);
+	bool SetPSViewMatrixArray(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX* matrices);
+	bool SetPSProjectionMatrixArray(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX* matrices);
+	bool SetPSNrOfLights(ID3D11DeviceContext* deviceContext, int nrOfLights);
 
 private:
 	bool MapWorldMatrix(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX& matrix);
 	bool MapViewMatrix(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX& matrix);
 	bool MapProjectionMatrix(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX& matrix);
 	bool MapPointLight(ID3D11DeviceContext * deviceContext, const Vector3f& position, float intensity);
-	bool MapPointLightArray(ID3D11DeviceContext * deviceContext, Vector3f positions[MAX_NR_OF_LIGHTS], float intensities[MAX_NR_OF_LIGHTS]);
+	bool MapPointLightArray(ID3D11DeviceContext * deviceContext, Vector3f* positions, float* intensities);
 	bool MapColor(ID3D11DeviceContext * deviceContext, const Vector3f& color);
-
+	bool MapViewMatrixArray(ID3D11DeviceContext * deviceContext, DirectX::XMMATRIX* matrices);
+	bool MapProjectionMatrixArray(ID3D11DeviceContext * deviceContext, DirectX::XMMATRIX* matrices);
+	bool MapNrOfLights(ID3D11DeviceContext * deviceContext, int nrOfLights);
+	bool MapWorldMatrixArray(ID3D11DeviceContext* deviceContext, DirectX::XMMATRIX* matrices);
+	bool MapNrOfObjects(ID3D11DeviceContext* deviceContext, int nrOfObjects);
 
 	ID3D11Buffer* m_worldBuffer;
 	ID3D11Buffer* m_viewBuffer;
@@ -116,6 +128,11 @@ private:
 	ID3D11Buffer* m_pointLightBuffer;
 	ID3D11Buffer* m_pointLightArrayBuffer;
 	ID3D11Buffer* m_colorBuffer;
+	ID3D11Buffer* m_viewArrayBuffer;
+	ID3D11Buffer* m_projectionArrayBuffer;
+	ID3D11Buffer* m_nrOfLightsBuffer;
+	ID3D11Buffer* m_worldArrayBuffer;
+	ID3D11Buffer* m_nrOfObjectsBuffer;
 };
 
 #endif
