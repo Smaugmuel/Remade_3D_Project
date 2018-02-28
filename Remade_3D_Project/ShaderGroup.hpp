@@ -17,6 +17,7 @@ public:
 
 protected:
 	std::string m_vertexShaderName;
+	std::string m_geometryShaderName;
 	std::string m_pixelShaderName;
 };
 

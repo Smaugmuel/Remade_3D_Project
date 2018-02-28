@@ -19,14 +19,6 @@ cbuffer PointLight : register(b2)
 	float4 lightData;
 };
 
-
-//cbuffer LightBuffer : register(b0)
-//{
-//	float4 lightData;
-//	matrix<float, 4, 4> lightView;
-//	matrix<float, 4, 4> lightProj;
-//};
-
 struct VS_OUT
 {
 	float4 position : SV_POSITION;
@@ -49,6 +41,7 @@ float4 main(VS_OUT input) : SV_Target
 
 	// Object position on screen, from light perspective
 	float4 lightScreenPos;
+	float w;
 
 	// UV coords at position above
 	float2 lightScreenUV;
@@ -74,14 +67,14 @@ float4 main(VS_OUT input) : SV_Target
 
 	// Object position seen from light
 	lightScreenPos = mul(worldPos, mul(lightView, lightProj));
-	float abcds = lightScreenPos.w;
+	w = lightScreenPos.w;
 	lightScreenPos /= lightScreenPos.w;
 
 	// Translate from [-1, 1] to [0, 1]
 	lightScreenUV.x = (lightScreenPos.x + 1) * 0.5f;
 	lightScreenUV.y = 1 - (lightScreenPos.y + 1) * 0.5f;
 	
-	if (abcds > 0 && lightScreenUV.x >= 0.0f && lightScreenUV.x <= 1.0f && lightScreenUV.y >= 0.0f && lightScreenUV.y <= 1.0f)
+	if (w > 0 && lightScreenUV.x >= 0.0f && lightScreenUV.x <= 1.0f && lightScreenUV.y >= 0.0f && lightScreenUV.y <= 1.0f)
 	{
 		// Object position fit into light frustum (was visible from light)
 

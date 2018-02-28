@@ -47,6 +47,7 @@ ShaderStorage::ShaderStorage()
 	m_linker["VS_PosNormColor.hlsl"] = "PNC";
 	m_linker["VS_PosUV.hlsl"] = "PU";
 	m_linker["VS_Depth.hlsl"] = "P";
+	m_linker["VS_D_TextureChunk.hlsl"] = "PNU";
 }
 ShaderStorage::~ShaderStorage()
 {
@@ -106,7 +107,7 @@ bool ShaderStorage::CreateVertexShader(ID3D11Device * device, std::string name)
 }
 bool ShaderStorage::CreateGeometryShader(ID3D11Device * device, std::string name)
 {
-	if (HasGeometryShader(name))
+	if (HasGeometryShader(name) || name == "NULL")
 		return true;
 
 	ID3D10Blob* blob;
@@ -184,6 +185,9 @@ ID3D11GeometryShader * ShaderStorage::GetGeometryShader(std::string name)
 {
 	/*if (!HasGeometryShader(name))
 		return nullptr;*/
+
+	if (name == "NULL")
+		return nullptr;
 
 	return m_geometryShaders.at(name);
 }

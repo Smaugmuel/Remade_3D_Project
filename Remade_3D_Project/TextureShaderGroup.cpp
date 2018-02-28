@@ -14,6 +14,7 @@ TextureShaderGroup::~TextureShaderGroup()
 bool TextureShaderGroup::Initialize(ID3D11Device * device)
 {
 	m_vertexShaderName = "VS_Texture.hlsl";
+	m_geometryShaderName = "NULL";
 	m_pixelShaderName = "PS_Texture.hlsl";
 	
 	if (!ShaderGroup::Initialize(device))

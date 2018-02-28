@@ -12,6 +12,7 @@ SingleColorShaderGroup::~SingleColorShaderGroup()
 bool SingleColorShaderGroup::Initialize(ID3D11Device* device)
 {
 	m_vertexShaderName = "VS_PosNormColor.hlsl";
+	m_geometryShaderName = "NULL";
 	m_pixelShaderName = "PS_SingleColor.hlsl";
 
 	if (!ShaderGroup::Initialize(device))

@@ -3,10 +3,8 @@
 #include "Singleton.hpp"
 
 #include <memory>
-//#include <string>
 #include "Vector3.hpp"
 #include <DirectXMath.h>
-#include "SystemInformation.hpp"
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -23,6 +21,7 @@ class DeferredLightShadowShaderGroup;
 class DeferredLightSplitScreenShaderGroup;
 class DeferredLightMultipleLightsShaderGroup;
 class DeferredLightMultipleShadowLightsShaderGroup;
+class DeferredTextureChunkShaderGroup;
 
 enum ShaderType
 {
@@ -36,7 +35,8 @@ enum ShaderType
 	HUD,
 	D_SPLIT,
 	D_MULTIPLE,
-	D_MULTIPLE_SHADOWS
+	D_MULTIPLE_SHADOWS,
+	D_TEXTURE_CHUNK
 };
 
 
@@ -58,17 +58,18 @@ public:
 	void SetPerFrameDeferredTextureConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix);
 	void SetPerFrameDeferredShadowConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix);
 	void SetPerFrameDeferredLightShadowConstantBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfDeferredBuffers, ID3D11ShaderResourceView** deferredShaderResourceViews, ID3D11ShaderResourceView* depthTexture);
-	void SetPerFrameDeferredLightSplitScreenConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix, unsigned int nrOfDeferredBuffers, ID3D11ShaderResourceView** deferredShaderResourceViews, ID3D11ShaderResourceView* depthTexture, Vector3f lightPosition, float lightIntensity);
+	void SetPerFrameDeferredLightSplitScreenConstantBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfDeferredBuffers, ID3D11ShaderResourceView** deferredShaderResourceViews, ID3D11ShaderResourceView* depthTexture);
 	void SetPerFrameDeferredLightMultipleLightsConstantBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfDeferredBuffers, ID3D11ShaderResourceView** deferredShaderResourceViews);
-	void SetPerFrameDeferredLightMultipleShadowLightsConstantBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources, unsigned int nrOfLights, ID3D11ShaderResourceView* depthTextures[MAX_NR_OF_LIGHTS], Vector3f lightPositions[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightViewMatrices[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightProjectionMatrices[MAX_NR_OF_LIGHTS], float lightIntensities[MAX_NR_OF_LIGHTS]);
+	void SetPerFrameDeferredLightMultipleShadowLightsConstantBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources, ID3D11ShaderResourceView** depthTextures);
 
 	void SetPerObjectSingleColorConstantBuffer(ID3D11DeviceContext* deviceContext);
 	void SetPerObjectTextureConstantBuffer(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView* texture);
 	void SetPerObjectDepthConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & worldMatrix);
 	void SetPerObjectHUDConstantBuffer(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView* texture);
 	void SetPerObjectDeferredSingleColorConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & worldMatrix, Vector3f color);
-	void SetPerObjectDeferredTextureConstantBuffer(ID3D11DeviceContext* deviceContext,  ID3D11ShaderResourceView* texture);
+	void SetPerObjectDeferredTextureConstantBuffer(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView* texture);
 	void SetPerObjectDeferredShadowConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & worldMatrix);
+	void SetPerObjectDeferredTextureChunkShaderGroup(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView* texture);
 
 private:
 	std::unique_ptr<SingleColorShaderGroup> m_colorShaders;
@@ -82,6 +83,7 @@ private:
 	std::unique_ptr<DeferredLightSplitScreenShaderGroup> m_d_lightSplitScreenShaders;
 	std::unique_ptr<DeferredLightMultipleLightsShaderGroup> m_d_lightMultipleLightsShaders;
 	std::unique_ptr<DeferredLightMultipleShadowLightsShaderGroup> m_d_lightMultipleShadowLightsShaders;
+	std::unique_ptr<DeferredTextureChunkShaderGroup> m_d_textureChunkShaders;
 
 	ShaderType m_currentShaderType;
 };

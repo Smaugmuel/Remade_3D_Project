@@ -153,6 +153,7 @@
     <ClCompile Include="DeferredLightMultipleLightsShaderGroup.cpp" />
     <ClCompile Include="DeferredLightMultipleShadowLightsShaderGroup.cpp" />
     <ClCompile Include="DeferredLightSplitScreenShaderGroup.cpp" />
+    <ClCompile Include="DeferredTextureChunkShaderGroup.cpp" />
     <ClCompile Include="DeferredTextureShaderGroup.cpp" />
     <ClCompile Include="EventDispatcher.cpp" />
     <ClCompile Include="FPS_Counter.cpp" />
@@ -169,6 +170,7 @@
     <ClCompile Include="DeferredScreenTarget.cpp" />
     <ClCompile Include="DeferredShadowShaderGroup.cpp" />
     <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="PointLightManager.cpp" />
     <ClCompile Include="SamplerStorage.cpp" />
     <ClCompile Include="ShaderGroup.cpp" />
     <ClCompile Include="SingleColorShaderGroup.cpp" />
@@ -203,12 +205,14 @@
   <ItemGroup>
     <ClInclude Include="AABB.hpp" />
     <ClInclude Include="Character.hpp" />
+    <ClInclude Include="ChunkRenderSettings.hpp" />
     <ClInclude Include="Collision.hpp" />
     <ClInclude Include="ConstantBufferTypes.hpp" />
     <ClInclude Include="ConstantBufferStorage.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="DeferredTextureChunkShaderGroup.hpp" />
     <ClInclude Include="DeferredLightMultipleLightsShaderGroup.hpp" />
     <ClInclude Include="DeferredLightMultipleShadowLightsShaderGroup.hpp" />
     <ClInclude Include="DeferredLightSplitScreenShaderGroup.hpp" />
@@ -224,6 +228,7 @@
     <ClInclude Include="DepthShaderGroup.hpp" />
     <ClInclude Include="HUDShaderGroup.hpp" />
     <ClInclude Include="HUDText.hpp" />
+    <ClInclude Include="LightSettings.hpp" />
     <ClInclude Include="ModelStorage.hpp" />
     <ClInclude Include="OBB.hpp" />
     <ClInclude Include="Object.hpp" />
@@ -231,6 +236,7 @@
     <ClInclude Include="DeferredScreenTarget.hpp" />
     <ClInclude Include="DeferredShadowShaderGroup.hpp" />
     <ClInclude Include="PointLight.hpp" />
+    <ClInclude Include="PointLightManager.hpp" />
     <ClInclude Include="SamplerStorage.hpp" />
     <ClInclude Include="ShaderGroup.hpp" />
     <ClInclude Include="SingleColorShaderGroup.hpp" />
@@ -267,6 +273,16 @@
     <ClInclude Include="Window.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="GS_D_TextureChunk.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="PS_Depth.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
@@ -462,6 +478,16 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DisableOptimizations>
       <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</EnableDebuggingInformation>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="VS_D_TextureChunk.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>

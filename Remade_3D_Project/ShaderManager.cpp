@@ -15,6 +15,7 @@
 #include "DeferredLightSplitScreenShaderGroup.hpp"
 #include "DeferredLightMultipleLightsShaderGroup.hpp"
 #include "DeferredLightMultipleShadowLightsShaderGroup.hpp"
+#include "DeferredTextureChunkShaderGroup.hpp"
 
 ShaderManager* Singleton<ShaderManager>::s_instance = nullptr;
 
@@ -71,6 +72,10 @@ bool ShaderManager::Initialize(ID3D11Device* device)
 	if (!m_d_lightMultipleShadowLightsShaders->Initialize(device))
 		return false;
 
+	m_d_textureChunkShaders = std::make_unique<DeferredTextureChunkShaderGroup>();
+	if (!m_d_textureChunkShaders->Initialize(device))
+		return false;
+
 	m_currentShaderType = (ShaderType)-1;
 
 	return true;
@@ -86,37 +91,40 @@ void ShaderManager::SetShaderType(ID3D11DeviceContext* deviceContext, const Shad
 	switch (shaderType)
 	{
 	case ShaderType::SINGLE_COLOR:
-		m_colorShaders->SetupShaders(deviceContext);
+		m_colorShaders.get()->SetupShaders(deviceContext);
 		break;
 	case ShaderType::D_SINGLE_COLOR:
-		m_d_colorShaders->SetupShaders(deviceContext);
+		m_d_colorShaders.get()->SetupShaders(deviceContext);
 		break;
 	case ShaderType::D_LIGHT:
-		m_d_lightShadowShaders->SetupShaders(deviceContext);
+		m_d_lightShadowShaders.get()->SetupShaders(deviceContext);
 		break;
 	case ShaderType::DEPTH:
-		m_depthShaders->SetupShaders(deviceContext);
+		m_depthShaders.get()->SetupShaders(deviceContext);
 		break;
 	case ShaderType::D_SHADOW:
-		m_d_s_shaders->SetupShaders(deviceContext);
+		m_d_s_shaders.get()->SetupShaders(deviceContext);
 		break;
 	case ShaderType::TEXTURE:
-		m_textureShaders->SetupShaders(deviceContext);
+		m_textureShaders.get()->SetupShaders(deviceContext);
 		break;
 	case ShaderType::D_TEXTURE:
-		m_d_textureShaders->SetupShaders(deviceContext);
+		m_d_textureShaders.get()->SetupShaders(deviceContext);
 		break;
 	case ShaderType::HUD:
-		m_HUDShaders->SetupShaders(deviceContext);
+		m_HUDShaders.get()->SetupShaders(deviceContext);
 		break;
 	case ShaderType::D_SPLIT:
-		m_d_lightSplitScreenShaders->SetupShaders(deviceContext);
+		m_d_lightSplitScreenShaders.get()->SetupShaders(deviceContext);
 		break;
 	case ShaderType::D_MULTIPLE:
-		m_d_lightMultipleLightsShaders->SetupShaders(deviceContext);
+		m_d_lightMultipleLightsShaders.get()->SetupShaders(deviceContext);
 		break;
 	case ShaderType::D_MULTIPLE_SHADOWS:
-		m_d_lightMultipleShadowLightsShaders->SetupShaders(deviceContext);
+		m_d_lightMultipleShadowLightsShaders.get()->SetupShaders(deviceContext);
+		break;
+	case ShaderType::D_TEXTURE_CHUNK:
+		m_d_textureChunkShaders.get()->SetupShaders(deviceContext);
 		break;
 	default:
 		break;
@@ -133,82 +141,86 @@ void ShaderManager::SetShaderType(ID3D11DeviceContext* deviceContext, const Shad
 	//	deviceContext->GSSetShader(nullptr, nullptr, 0);
 	//	//deviceContext->GSSetShader(m_shaderGroupMap[shaderGroupName]->vgeometryShader->GetShader(), nullptr, 0);
 	//	deviceContext->PSSetShader(m_shaderGroupMap[shaderGroupName]->pixelShader->GetShader(), nullptr, 0);
-
+	//
 	//	deviceContext->IASetInputLayout(m_shaderGroupMap[shaderGroupName]->vertexShader->GetInputLayout());
-
+	//
 	//	m_currentShaderGroup = shaderGroupName;
-
+	//
 	//	return true;
 	//}
 }
 
 void ShaderManager::SetPerFrameSingleColorConstantBuffer(ID3D11DeviceContext * deviceContext, Vector3f lightPosition, float lightIntensity)
 {
-	m_colorShaders->SetupPerFrameBuffer(deviceContext);
+	m_colorShaders.get()->SetupPerFrameBuffer(deviceContext);
 }
 void ShaderManager::SetPerFrameTextureConstantBuffer(ID3D11DeviceContext * deviceContext, Vector3f lightPosition, float lightIntensity)
 {
-	m_textureShaders->SetupPerFrameBuffer(deviceContext);
+	m_textureShaders.get()->SetupPerFrameBuffer(deviceContext);
 }
 void ShaderManager::SetPerFrameDepthConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix)
 {
-	m_depthShaders->SetupPerFrameBuffer(deviceContext, viewMatrix, projectionMatrix);
+	m_depthShaders.get()->SetupPerFrameBuffer(deviceContext, viewMatrix, projectionMatrix);
 }
 void ShaderManager::SetPerFrameDeferredSingleColorConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix)
 {
-	m_d_colorShaders->SetupPerFrameBuffer(deviceContext);
+	m_d_colorShaders.get()->SetupPerFrameBuffer(deviceContext);
 }
 void ShaderManager::SetPerFrameDeferredTextureConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix)
 {
-	m_d_textureShaders->SetupPerFrameBuffer(deviceContext);
+	m_d_textureShaders.get()->SetupPerFrameBuffer(deviceContext);
 }
 void ShaderManager::SetPerFrameDeferredShadowConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix)
 {
-	m_d_s_shaders->SetupPerFrameBuffer(deviceContext, lightViewMatrix, lightProjectionMatrix);
+	m_d_s_shaders.get()->SetupPerFrameBuffer(deviceContext, lightViewMatrix, lightProjectionMatrix);
 }
 void ShaderManager::SetPerFrameDeferredLightShadowConstantBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfDeferredBuffers, ID3D11ShaderResourceView** deferredShaderResourceViews, ID3D11ShaderResourceView* depthTexture)
 {
-	m_d_lightShadowShaders->SetupPerFrameBuffer(deviceContext, nrOfDeferredBuffers, deferredShaderResourceViews, depthTexture);
+	m_d_lightShadowShaders.get()->SetupPerFrameBuffer(deviceContext, nrOfDeferredBuffers, deferredShaderResourceViews, depthTexture);
 }
-void ShaderManager::SetPerFrameDeferredLightSplitScreenConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix, unsigned int nrOfDeferredBuffers, ID3D11ShaderResourceView** deferredShaderResourceViews, ID3D11ShaderResourceView * depthTexture, Vector3f lightPosition, float lightIntensity)
+void ShaderManager::SetPerFrameDeferredLightSplitScreenConstantBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfDeferredBuffers, ID3D11ShaderResourceView** deferredShaderResourceViews, ID3D11ShaderResourceView * depthTexture)
 {
-	m_d_lightSplitScreenShaders->SetupPerFrameBuffer(deviceContext, nrOfDeferredBuffers, deferredShaderResourceViews, depthTexture, lightPosition, lightViewMatrix, lightProjectionMatrix, lightIntensity);
+	m_d_lightSplitScreenShaders.get()->SetupPerFrameBuffer(deviceContext, nrOfDeferredBuffers, deferredShaderResourceViews, depthTexture/*, lightPosition, lightViewMatrix, lightProjectionMatrix, lightIntensity*/);
 }
 void ShaderManager::SetPerFrameDeferredLightMultipleLightsConstantBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfDeferredBuffers, ID3D11ShaderResourceView ** deferredShaderResourceViews)
 {
-	m_d_lightMultipleLightsShaders->SetupPerFrameBuffer(deviceContext, nrOfDeferredBuffers, deferredShaderResourceViews);
+	m_d_lightMultipleLightsShaders.get()->SetupPerFrameBuffer(deviceContext, nrOfDeferredBuffers, deferredShaderResourceViews);
 }
-
-void ShaderManager::SetPerFrameDeferredLightMultipleShadowLightsConstantBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView ** resources, unsigned int nrOfLights, ID3D11ShaderResourceView * depthTextures[MAX_NR_OF_LIGHTS], Vector3f lightPositions[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightViewMatrices[MAX_NR_OF_LIGHTS], DirectX::XMMATRIX lightProjectionMatrices[MAX_NR_OF_LIGHTS], float lightIntensities[MAX_NR_OF_LIGHTS])
+void ShaderManager::SetPerFrameDeferredLightMultipleShadowLightsConstantBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView ** resources, ID3D11ShaderResourceView ** depthTextures)
 {
-	m_d_lightMultipleShadowLightsShaders->SetupPerFrameBuffer(deviceContext, nrOfResources, resources, nrOfLights, depthTextures, lightPositions, lightViewMatrices, lightProjectionMatrices, lightIntensities);
+	m_d_lightMultipleShadowLightsShaders.get()->SetupPerFrameBuffer(deviceContext, nrOfResources, resources, depthTextures);
 }
 
 void ShaderManager::SetPerObjectSingleColorConstantBuffer(ID3D11DeviceContext * deviceContext)
 {
-	m_colorShaders->SetupPerObjectBuffer(deviceContext);
+	m_colorShaders.get()->SetupPerObjectBuffer(deviceContext);
 }
 void ShaderManager::SetPerObjectTextureConstantBuffer(ID3D11DeviceContext * deviceContext, ID3D11ShaderResourceView* bitMapTexture)
 {
-	m_textureShaders->SetupPerObjectBuffer(deviceContext, bitMapTexture);
+	m_textureShaders.get()->SetupPerObjectBuffer(deviceContext, bitMapTexture);
 }
 void ShaderManager::SetPerObjectDepthConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & worldMatrix)
 {
-	m_depthShaders->SetupPerObjectBuffer(deviceContext, worldMatrix);
+	m_depthShaders.get()->SetupPerObjectBuffer(deviceContext, worldMatrix);
 }
 void ShaderManager::SetPerObjectHUDConstantBuffer(ID3D11DeviceContext * deviceContext, ID3D11ShaderResourceView * texture)
 {
-	m_HUDShaders->SetupPerObjectBuffer(deviceContext, texture);
+	m_HUDShaders.get()->SetupPerObjectBuffer(deviceContext, texture);
 }
 void ShaderManager::SetPerObjectDeferredSingleColorConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & worldMatrix, Vector3f color)
 {
-	m_d_colorShaders->SetupPerObjectBuffer(deviceContext);
+	m_d_colorShaders.get()->SetupPerObjectBuffer(deviceContext);
 }
-void ShaderManager::SetPerObjectDeferredTextureConstantBuffer(ID3D11DeviceContext * deviceContext, /*const DirectX::XMMATRIX & worldMatrix,*/ ID3D11ShaderResourceView * texture)
+void ShaderManager::SetPerObjectDeferredTextureConstantBuffer(ID3D11DeviceContext * deviceContext, ID3D11ShaderResourceView * texture)
 {
-	m_d_textureShaders->SetupPerObjectBuffer(deviceContext, /*worldMatrix,*/ texture);
+	m_d_textureShaders.get()->SetupPerObjectBuffer(deviceContext, texture);
 }
 void ShaderManager::SetPerObjectDeferredShadowConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & worldMatrix)
 {
-	m_d_s_shaders->SetupPerObjectBuffer(deviceContext, worldMatrix);
+	m_d_s_shaders.get()->SetupPerObjectBuffer(deviceContext, worldMatrix);
+}
+
+void ShaderManager::SetPerObjectDeferredTextureChunkShaderGroup(ID3D11DeviceContext * deviceContext, ID3D11ShaderResourceView * texture)
+{
+	m_d_textureChunkShaders.get()->SetupPerObjectBuffer(deviceContext, texture);
 }

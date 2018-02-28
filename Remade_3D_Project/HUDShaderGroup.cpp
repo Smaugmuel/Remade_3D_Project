@@ -14,6 +14,7 @@ HUDShaderGroup::~HUDShaderGroup()
 bool HUDShaderGroup::Initialize(ID3D11Device * device)
 {
 	m_vertexShaderName = "VS_PosUV.hlsl";
+	m_geometryShaderName = "NULL";
 	m_pixelShaderName = "PS_HUD.hlsl";
 
 	if (!ShaderGroup::Initialize(device))

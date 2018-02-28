@@ -1,7 +1,7 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 #include "Singleton.hpp"
-#include "SystemInformation.hpp"
+//#include "SystemInformation.hpp"
 #include <memory>
 #include <vector>
 #include <chrono>
@@ -19,6 +19,7 @@ enum RenderMode
 {
 	NORMAL_MODE,
 	DEFERRED_MODE,
+	DEFERRED_CHUNK_MODE,
 	DEFERRED_SPLIT_MODE,
 	DEFERRED_MULTIPLE_LIGHTS_MODE,
 	DEFERRED_MULTIPLE_SHADOW_LIGHTS_MODE,
@@ -66,10 +67,14 @@ private:
 
 	void RenderNormal();
 	void RenderDeferredFirstPass();
+	void RenderDeferredFirstPassChunks();
 	void RenderDepth();
 	void RenderShadowPass();
+	void RenderShadowPassChunks();
 	void RenderMultipleShadowsPass();
-	void RenderDeferredLightPass();
+	void RenderDeferredLightShadowPass();
+	void RenderDeferredLightSplitPass();
+	void RenderDeferredLightMultiplePass();
 	void RenderDeferredLightMultipleShadowsPass();
 	void RenderHUD();
 	void RenderHUDText();
@@ -79,9 +84,9 @@ private:
 	std::unique_ptr<SingleColorObject> m_coloredFloor;
 	std::unique_ptr<HUDObject> m_HUDObject;
 
-	std::unique_ptr<PointLight> m_pointLights[MAX_NR_OF_LIGHTS];
+	/*std::unique_ptr<PointLight> m_pointLights[MAX_NR_OF_LIGHTS];
 	unsigned int m_nrOfLights;
-	unsigned int m_currentLight;
+	unsigned int m_currentLight;*/
 
 	std::unique_ptr<FPSCounter> m_fpsCounter;
 

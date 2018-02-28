@@ -73,6 +73,9 @@
     <Filter Include="Header Files\Storages">
       <UniqueIdentifier>{cdf9c74c-c0f7-4051-8173-edf704f9d69f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Lights">
+      <UniqueIdentifier>{4f631ab0-8055-4224-bef6-01fd9e14d452}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp">
@@ -201,6 +204,12 @@
     <ClCompile Include="ShaderGroup.cpp">
       <Filter>Source Files\Shaders\ShaderGroups</Filter>
     </ClCompile>
+    <ClCompile Include="PointLightManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredTextureChunkShaderGroup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.hpp">
@@ -293,9 +302,6 @@
     <ClInclude Include="DeferredLightMultipleShadowLightsShaderGroup.hpp">
       <Filter>Header Files\Shaders\ShaderGroups</Filter>
     </ClInclude>
-    <ClInclude Include="PointLight.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="HUDText.hpp">
       <Filter>Header Files\Objects</Filter>
     </ClInclude>
@@ -356,6 +362,21 @@
     <ClInclude Include="ConstantBufferStorage.hpp">
       <Filter>Header Files\Storages</Filter>
     </ClInclude>
+    <ClInclude Include="PointLight.hpp">
+      <Filter>Header Files\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLightManager.hpp">
+      <Filter>Header Files\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="LightSettings.hpp">
+      <Filter>Header Files\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="ChunkRenderSettings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DeferredTextureChunkShaderGroup.hpp">
+      <Filter>Header Files\Shaders\ShaderGroups</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PS_SingleColor.hlsl">
@@ -401,6 +422,12 @@
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
     <FxCompile Include="VS_PosNormColor.hlsl">
+      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_D_TextureChunk.hlsl">
+      <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="GS_D_TextureChunk.hlsl">
       <Filter>Source Files\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
   </ItemGroup>
