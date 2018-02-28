@@ -131,6 +131,8 @@ bool ConstantBufferStorage::SetGSProjectionMatrix(ID3D11DeviceContext * deviceCo
 		return false;
 
 	deviceContext->GSSetConstantBuffers(2, 1, &m_projectionBuffer);
+
+	return true;
 }
 bool ConstantBufferStorage::SetGSWorldMatrixArray(ID3D11DeviceContext * deviceContext, DirectX::XMMATRIX * matrices)
 {
@@ -138,6 +140,8 @@ bool ConstantBufferStorage::SetGSWorldMatrixArray(ID3D11DeviceContext * deviceCo
 		return false;
 
 	deviceContext->GSSetConstantBuffers(3, 1, &m_worldArrayBuffer);
+
+	return true;
 }
 bool ConstantBufferStorage::SetGSNrOfObjects(ID3D11DeviceContext * deviceContext, int nrOfObjects)
 {
@@ -145,6 +149,8 @@ bool ConstantBufferStorage::SetGSNrOfObjects(ID3D11DeviceContext * deviceContext
 		return false;
 
 	deviceContext->GSSetConstantBuffers(4, 1, &m_nrOfObjectsBuffer);
+
+	return true;
 }
 
 bool ConstantBufferStorage::SetPSViewMatrix(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & matrix)

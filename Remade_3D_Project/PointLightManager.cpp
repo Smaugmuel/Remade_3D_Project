@@ -41,7 +41,7 @@ const std::vector<std::unique_ptr<PointLight>>& PointLightManager::GetPointLight
 	return m_pointLights;
 }
 
-int PointLightManager::GetNrOfPointLights() const
+unsigned int PointLightManager::GetNrOfPointLights() const
 {
 	return m_pointLights.size();
 }

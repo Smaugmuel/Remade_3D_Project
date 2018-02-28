@@ -73,6 +73,10 @@ struct Vector2 final
 	{
 		return right.x == x && right.y == y;
 	}
+	bool operator!=(const Vector2<Type>& right) const
+	{
+		return !(*this == right);
+	}
 
 	Vector2<Type> reflectAround(const Vector2<Type>& vec) const
 	{

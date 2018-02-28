@@ -112,7 +112,7 @@ float4 main(VS_OUT input) : SV_Target
 	float depthToNearestObject;
 	float depthToThisObject;
 
-	unsigned int i;
+	int i;
 
 
 	// Retrieve deferred values

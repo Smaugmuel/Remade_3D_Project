@@ -80,7 +80,10 @@ private:
 	void RenderHUDText();
 
 
-	std::vector<std::unique_ptr<TextureObject>> m_texturedCubes;
+	//std::vector<std::unique_ptr<TextureObject>> m_texturedCubes;
+	/*static const*/ unsigned int m_nrOfCubes;// = 10000;
+	TextureObject* m_texturedCubes;//[m_nrOfCubes];
+
 	std::unique_ptr<SingleColorObject> m_coloredFloor;
 	std::unique_ptr<HUDObject> m_HUDObject;
 
