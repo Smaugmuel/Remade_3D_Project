@@ -74,13 +74,14 @@ float4 main(VS_OUT input) : SV_Target
 
 	// Object position seen from light
 	lightScreenPos = mul(worldPos, mul(lightView, lightProj));
+	float abcds = lightScreenPos.w;
 	lightScreenPos /= lightScreenPos.w;
 
 	// Translate from [-1, 1] to [0, 1]
 	lightScreenUV.x = (lightScreenPos.x + 1) * 0.5f;
 	lightScreenUV.y = 1 - (lightScreenPos.y + 1) * 0.5f;
 	
-	if (lightScreenUV.x >= 0.0f && lightScreenUV.x <= 1.0f && lightScreenUV.y >= 0.0f && lightScreenUV.y <= 1.0f)
+	if (abcds > 0 && lightScreenUV.x >= 0.0f && lightScreenUV.x <= 1.0f && lightScreenUV.y >= 0.0f && lightScreenUV.y <= 1.0f)
 	{
 		// Object position fit into light frustum (was visible from light)
 
