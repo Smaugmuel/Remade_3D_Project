@@ -56,6 +56,12 @@ Game::~Game()
 	ShaderStorage::Delete();
 	SamplerStorage::Delete();
 	ConstantBufferStorage::Delete();
+
+	delete[] m_texturedCubes;
+	/*for (unsigned int i = 0; i < m_nrOfCubes; i++)
+	{
+		delete m_texturedCubes[i];
+	}*/
 }
 
 bool Game::Initialize()
@@ -101,6 +107,9 @@ bool Game::Initialize()
 	/* ============================================= Objects ============================================= */
 	// Cubes
 	unsigned int nX = 20, nY = 25, nZ = 20;
+	m_nrOfCubes = nX * nY * nZ;
+	m_texturedCubes = new TextureObject[m_nrOfCubes];
+
 	float distance = 4;
 
 	Vector3f startPos = Vector3f((nX - 1) * -0.5f, 1.0f, (nZ - 1) * -0.5f) * distance;
@@ -111,11 +120,21 @@ bool Game::Initialize()
 		{
 			for (unsigned int x = 0; x < nX; x++)
 			{
-				m_texturedCubes.push_back(std::make_unique<TextureObject>());
+				int index = x + y * nX + z * nX * nY;
+
+				//m_texturedCubes[index] = new TextureObject;
+				//if (!m_texturedCubes[index]->Initialize("../Models/cube_uv.obj", "../Textures/Torgue.png"))
+				if (!m_texturedCubes[index].Initialize("../Models/cube_uv.obj", "../Textures/Torgue.png"))
+					return false;
+
+				//m_texturedCubes[index]->SetPosition(startPos + Vector3f(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)) * distance);
+				m_texturedCubes[index].SetPosition(startPos + Vector3f(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)) * distance);
+
+				/*m_texturedCubes.push_back(std::make_unique<TextureObject>());
 				if (!m_texturedCubes.back().get()->Initialize("../Models/cube_uv.obj", "../Textures/Torgue.png"))
 					return false;
 
-				m_texturedCubes.back().get()->SetPosition(startPos + Vector3f(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)) * distance);
+				m_texturedCubes.back().get()->SetPosition(startPos + Vector3f(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)) * distance);*/
 			}
 		}
 	}
@@ -163,7 +182,7 @@ bool Game::Initialize()
 	m_fpsCounter->Initialize(Direct3D::Get()->GetDevice(), Direct3D::Get()->GetDeviceContext());
 
 
-	m_renderMode = RenderMode::DEFERRED_MODE;
+	m_renderMode = RenderMode::NORMAL_MODE;
 	m_HUDMode = HUDMode::HUD_OFF;
 	m_orthogonal = OrthogonalMode::ORTHOGONAL_OFF;
 
@@ -273,12 +292,16 @@ bool Game::ProcessInput()
 
 		if (toggle)
 		{
-			m_texturedCubes[0].get()->SetTextureName("../Textures/BrickWallRaw.jpg");
+			//m_texturedCubes[0].get()->SetTextureName("../Textures/BrickWallRaw.jpg");
+			//m_texturedCubes[0]->SetTextureName("../Textures/BrickWallRaw.jpg");
+			m_texturedCubes[0].SetTextureName("../Textures/BrickWallRaw.jpg");
 			m_coloredFloor->SetColor(0.0f, 1.0f, 0.0f);
 		}
 		else
 		{
-			m_texturedCubes[0].get()->SetTextureName("../Textures/Torgue.png");
+			//m_texturedCubes[0].get()->SetTextureName("../Textures/Torgue.png");
+			//m_texturedCubes[0]->SetTextureName("../Textures/Torgue.png");
+			m_texturedCubes[0].SetTextureName("../Textures/Torgue.png");
 			m_coloredFloor->SetColor(1.0f, 0.0f, 0.0f);
 		}
 	}
@@ -346,9 +369,15 @@ bool Game::ProcessInput()
 	
 	if (input->IsKeyDown(VK_RBUTTON))
 	{
-		for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
+		if (mouseMovement != Vector2f(0, 0))
 		{
-			m_texturedCubes[i].get()->Rotate(mouseMovement.y * 0.01f * (i + 1), mouseMovement.x * 0.01f * (i + 1), 0.0f);
+			unsigned int nrOfCubes = m_nrOfCubes;//m_texturedCubes.size();
+			for (unsigned int i = 0; i < nrOfCubes; i++)
+			{
+				//m_texturedCubes[i].get()->Rotate(mouseMovement.y * 0.01f * (i + 1), mouseMovement.x * 0.01f * (i + 1), 0.0f);
+				//m_texturedCubes[i]->Rotate(mouseMovement.y * 0.01f * (i + 1), mouseMovement.x * 0.01f * (i + 1), 0.0f);
+				m_texturedCubes[i].Rotate(mouseMovement.y * 0.01f * (i + 1), mouseMovement.x * 0.01f * (i + 1), 0.0f);
+			}
 		}
 	}
 	else
@@ -369,6 +398,7 @@ void Game::Update(double dt)
 	static float angle = 0.0f;
 	Camera* cam = PlayerCameraManager::Get()->GetCurrentCamera();
 	PointLightManager* lightManager = PointLightManager::Get();
+	unsigned int n;
 
 	angle += deltaTime;
 
@@ -378,16 +408,20 @@ void Game::Update(double dt)
 	cam->SetTarget(m_player->GetPosition() + m_player->GetLookDirection());
 	PlayerCameraManager::Get()->Update();
 
-	for (unsigned int i = 0; i < lightManager->GetNrOfPointLights(); i++)
+	n = lightManager->GetNrOfPointLights();
+	for (unsigned int i = 0; i < n; i++)
 	{
 		lightManager->GetPointLight(i)->SetPosition(Vector3f(std::cosf(angle + i * 0.5f), 1.0f, std::sinf(angle + i * 0.5f)) * 100.0f);
 		lightManager->GetPointLight(i)->SetTarget(Vector3f(0, 0, 0));
 		lightManager->GetPointLight(i)->Update();
 	}
 
-	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
+	n = m_nrOfCubes;//m_texturedCubes.size();
+	for (unsigned int i = 0; i < n; i++)
 	{
-		m_texturedCubes[i].get()->Update();
+		//m_texturedCubes[i].get()->Update();
+		//m_texturedCubes[i]->Update();
+		m_texturedCubes[i].Update();
 	}
 	m_coloredFloor->Update();
 
@@ -501,11 +535,13 @@ void Game::CubeIntersection()
 
 	IntersectionData data;
 
-	obb.center = m_texturedCubes[0]->GetPosition();
+	//obb.center = m_texturedCubes[0]->GetPosition();
+	obb.center = m_texturedCubes[0].GetPosition();
 	data = RayVsOBB(origin, direction, obb);
 	if (data.intersection)
 	{
-		m_texturedCubes[0]->SetTextureName("../Textures/BrickWallRaw.jpg");
+		//m_texturedCubes[0]->SetTextureName("../Textures/BrickWallRaw.jpg");
+		m_texturedCubes[0].SetTextureName("../Textures/BrickWallRaw.jpg");
 	}
 }
 
@@ -593,7 +629,7 @@ void Game::RenderNormal()
 	SingleColorModel* singleColorModel;
 	ID3D11ShaderResourceView* texture;
 
-	unsigned int nrOfCubes = m_texturedCubes.size();
+	unsigned int nrOfCubes = m_nrOfCubes;//m_texturedCubes.size();
 
 	/* ========================= Render texture objects ========================== */
 	shaders->SetShaderType(deviceContext, ShaderType::TEXTURE);
@@ -601,15 +637,21 @@ void Game::RenderNormal()
 	bufferStorage->SetVSPointLight(deviceContext, cam0->GetPosition(), 1.0f);
 
 	/* ------------------------- Render cubes ------------------------- */
-	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].get()->GetModelName());
+	//textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].get()->GetModelName());
+	//textureModel = modelStorage->GetTextureModel(m_texturedCubes[0]->GetModelName());
+	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].GetModelName());
 	textureModel->SetupRender(deviceContext);
 
-	texture = textureStorage->GetTexture(m_texturedCubes[0].get()->GetTextureName());
+	//texture = textureStorage->GetTexture(m_texturedCubes[0].get()->GetTextureName());
+	//texture = textureStorage->GetTexture(m_texturedCubes[0]->GetTextureName());
+	texture = textureStorage->GetTexture(m_texturedCubes[0].GetTextureName());
 	shaders->SetPerObjectTextureConstantBuffer(deviceContext, texture);
 
 	for (unsigned int i = 0; i < nrOfCubes; i++)
 	{
-		bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[i].get()->GetWorldMatrix());
+		//bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[i].get()->GetWorldMatrix());
+		//bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[i]->GetWorldMatrix());
+		bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[i].GetWorldMatrix());
 		textureModel->Render(deviceContext);
 	}
 
@@ -642,25 +684,34 @@ void Game::RenderDeferredFirstPass()
 	SingleColorModel* singleColorModel;
 	ID3D11ShaderResourceView* texture;
 
+	unsigned int n;
+
 	d3d->SetDeferredTargets();
 	d3d->ClearDeferredTargets();
+
+	bufferStorage->SetVSViewMatrix(deviceContext, cam->GetViewMatrix());
+	bufferStorage->SetVSProjectionMatrix(deviceContext, m_orthogonal ? cam->GetOrthogonalMatrix() : cam->GetProjectionMatrix());
 
 	/* ========================= Render texture objects ========================== */
 	shaders->SetShaderType(deviceContext, ShaderType::D_TEXTURE);
 
-	bufferStorage->SetVSViewMatrix(deviceContext, cam->GetViewMatrix());
-	bufferStorage->SetVSProjectionMatrix(deviceContext, cam->GetProjectionMatrix());
-
 	/* ------------------------- Render cubes ------------------------- */
-	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].get()->GetModelName());
+	//textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].get()->GetModelName());
+	//textureModel = modelStorage->GetTextureModel(m_texturedCubes[0]->GetModelName());
+	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].GetModelName());
 	textureModel->SetupRender(deviceContext);
 
-	texture = textureStorage->GetTexture(m_texturedCubes[0].get()->GetTextureName());
+	//texture = textureStorage->GetTexture(m_texturedCubes[0].get()->GetTextureName());
+	//texture = textureStorage->GetTexture(m_texturedCubes[0]->GetTextureName());
+	texture = textureStorage->GetTexture(m_texturedCubes[0].GetTextureName());
 	shaders->SetPerObjectDeferredTextureConstantBuffer(deviceContext, texture);
 
-	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
+	n = m_nrOfCubes;// m_texturedCubes.size();
+	for (unsigned int i = 0; i < n; i++)
 	{
-		bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[i].get()->GetWorldMatrix());
+		//bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[i].get()->GetWorldMatrix());
+		//bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[i]->GetWorldMatrix());
+		bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[i].GetWorldMatrix());
 		textureModel->Render(deviceContext);
 	}
 
@@ -677,7 +728,6 @@ void Game::RenderDeferredFirstPass()
 	
 	singleColorModel->Render(deviceContext);
 }
-
 void Game::RenderDeferredFirstPassChunks()
 {
 	Direct3D* d3d = Direct3D::Get();
@@ -695,31 +745,39 @@ void Game::RenderDeferredFirstPassChunks()
 	d3d->SetDeferredTargets();
 	d3d->ClearDeferredTargets();
 
+	bufferStorage->SetGSViewMatrix(deviceContext, cam->GetViewMatrix());
+	bufferStorage->SetGSProjectionMatrix(deviceContext, m_orthogonal ? cam->GetOrthogonalMatrix() : cam->GetProjectionMatrix());
+
 	/* ========================= Render texture objects ========================== */
 	shaders->SetShaderType(deviceContext, ShaderType::D_TEXTURE_CHUNK);
 
-	bufferStorage->SetGSViewMatrix(deviceContext, cam->GetViewMatrix());
-	bufferStorage->SetGSProjectionMatrix(deviceContext, cam->GetProjectionMatrix());
-
 	/* ------------------------- Render cubes ------------------------- */
-	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].get()->GetModelName());
+	//textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].get()->GetModelName());
+	//textureModel = modelStorage->GetTextureModel(m_texturedCubes[0]->GetModelName());
+	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].GetModelName());
 	textureModel->SetupRender(deviceContext);
 
-	texture = textureStorage->GetTexture(m_texturedCubes[0].get()->GetTextureName());
+	//texture = textureStorage->GetTexture(m_texturedCubes[0].get()->GetTextureName());
+	//texture = textureStorage->GetTexture(m_texturedCubes[0]->GetTextureName());
+	texture = textureStorage->GetTexture(m_texturedCubes[0].GetTextureName());
 	shaders->SetPerObjectDeferredTextureChunkShaderGroup(deviceContext, texture);
 
 	DirectX::XMMATRIX worldMatrices[CHUNK_SIZE];
 	
-	int nrOfFullRenderPasses = m_texturedCubes.size() / CHUNK_SIZE;
-	int nrOfCubesInFullRenderPasses = nrOfFullRenderPasses * CHUNK_SIZE;
-	int nrOfRemainingCubes = m_texturedCubes.size() - nrOfCubesInFullRenderPasses;
+	//int nrOfFullRenderPasses = m_texturedCubes.size() / CHUNK_SIZE;
+	unsigned int nrOfFullRenderPasses = m_nrOfCubes / CHUNK_SIZE;
+	unsigned int nrOfCubesInFullRenderPasses = nrOfFullRenderPasses * CHUNK_SIZE;
+	//int nrOfRemainingCubes = m_texturedCubes.size() - nrOfCubesInFullRenderPasses;
+	unsigned int nrOfRemainingCubes = m_nrOfCubes - nrOfCubesInFullRenderPasses;
 
 	// Render the full chunks of objects
 	for (unsigned int i = 0; i < nrOfFullRenderPasses; i++)
 	{
 		for (unsigned int j = 0; j < CHUNK_SIZE; j++)
 		{
-			worldMatrices[j] = m_texturedCubes[i * CHUNK_SIZE + j].get()->GetWorldMatrix();
+			//worldMatrices[j] = m_texturedCubes[i * CHUNK_SIZE + j].get()->GetWorldMatrix();
+			//worldMatrices[j] = m_texturedCubes[i * CHUNK_SIZE + j]->GetWorldMatrix();
+			worldMatrices[j] = m_texturedCubes[i * CHUNK_SIZE + j].GetWorldMatrix();
 		}
 
 		bufferStorage->SetGSWorldMatrixArray(deviceContext, worldMatrices);
@@ -732,7 +790,9 @@ void Game::RenderDeferredFirstPassChunks()
 	{
 		for (unsigned int i = 0; i < nrOfRemainingCubes; i++)
 		{
-			worldMatrices[i] = m_texturedCubes[nrOfCubesInFullRenderPasses + i].get()->GetWorldMatrix();
+			//worldMatrices[i] = m_texturedCubes[nrOfCubesInFullRenderPasses + i].get()->GetWorldMatrix();
+			//worldMatrices[i] = m_texturedCubes[nrOfCubesInFullRenderPasses + i]->GetWorldMatrix();
+			worldMatrices[i] = m_texturedCubes[nrOfCubesInFullRenderPasses + i].GetWorldMatrix();
 		}
 
 		bufferStorage->SetGSWorldMatrixArray(deviceContext, worldMatrices);
@@ -765,21 +825,28 @@ void Game::RenderDepth()
 	TextureModel* textureModel;
 	SingleColorModel* singleColorModel;
 
-	/* ========================= Render texture objects ========================== */
-	shaders->SetShaderType(deviceContext, ShaderType::DEPTH);
-	
+	unsigned int n;
+
 	shaders->SetPerFrameDepthConstantBuffer(
 		deviceContext,
 		cam->GetViewMatrix(),
 		m_orthogonal ? cam->GetOrthogonalMatrix() : cam->GetProjectionMatrix());
 
+	/* ========================= Render texture objects ========================== */
+	shaders->SetShaderType(deviceContext, ShaderType::DEPTH);
+
 	/* ------------------------- Render cubes ------------------------- */
-	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].get()->GetModelName());
+	//textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].get()->GetModelName());
+	//textureModel = modelStorage->GetTextureModel(m_texturedCubes[0]->GetModelName());
+	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].GetModelName());
 	textureModel->SetupRender(deviceContext);
 
-	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
+	n = m_nrOfCubes;//m_texturedCubes.size();
+	for (unsigned int i = 0; i < n; i++)
 	{
-		shaders->SetPerObjectDepthConstantBuffer(deviceContext, m_texturedCubes[i].get()->GetWorldMatrix());
+		//shaders->SetPerObjectDepthConstantBuffer(deviceContext, m_texturedCubes[i].get()->GetWorldMatrix());
+		//shaders->SetPerObjectDepthConstantBuffer(deviceContext, m_texturedCubes[i]->GetWorldMatrix());
+		shaders->SetPerObjectDepthConstantBuffer(deviceContext, m_texturedCubes[i].GetWorldMatrix());
 		textureModel->Render(deviceContext);
 	}
 
@@ -803,24 +870,31 @@ void Game::RenderShadowPass()
 	TextureModel* textureModel;
 	SingleColorModel* singleColorModel;
 
+	unsigned int n;
+
 	d3d->SetShadowTarget();
 	d3d->ClearShadowTarget();
+
+	bufferStorage->SetVSViewMatrix(deviceContext, cam0->GetViewMatrix());
+	bufferStorage->SetVSProjectionMatrix(deviceContext, m_orthogonal ? cam0->GetOrthogonalMatrix() : cam0->GetProjectionMatrix());
 
 	/* ========================= Render texture objects ========================== */
 	// Set texture shaders, then remove pixel shader
 	shaders->SetShaderType(deviceContext, ShaderType::D_TEXTURE);
 	shaders->SetShaderType(deviceContext, ShaderType::D_SHADOW);
 
-	bufferStorage->SetVSViewMatrix(deviceContext, cam0->GetViewMatrix());
-	bufferStorage->SetVSProjectionMatrix(deviceContext, cam0->GetProjectionMatrix());
-
 	/* ------------------------- Render cubes ------------------------- */
-	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].get()->GetModelName());
+	//textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].get()->GetModelName());
+	//textureModel = modelStorage->GetTextureModel(m_texturedCubes[0]->GetModelName());
+	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].GetModelName());
 	textureModel->SetupRender(deviceContext);
 
-	for (unsigned int i = 0; i < m_texturedCubes.size(); i++)
+	n = m_nrOfCubes;// m_texturedCubes.size();
+	for (unsigned int i = 0; i < n; i++)
 	{
-		bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[i].get()->GetWorldMatrix());
+		//bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[i].get()->GetWorldMatrix());
+		//bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[i]->GetWorldMatrix());
+		bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[i].GetWorldMatrix());
 		textureModel->Render(deviceContext);
 	}
 
@@ -836,7 +910,6 @@ void Game::RenderShadowPass()
 	singleColorModel->SetupRender(deviceContext);
 	singleColorModel->Render(deviceContext);
 }
-
 void Game::RenderShadowPassChunks()
 {
 	Direct3D* d3d = Direct3D::Get();
@@ -852,29 +925,35 @@ void Game::RenderShadowPassChunks()
 	d3d->SetShadowTarget();
 	d3d->ClearShadowTarget();
 
+	bufferStorage->SetGSViewMatrix(deviceContext, cam0->GetViewMatrix());
+	bufferStorage->SetGSProjectionMatrix(deviceContext, m_orthogonal ? cam0->GetOrthogonalMatrix() : cam0->GetProjectionMatrix());
+
 	/* ========================= Render texture objects ========================== */
 	shaders->SetShaderType(deviceContext, ShaderType::D_TEXTURE_CHUNK);
 	shaders->SetShaderType(deviceContext, ShaderType::D_SHADOW);
 
-	bufferStorage->SetGSViewMatrix(deviceContext, cam0->GetViewMatrix());
-	bufferStorage->SetGSProjectionMatrix(deviceContext, cam0->GetProjectionMatrix());
-
 	/* ------------------------- Render cubes ------------------------- */
-	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].get()->GetModelName());
+	//textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].get()->GetModelName());
+	//textureModel = modelStorage->GetTextureModel(m_texturedCubes[0]->GetModelName());
+	textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].GetModelName());
 	textureModel->SetupRender(deviceContext);
 
 	DirectX::XMMATRIX worldMatrices[CHUNK_SIZE];
 
-	int nrOfFullRenderPasses = m_texturedCubes.size() / CHUNK_SIZE;
-	int nrOfCubesInFullRenderPasses = nrOfFullRenderPasses * CHUNK_SIZE;
-	int nrOfRemainingCubes = m_texturedCubes.size() - nrOfCubesInFullRenderPasses;
+	//int nrOfFullRenderPasses = m_texturedCubes.size() / CHUNK_SIZE;
+	unsigned int nrOfFullRenderPasses = m_nrOfCubes / CHUNK_SIZE;
+	unsigned int nrOfCubesInFullRenderPasses = nrOfFullRenderPasses * CHUNK_SIZE;
+	//int nrOfRemainingCubes = m_texturedCubes.size() - nrOfCubesInFullRenderPasses;
+	unsigned int nrOfRemainingCubes = m_nrOfCubes - nrOfCubesInFullRenderPasses;
 
 	// Render the full chunks of objects
 	for (unsigned int i = 0; i < nrOfFullRenderPasses; i++)
 	{
 		for (unsigned int j = 0; j < CHUNK_SIZE; j++)
 		{
-			worldMatrices[j] = m_texturedCubes[i * CHUNK_SIZE + j].get()->GetWorldMatrix();
+			//worldMatrices[j] = m_texturedCubes[i * CHUNK_SIZE + j].get()->GetWorldMatrix();
+			//worldMatrices[j] = m_texturedCubes[i * CHUNK_SIZE + j]->GetWorldMatrix();
+			worldMatrices[j] = m_texturedCubes[i * CHUNK_SIZE + j].GetWorldMatrix();
 		}
 
 		bufferStorage->SetGSWorldMatrixArray(deviceContext, worldMatrices);
@@ -887,7 +966,9 @@ void Game::RenderShadowPassChunks()
 	{
 		for (unsigned int i = 0; i < nrOfRemainingCubes; i++)
 		{
-			worldMatrices[i] = m_texturedCubes[nrOfCubesInFullRenderPasses + i].get()->GetWorldMatrix();
+			//worldMatrices[i] = m_texturedCubes[nrOfCubesInFullRenderPasses + i].get()->GetWorldMatrix();
+			//worldMatrices[i] = m_texturedCubes[nrOfCubesInFullRenderPasses + i]->GetWorldMatrix();
+			worldMatrices[i] = m_texturedCubes[nrOfCubesInFullRenderPasses + i].GetWorldMatrix();
 		}
 
 		bufferStorage->SetGSWorldMatrixArray(deviceContext, worldMatrices);
@@ -907,7 +988,6 @@ void Game::RenderShadowPassChunks()
 	singleColorModel->SetupRender(deviceContext);
 	singleColorModel->Render(deviceContext);
 }
-
 void Game::RenderMultipleShadowsPass()
 {
 	Direct3D* d3d = Direct3D::Get();
@@ -923,31 +1003,34 @@ void Game::RenderMultipleShadowsPass()
 
 	PointLight* pointLight;
 
-	unsigned int nrOfCubes = m_texturedCubes.size();
+	unsigned int nrOfCubes = m_nrOfCubes;// m_texturedCubes.size();
 
 	for (unsigned int i = 0; i < lightManager->GetNrOfPointLights(); i++)
 	{
 		pointLight = lightManager->GetPointLight(i);
-		//pointLight = m_pointLights[i].get();
 
 		pointLight->Set(deviceContext);
 		pointLight->Clear(deviceContext);
+
+		bufferStorage->SetVSViewMatrix(deviceContext, pointLight->GetView());
+		bufferStorage->SetVSProjectionMatrix(deviceContext, pointLight->GetProjection());
 
 		/* ========================= Render texture objects ========================== */
 		// Set texture shaders, then remove pixel shader
 		shaders->SetShaderType(deviceContext, ShaderType::D_TEXTURE);
 		shaders->SetShaderType(deviceContext, ShaderType::D_SHADOW);
 
-		bufferStorage->SetVSViewMatrix(deviceContext, pointLight->GetView());
-		bufferStorage->SetVSProjectionMatrix(deviceContext, pointLight->GetProjection());
-
 		/* ------------------------- Render cubes ------------------------- */
-		textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].get()->GetModelName());
+		//textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].get()->GetModelName());
+		//textureModel = modelStorage->GetTextureModel(m_texturedCubes[0]->GetModelName());
+		textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].GetModelName());
 		textureModel->SetupRender(deviceContext);
 
 		for (unsigned int j = 0; j < nrOfCubes; j++)
 		{
-			bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[j].get()->GetWorldMatrix());
+			//bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[j].get()->GetWorldMatrix());
+			//bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[j]->GetWorldMatrix());
+			bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[j].GetWorldMatrix());
 			textureModel->Render(deviceContext);
 		}
 
@@ -964,6 +1047,7 @@ void Game::RenderMultipleShadowsPass()
 		singleColorModel->Render(deviceContext);
 	}
 }
+
 void Game::RenderDeferredLightShadowPass()
 {
 	Direct3D* d3d = Direct3D::Get();

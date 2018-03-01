@@ -43,7 +43,7 @@ void main(triangle GS_IN input[3], inout TriangleStream<GS_OUT> outputStream)
 
 	matrix<float, 4, 4> viewProj = mul(view, projection);
 
-	for (unsigned int i = 0; i < n.x; i++)
+	for (int i = 0; i < n.x; i++)
 	{
 		for (unsigned int j = 0; j < 3; j++)
 		{
@@ -52,7 +52,7 @@ void main(triangle GS_IN input[3], inout TriangleStream<GS_OUT> outputStream)
 
 			// Send the minumum amount of required information
 			output.worldPosition = worldPos.xyz;
-			output.normal = normalize(mul(float4(input[j].normal, 1.0f), worlds[i]));
+			output.normal = normalize(mul(float4(input[j].normal, 0.0f), worlds[i]).xyz);
 
 			output.uv = input[j].uv;
 

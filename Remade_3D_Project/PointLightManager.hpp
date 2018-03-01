@@ -19,7 +19,7 @@ public:
 	PointLight * GetPointLight(unsigned int i);
 	const std::vector<std::unique_ptr<PointLight>>& GetPointLights() const;
 
-	int GetNrOfPointLights() const;
+	unsigned int GetNrOfPointLights() const;
 
 private:
 	std::vector<std::unique_ptr<PointLight>> m_pointLights;
