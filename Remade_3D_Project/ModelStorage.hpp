@@ -11,7 +11,7 @@ struct ID3D11Device;
 class SingleColorModel;
 class TextureModel;
 
-class ModelStorage : public Singleton<ModelStorage>
+class ModelStorage final : public Singleton<ModelStorage>
 {
 	friend class Singleton<ModelStorage>;
 	ModelStorage();

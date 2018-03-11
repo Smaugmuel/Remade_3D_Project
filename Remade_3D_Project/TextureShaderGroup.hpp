@@ -6,7 +6,7 @@
 
 struct ID3D11ShaderResourceView;
 
-class TextureShaderGroup : public ShaderGroup
+class TextureShaderGroup final : public ShaderGroup
 {
 public:
 	TextureShaderGroup();

@@ -9,7 +9,7 @@
 struct ID3D11Buffer;
 struct ID3D11ShaderResourceView;
 
-class DeferredLightMultipleShadowLightsShaderGroup : public ShaderGroup
+class DeferredLightMultipleShadowLightsShaderGroup final : public ShaderGroup
 {
 	struct PointLight
 	{

@@ -40,7 +40,7 @@ public:
 	bool CreateVertexBuffer(ID3D11Device* device) override;
 	void SetupRender(ID3D11DeviceContext* deviceContext) override;
 
-	static Model* Create(ID3D11Device* device, const char* fileName);
+	//static Model* Create(ID3D11Device* device, const char* fileName);
 
 private:
 	TextureVertex* m_vertices;

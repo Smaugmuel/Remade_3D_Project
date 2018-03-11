@@ -40,7 +40,7 @@ enum ShaderType
 };
 
 
-class ShaderManager : public Singleton<ShaderManager>
+class ShaderManager final : public Singleton<ShaderManager>
 {
 	friend class Singleton<ShaderManager>;
 	ShaderManager();

@@ -50,7 +50,6 @@ void main(triangle GS_IN input[3], inout TriangleStream<GS_OUT> outputStream)
 			float4 worldPos = mul(float4(input[j].position, 1.0f), worlds[i]);
 			output.position = mul(worldPos, viewProj);
 
-			// Send the minumum amount of required information
 			output.worldPosition = worldPos.xyz;
 			output.normal = normalize(mul(float4(input[j].normal, 0.0f), worlds[i]).xyz);
 

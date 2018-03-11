@@ -8,7 +8,7 @@
 
 struct ID3D11Buffer;
 
-class DeferredSingleColorShaderGroup : public ShaderGroup
+class DeferredSingleColorShaderGroup final : public ShaderGroup
 {
 public:
 	DeferredSingleColorShaderGroup();

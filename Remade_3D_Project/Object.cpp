@@ -140,10 +140,28 @@ const std::string & Object::GetModelName() const
 
 void Object::UpdateWorldMatrix()
 {
-	DirectX::XMMATRIX transformation =
+	DirectX::XMMATRIX transformationRot = DirectX::XMMatrixMultiply(
+		DirectX::XMMatrixRotationX(m_rotation.x),
+		DirectX::XMMatrixRotationY(m_rotation.y)
+	);
+	transformationRot = DirectX::XMMatrixMultiply(
+		transformationRot,
+		DirectX::XMMatrixRotationZ(m_rotation.z)
+	);
+
+	DirectX::XMMATRIX transformation = DirectX::XMMatrixMultiply(
+		DirectX::XMMatrixTranspose(DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z)),
+		DirectX::XMMatrixTranspose(transformationRot)
+	);
+	transformation = DirectX::XMMatrixMultiply(
+		transformation,
+		DirectX::XMMatrixTranspose(DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z))
+	);
+
+	/*DirectX::XMMATRIX transformation =
 		DirectX::XMMatrixTranspose(DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z)) *
 		DirectX::XMMatrixTranspose(DirectX::XMMatrixRotationX(m_rotation.x) * DirectX::XMMatrixRotationY(m_rotation.y) * DirectX::XMMatrixRotationZ(m_rotation.z)) *
-		DirectX::XMMatrixTranspose(DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z));
+		DirectX::XMMatrixTranspose(DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z));*/
 
 	DirectX::XMStoreFloat4x4(&m_worldMatrix, transformation);
 

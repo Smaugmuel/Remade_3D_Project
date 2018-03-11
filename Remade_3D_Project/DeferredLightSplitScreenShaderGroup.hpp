@@ -9,7 +9,7 @@
 struct ID3D11Buffer;
 struct ID3D11ShaderResourceView;
 
-class DeferredLightSplitScreenShaderGroup : public ShaderGroup
+class DeferredLightSplitScreenShaderGroup final : public ShaderGroup
 {
 	struct PS_PerFrameBuffer
 	{
@@ -26,7 +26,7 @@ public:
 	bool Initialize(ID3D11Device* device) override;
 
 	void SetupShaders(ID3D11DeviceContext* deviceContext) override;
-	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources, ID3D11ShaderResourceView* depthTexture/*, Vector3f lightPosition, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix, float lightIntensity*/);
+	void SetupPerFrameBuffer(ID3D11DeviceContext* deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView** resources, ID3D11ShaderResourceView* depthTexture);
 
 private:
 	std::string m_samplerName;

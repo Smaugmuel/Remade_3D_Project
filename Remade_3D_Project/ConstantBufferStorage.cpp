@@ -171,24 +171,6 @@ bool ConstantBufferStorage::SetPSProjectionMatrix(ID3D11DeviceContext * deviceCo
 
 	return true;
 }
-bool ConstantBufferStorage::SetPSPointLight(ID3D11DeviceContext * deviceContext, const Vector3f & position, float intensity)
-{
-	if (!MapPointLight(deviceContext, position, intensity))
-		return false;
-
-	deviceContext->PSSetConstantBuffers(2, 1, &m_pointLightBuffer);
-
-	return true;
-}
-bool ConstantBufferStorage::SetPSPointLightArray(ID3D11DeviceContext * deviceContext, Vector3f * positions, float * intensities)
-{
-	if (!MapPointLightArray(deviceContext, positions, intensities))
-		return false;
-
-	deviceContext->PSSetConstantBuffers(3, 1, &m_pointLightArrayBuffer);
-
-	return true;
-}
 bool ConstantBufferStorage::SetPSViewMatrixArray(ID3D11DeviceContext * deviceContext, DirectX::XMMATRIX * matrices)
 {
 	if (!MapViewMatrixArray(deviceContext, matrices))
@@ -204,6 +186,24 @@ bool ConstantBufferStorage::SetPSProjectionMatrixArray(ID3D11DeviceContext * dev
 		return false;
 
 	deviceContext->PSSetConstantBuffers(5, 1, &m_projectionArrayBuffer);
+
+	return true;
+}
+bool ConstantBufferStorage::SetPSPointLight(ID3D11DeviceContext * deviceContext, const Vector3f & position, float intensity)
+{
+	if (!MapPointLight(deviceContext, position, intensity))
+		return false;
+
+	deviceContext->PSSetConstantBuffers(2, 1, &m_pointLightBuffer);
+
+	return true;
+}
+bool ConstantBufferStorage::SetPSPointLightArray(ID3D11DeviceContext * deviceContext, Vector3f * positions, float * intensities)
+{
+	if (!MapPointLightArray(deviceContext, positions, intensities))
+		return false;
+
+	deviceContext->PSSetConstantBuffers(3, 1, &m_pointLightArrayBuffer);
 
 	return true;
 }
@@ -226,7 +226,11 @@ bool ConstantBufferStorage::MapWorldMatrix(ID3D11DeviceContext * deviceContext, 
 		return false;
 
 	data = static_cast<Matrix*>(mappedResource.pData);
-	data->matrix = matrix;
+	
+	// memcpy here instead of regular assignment bumped frames from 129 to 135
+
+	//data->matrix = matrix;
+	memcpy(&data->matrix, &matrix, sizeof(matrix));
 
 	deviceContext->Unmap(m_worldBuffer, 0);
 	
@@ -241,6 +245,8 @@ bool ConstantBufferStorage::MapViewMatrix(ID3D11DeviceContext * deviceContext, c
 		return false;
 
 	data = static_cast<Matrix*>(mappedResource.pData);
+
+	// memcpy here instead of regular assignment didn't change frames from ~130
 	data->matrix = matrix;
 
 	deviceContext->Unmap(m_viewBuffer, 0);
@@ -256,9 +262,68 @@ bool ConstantBufferStorage::MapProjectionMatrix(ID3D11DeviceContext * deviceCont
 		return false;
 
 	data = static_cast<Matrix*>(mappedResource.pData);
+
+	// memcpy here instead of regular assignment didn't change frames from ~130
 	data->matrix = matrix;
 
 	deviceContext->Unmap(m_projectionBuffer, 0);
+
+	return true;
+}
+bool ConstantBufferStorage::MapWorldMatrixArray(ID3D11DeviceContext * deviceContext, DirectX::XMMATRIX * matrices)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	MatrixChunk* data;
+
+	if (FAILED(deviceContext->Map(m_worldArrayBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+		return false;
+
+	data = static_cast<MatrixChunk*>(mappedResource.pData);
+
+	// This memcpy gave 267 frames in deferred chunk
+	// Looping through each matrix and memcpy each gave 257
+	// Looping through each matrix and using regular assignment gave 248 frames
+	memcpy(data->matrices, matrices, sizeof(matrices[0]) * CHUNK_SIZE);
+
+	deviceContext->Unmap(m_worldArrayBuffer, 0);
+
+	return true;
+}
+bool ConstantBufferStorage::MapViewMatrixArray(ID3D11DeviceContext * deviceContext, DirectX::XMMATRIX * matrices)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	MatrixArray* data;
+
+	if (FAILED(deviceContext->Map(m_viewArrayBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+		return false;
+
+	data = static_cast<MatrixArray*>(mappedResource.pData);
+
+	for (unsigned int i = 0; i < MAX_NR_OF_LIGHTS; i++)
+	{
+		data->matrices[i] = matrices[i];
+	}
+
+	deviceContext->Unmap(m_viewArrayBuffer, 0);
+
+	return true;
+}
+bool ConstantBufferStorage::MapProjectionMatrixArray(ID3D11DeviceContext * deviceContext, DirectX::XMMATRIX * matrices)
+{
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	MatrixArray* data;
+
+	if (FAILED(deviceContext->Map(m_projectionArrayBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+		return false;
+
+	data = static_cast<MatrixArray*>(mappedResource.pData);
+
+	for (unsigned int i = 0; i < MAX_NR_OF_LIGHTS; i++)
+	{
+		data->matrices[i] = matrices[i];
+	}
+
+	deviceContext->Unmap(m_projectionArrayBuffer, 0);
 
 	return true;
 }
@@ -320,44 +385,6 @@ bool ConstantBufferStorage::MapColor(ID3D11DeviceContext * deviceContext, const 
 
 	return true;
 }
-bool ConstantBufferStorage::MapViewMatrixArray(ID3D11DeviceContext * deviceContext, DirectX::XMMATRIX * matrices)
-{
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	MatrixArray* data;
-
-	if (FAILED(deviceContext->Map(m_viewArrayBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
-		return false;
-
-	data = static_cast<MatrixArray*>(mappedResource.pData);
-
-	for (unsigned int i = 0; i < MAX_NR_OF_LIGHTS; i++)
-	{
-		data->matrices[i] = matrices[i];
-	}
-
-	deviceContext->Unmap(m_viewArrayBuffer, 0);
-
-	return true;
-}
-bool ConstantBufferStorage::MapProjectionMatrixArray(ID3D11DeviceContext * deviceContext, DirectX::XMMATRIX * matrices)
-{
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	MatrixArray* data;
-
-	if (FAILED(deviceContext->Map(m_projectionArrayBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
-		return false;
-
-	data = static_cast<MatrixArray*>(mappedResource.pData);
-
-	for (unsigned int i = 0; i < MAX_NR_OF_LIGHTS; i++)
-	{
-		data->matrices[i] = matrices[i];
-	}
-
-	deviceContext->Unmap(m_projectionArrayBuffer, 0);
-
-	return true;
-}
 bool ConstantBufferStorage::MapNrOfLights(ID3D11DeviceContext * deviceContext, int nrOfLights)
 {
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -371,26 +398,6 @@ bool ConstantBufferStorage::MapNrOfLights(ID3D11DeviceContext * deviceContext, i
 	data->i[0] = nrOfLights;
 
 	deviceContext->Unmap(m_nrOfLightsBuffer, 0);
-
-	return true;
-}
-
-bool ConstantBufferStorage::MapWorldMatrixArray(ID3D11DeviceContext * deviceContext, DirectX::XMMATRIX * matrices)
-{
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	MatrixChunk* data;
-
-	if (FAILED(deviceContext->Map(m_worldArrayBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
-		return false;
-
-	data = static_cast<MatrixChunk*>(mappedResource.pData);
-
-	for (unsigned int i = 0; i < CHUNK_SIZE; i++)
-	{
-		data->matrices[i] = matrices[i];
-	}
-
-	deviceContext->Unmap(m_worldArrayBuffer, 0);
 
 	return true;
 }

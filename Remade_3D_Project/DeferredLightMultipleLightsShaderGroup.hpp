@@ -6,7 +6,7 @@
 
 struct ID3D11ShaderResourceView;
 
-class DeferredLightMultipleLightsShaderGroup : public ShaderGroup
+class DeferredLightMultipleLightsShaderGroup final : public ShaderGroup
 {
 public:
 	DeferredLightMultipleLightsShaderGroup();

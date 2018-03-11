@@ -70,7 +70,7 @@ bool TextureModel::LoadFromFile(const char * fileName)
 			int normalIndex[4];
 			int uvIndex[4];
 
-			int index = 0;
+			int nrOfVertsOnFace = 0;
 
 			std::string str;
 			while (stringStream >> str)
@@ -80,20 +80,24 @@ bool TextureModel::LoadFromFile(const char * fileName)
 
 				std::istringstream stringStream2(str);
 
-				stringStream2 >> positionIndex[index] >> uvIndex[index] >> normalIndex[index];
+				stringStream2 >> positionIndex[nrOfVertsOnFace] >> uvIndex[nrOfVertsOnFace] >> normalIndex[nrOfVertsOnFace];
 
-				positionIndex[index]--;
-				normalIndex[index]--;
-				uvIndex[index]--;
-				index++;
+				positionIndex[nrOfVertsOnFace]--;
+				normalIndex[nrOfVertsOnFace]--;
+				uvIndex[nrOfVertsOnFace]--;
+				nrOfVertsOnFace++;
 			}
 
 			vertices.push_back(TextureVertex(positions[positionIndex[0]], normals[normalIndex[0]], uvs[uvIndex[0]]));
 			vertices.push_back(TextureVertex(positions[positionIndex[1]], normals[normalIndex[1]], uvs[uvIndex[1]]));
 			vertices.push_back(TextureVertex(positions[positionIndex[2]], normals[normalIndex[2]], uvs[uvIndex[2]]));
-			vertices.push_back(TextureVertex(positions[positionIndex[2]], normals[normalIndex[2]], uvs[uvIndex[2]]));
-			vertices.push_back(TextureVertex(positions[positionIndex[3]], normals[normalIndex[3]], uvs[uvIndex[3]]));
-			vertices.push_back(TextureVertex(positions[positionIndex[0]], normals[normalIndex[0]], uvs[uvIndex[0]]));
+					
+			if (nrOfVertsOnFace == 4)
+			{
+				vertices.push_back(TextureVertex(positions[positionIndex[2]], normals[normalIndex[2]], uvs[uvIndex[2]]));
+				vertices.push_back(TextureVertex(positions[positionIndex[3]], normals[normalIndex[3]], uvs[uvIndex[3]]));
+				vertices.push_back(TextureVertex(positions[positionIndex[0]], normals[normalIndex[0]], uvs[uvIndex[0]]));
+			}
 		}
 	}
 
@@ -131,19 +135,19 @@ void TextureModel::SetupRender(ID3D11DeviceContext * deviceContext)
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-Model * TextureModel::Create(ID3D11Device * device, const char * fileName)
-{
-	Model* model = new TextureModel;
-	if (!model->LoadFromFile(fileName))
-	{
-		delete model;
-		return nullptr;
-	}
-	if (!model->CreateVertexBuffer(device))
-	{
-		delete model;
-		return nullptr;
-	}
-
-	return model;
-}
+//Model * TextureModel::Create(ID3D11Device * device, const char * fileName)
+//{
+//	Model* model = new TextureModel;
+//	if (!model->LoadFromFile(fileName))
+//	{
+//		delete model;
+//		return nullptr;
+//	}
+//	if (!model->CreateVertexBuffer(device))
+//	{
+//		delete model;
+//		return nullptr;
+//	}
+//
+//	return model;
+//}

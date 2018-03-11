@@ -1,5 +1,5 @@
-#ifndef SYSTEM_INFORMATION_HPP
-#define SYSTEM_INFORMATION_HPP
+#ifndef WINDOW_SETTINGS_HPP
+#define WINDOW_SETTINGS_HPP
 
 const unsigned int WNDW = 800;
 const unsigned int WNDH = 800;

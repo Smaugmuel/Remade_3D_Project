@@ -6,7 +6,7 @@
 
 struct ID3D11ShaderResourceView;
 
-class HUDShaderGroup : public ShaderGroup
+class HUDShaderGroup final : public ShaderGroup
 {
 public:
 	HUDShaderGroup();

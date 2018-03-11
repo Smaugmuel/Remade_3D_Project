@@ -8,7 +8,7 @@
 
 struct ID3D11ShaderResourceView;
 
-class DeferredTextureChunkShaderGroup : public ShaderGroup
+class DeferredTextureChunkShaderGroup final : public ShaderGroup
 {
 public:
 	DeferredTextureChunkShaderGroup();

@@ -6,7 +6,7 @@ struct ID3D11Device;
 struct ID3D11DeviceContext;
 class HUDText;
 
-class FPSCounter
+class FPSCounter final
 {
 public:
 	FPSCounter();

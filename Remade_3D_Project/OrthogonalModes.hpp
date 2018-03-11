@@ -1,0 +1,10 @@
+#ifndef ORTHOGONAL_MODES_HPP
+#define ORTHOGONAL_MODES_HPP
+
+enum OrthogonalMode
+{
+	ORTHOGONAL_OFF,
+	ORTHOGONAL_ON
+};
+
+#endif

@@ -1,6 +1,6 @@
 #include "Camera.hpp"
 #include <math.h>
-#include "SystemInformation.hpp"
+#include "WindowSettings.hpp"
 
 Camera::Camera()
 {

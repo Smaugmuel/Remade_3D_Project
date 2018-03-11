@@ -1,47 +1,48 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 #include "Singleton.hpp"
-//#include "SystemInformation.hpp"
-#include <memory>
-#include <vector>
+#include "EventReceiver.hpp"
+
 #include <chrono>
 
-class TextureObject;
-class SingleColorObject;
-class HUDObject;
-class PointLight;
-class FPSCounter;
-class Character;
+#include "StateMachine.hpp"
+#include "GameState.hpp"
 
-template<typename StateCategory> class StateMachine;
+//class TextureObject;
+//class SingleColorObject;
+//class HUDObject;
+//class PointLight;
+//class FPSCounter;
+//class Character;
+////class QuadTree;
 
-enum RenderMode
-{
-	NORMAL_MODE,
-	DEFERRED_MODE,
-	DEFERRED_CHUNK_MODE,
-	DEFERRED_SPLIT_MODE,
-	DEFERRED_MULTIPLE_LIGHTS_MODE,
-	DEFERRED_MULTIPLE_SHADOW_LIGHTS_MODE,
-	DEPTH_MODE,
-	NR_OF_RENDER_MODES
-};
-enum HUDMode
-{
-	HUD_OFF,
-	TORGUE_HUD,
-	DEFERRED_POSITIONS,
-	DEFERRED_NORMALS,
-	DEFERRED_COLORS,
-	NR_OF_HUD_MODES
-};
-enum OrthogonalMode
-{
-	ORTHOGONAL_OFF,
-	ORTHOGONAL_ON
-};
+//enum RenderMode
+//{
+//	NORMAL_MODE,
+//	DEFERRED_MODE,
+//	DEFERRED_CHUNK_MODE,
+//	DEFERRED_SPLIT_MODE,
+//	DEFERRED_MULTIPLE_LIGHTS_MODE,
+//	DEFERRED_MULTIPLE_SHADOW_LIGHTS_MODE,
+//	DEPTH_MODE,
+//	NR_OF_RENDER_MODES
+//};
+//enum HUDMode
+//{
+//	HUD_OFF,
+//	TORGUE_HUD,
+//	DEFERRED_POSITIONS,
+//	DEFERRED_NORMALS,
+//	DEFERRED_COLORS,
+//	NR_OF_HUD_MODES
+//};
+//enum OrthogonalMode
+//{
+//	ORTHOGONAL_OFF,
+//	ORTHOGONAL_ON
+//};
 
-class Game final : public Singleton<Game>
+class Game final : public Singleton<Game>, public EventReceiver
 {
 	typedef std::chrono::high_resolution_clock Clock;
 	typedef std::chrono::time_point<std::chrono::steady_clock> Time;
@@ -55,14 +56,15 @@ public:
 	bool Initialize();
 	void Run();
 
-	bool ProcessInput();
-	void Update(double dt);
-	void Render();
+	/*bool ProcessInput();
+	void Update(float dt);
+	void Render();*/
 
 private:
-	void MapProjectionMatrix();
+	void ReceiveEvent(const Event& e) override;
 
-	//void CreatePickingVector(float x, float y);
+	/*void MapProjectionMatrix();
+
 	void CubeIntersection();
 
 	void RenderNormal();
@@ -77,19 +79,18 @@ private:
 	void RenderDeferredLightMultiplePass();
 	void RenderDeferredLightMultipleShadowsPass();
 	void RenderHUD();
-	void RenderHUDText();
+	void RenderHUDText();*/
 
 
-	//std::vector<std::unique_ptr<TextureObject>> m_texturedCubes;
-	/*static const*/ unsigned int m_nrOfCubes;// = 10000;
-	TextureObject* m_texturedCubes;//[m_nrOfCubes];
+	StateMachine<GameState> m_gameStateMachine;
+	bool m_pop_game_state_flag;
+
+
+	/*unsigned int m_nrOfCubes;
+	TextureObject* m_texturedCubes;
 
 	std::unique_ptr<SingleColorObject> m_coloredFloor;
 	std::unique_ptr<HUDObject> m_HUDObject;
-
-	/*std::unique_ptr<PointLight> m_pointLights[MAX_NR_OF_LIGHTS];
-	unsigned int m_nrOfLights;
-	unsigned int m_currentLight;*/
 
 	std::unique_ptr<FPSCounter> m_fpsCounter;
 
@@ -97,8 +98,9 @@ private:
 	HUDMode m_HUDMode;
 	OrthogonalMode m_orthogonal;
 
+	//std::unique_ptr<QuadTree> m_quadTree;
 
-	std::unique_ptr<Character> m_player;
+	std::unique_ptr<Character> m_player;*/
 };
 
 #endif

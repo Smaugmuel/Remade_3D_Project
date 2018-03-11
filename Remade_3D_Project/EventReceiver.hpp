@@ -4,16 +4,13 @@
 
 // Each inheriting class needs to check which event type was sent, and then static_cast the value to a pointer of the corresponding value type
 
-namespace Engine
+class EventReceiver
 {
-	class EventReceiver
-	{
-	public:
-		EventReceiver() {}
-		virtual ~EventReceiver() {}
+public:
+	EventReceiver() {}
+	virtual ~EventReceiver() {}
 
-		virtual void ReceiveEvent(const Event& e) = 0;
-	};
-}
+	virtual void ReceiveEvent(const Event& e) = 0;
+};
 
 #endif

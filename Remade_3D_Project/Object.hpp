@@ -20,8 +20,8 @@ public:
 	void Rotate(const Vector3f& offset);
 	void Rotate(float x, float y, float z);
 
-	void SetPosition(const Vector3f& position);
-	void SetPosition(float x, float y, float z);
+	virtual void SetPosition(const Vector3f& position);
+	virtual void SetPosition(float x, float y, float z);
 	void SetRotation(const Vector3f& rotation);
 	void SetRotation(float x, float y, float z);
 	void SetScale(const Vector3f& scale);

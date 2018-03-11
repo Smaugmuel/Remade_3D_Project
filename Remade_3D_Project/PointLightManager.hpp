@@ -6,7 +6,7 @@
 #include <vector>
 #include <memory>
 
-class PointLightManager : public Singleton<PointLightManager>
+class PointLightManager final : public Singleton<PointLightManager>
 {
 	friend class Singleton<PointLightManager>;
 	PointLightManager();

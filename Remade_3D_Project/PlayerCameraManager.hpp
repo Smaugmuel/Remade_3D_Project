@@ -7,7 +7,7 @@
 
 class Camera;
 
-class PlayerCameraManager : public Singleton<PlayerCameraManager>
+class PlayerCameraManager final : public Singleton<PlayerCameraManager>
 {
 	friend class Singleton <PlayerCameraManager>;
 

@@ -1,6 +1,7 @@
 #include "Collision.hpp"
 #include <algorithm>
 
+
 //IntersectionData RayVsAABB(const Vector3f & origin, const Vector3f & direction, const AABB & aabb)
 //{
 //	Vector3f planePointX = aabb.center;
@@ -106,7 +107,7 @@ IntersectionData RayVsOBB(const Vector3f & origin, const Vector3f & direction, c
 		}
 
 		// Check if ray would go past obb
-		else if (std::fabsf(e) < obb.halfSides[i])
+		else if (std::fabsf(e) > obb.halfSides[i])
 		{
 			return IntersectionData();
 		}
@@ -119,4 +120,73 @@ IntersectionData RayVsOBB(const Vector3f & origin, const Vector3f & direction, c
 	}
 
 	return IntersectionData(true, t_max);
+}
+
+
+
+Collision* Singleton<Collision>::s_instance = nullptr;
+
+Collision::Collision()
+{
+}
+
+Collision::~Collision()
+{
+}
+
+bool Collision::FrustumVSOBB(const Frustum & frustum, const OBB & obb)
+{
+	Vector3f halfSides[3];
+	Vector3f diagonals[4];
+
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		halfSides[i] = obb.vectors[i] * obb.halfSides[i];
+	}
+
+	diagonals[0] = halfSides[0] + halfSides[1] + halfSides[2];
+	diagonals[1] = halfSides[0] + halfSides[1] - halfSides[2];
+	diagonals[2] = halfSides[0] - halfSides[1] + halfSides[2];
+	diagonals[3] = halfSides[0] - halfSides[1] - halfSides[2];
+
+	for (unsigned int i = 0; i < 6; i++)
+	{
+		float highDot = 0.0f;
+		unsigned int highIndex = 0;
+		int highIsPositive = 1;
+
+		for (unsigned int j = 0; j < 4; j++)
+		{
+			float tempDot = frustum.planes[i].normal.dot(diagonals[j]);
+			int isPositive = 1;
+
+			if (tempDot < 0.0f)
+			{
+				tempDot = -tempDot;
+				isPositive = -1;
+			}
+
+			if (tempDot > highDot)
+			{
+				highIndex = j;
+				highDot = tempDot;
+				highIsPositive = isPositive;
+			}
+		}
+
+		if (DistancePlaneToPoint(frustum.planes[i], obb.center + diagonals[highIndex] * static_cast<float>(highIsPositive)) > 0.0f)
+			return false;
+	}
+
+	return true;
+}
+
+bool Collision::FrustumVSPoint(const Frustum & frustum, Vector3f point)
+{
+	return false;
+}
+
+float Collision::DistancePlaneToPoint(const Plane & plane, Vector3f point)
+{
+	return plane.normal.dot(point) + plane.d;
 }

@@ -1,7 +1,7 @@
 #include "HUDObject.hpp"
 #include <d3d11.h>
 #include "Texture.hpp"
-#include "SystemInformation.hpp"
+#include "WindowSettings.hpp"
 
 HUDObject::HUDObject()
 {

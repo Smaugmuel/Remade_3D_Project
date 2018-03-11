@@ -4,7 +4,7 @@ Texture2D colorTexture : register(t2);
 
 SamplerState sampleState : register(s0);
 
-// Change in SystemInformation.hpp aswell
+// Change in LightSettings.hpp aswell
 static const unsigned int MAX_NR_OF_LIGHTS = 8;
 
 Texture2D depthTextures[MAX_NR_OF_LIGHTS];

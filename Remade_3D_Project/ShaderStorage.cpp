@@ -8,12 +8,12 @@ ShaderStorage* Singleton<ShaderStorage>::s_instance = nullptr;
 
 ShaderStorage::ShaderStorage()
 {
-	Description* desc;
+	InputDescription* desc;
 
 	/* ================================ Create input layout descriptions ================================ */
 
 	// Position, Normal, Color
-	desc = &m_descriptions["PNC"];
+	desc = &m_inputDescriptions["PNC"];
 	desc->n = 3;
 	desc->elements = new D3D11_INPUT_ELEMENT_DESC[3];
 	desc->elements[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 };
@@ -21,7 +21,7 @@ ShaderStorage::ShaderStorage()
 	desc->elements[2] = { "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
 
 	// Position, Normal, UV
-	desc = &m_descriptions["PNU"];
+	desc = &m_inputDescriptions["PNU"];
 	desc->n = 3;
 	desc->elements = new D3D11_INPUT_ELEMENT_DESC[3];
 	desc->elements[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 };
@@ -29,14 +29,14 @@ ShaderStorage::ShaderStorage()
 	desc->elements[2] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
 
 	// Position, UV
-	desc = &m_descriptions["PU"];
+	desc = &m_inputDescriptions["PU"];
 	desc->n = 2;
 	desc->elements = new D3D11_INPUT_ELEMENT_DESC[2];
 	desc->elements[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 };
 	desc->elements[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
 
 	// Position
-	desc = &m_descriptions["P"];
+	desc = &m_inputDescriptions["P"];
 	desc->n = 1;
 	desc->elements = new D3D11_INPUT_ELEMENT_DESC[1];
 	desc->elements[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 };
@@ -51,7 +51,7 @@ ShaderStorage::ShaderStorage()
 }
 ShaderStorage::~ShaderStorage()
 {
-	for (auto a : m_descriptions)
+	for (auto a : m_inputDescriptions)
 	{
 		delete[] a.second.elements;
 	}
@@ -91,14 +91,14 @@ bool ShaderStorage::CreateVertexShader(ID3D11Device * device, std::string name)
 
 	
 	std::string linkedName = m_linker[name];
-	Description desc = m_descriptions[linkedName];
+	InputDescription desc = m_inputDescriptions[linkedName];
 
 	result = device->CreateInputLayout(
 		desc.elements,
 		desc.n,
 		blob->GetBufferPointer(),
 		blob->GetBufferSize(),
-		&m_layouts[linkedName]
+		&m_inputLayouts[linkedName]
 	);
 	if (FAILED(result))
 		return false;
@@ -211,7 +211,7 @@ ID3D11InputLayout * ShaderStorage::GetInputLayout(std::string name)
 
 	return it2->second;*/
 
-	return m_layouts[m_linker[name]];
+	return m_inputLayouts.at(m_linker.at(name));
 }
 
 bool ShaderStorage::HasVertexShader(std::string name) const
@@ -225,6 +225,19 @@ bool ShaderStorage::HasGeometryShader(std::string name) const
 bool ShaderStorage::HasPixelShader(std::string name) const
 {
 	return m_pixelShaders.find(name) != m_pixelShaders.end();
+}
+
+unsigned int ShaderStorage::NrOfVertexShaders() const
+{
+	return static_cast<unsigned int>(m_vertexShaders.size());
+}
+unsigned int ShaderStorage::NrOfGeometryShaders() const
+{
+	return static_cast<unsigned int>(m_geometryShaders.size());
+}
+unsigned int ShaderStorage::NrOfPixelShaders() const
+{
+	return static_cast<unsigned int>(m_pixelShaders.size());
 }
 
 std::wstring ShaderStorage::ToWideString(const std::string& str) const

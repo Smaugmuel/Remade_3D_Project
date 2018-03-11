@@ -2,7 +2,8 @@
 
 Character::Character()
 {
-	m_movementSpeed = 20.0f;
+	m_movementSpeed = 4.0f;
+	m_movementBoost = 1.0f;
 
 	m_isMovingRight = false;
 	m_isMovingLeft = false;
@@ -18,7 +19,7 @@ Character::~Character()
 
 void Character::Update(float dt)
 {
-	float movementAmount = 20.0f * dt;
+	float movementAmount = m_movementSpeed * m_movementBoost * dt;
 	Vector3f movements;
 
 	movements += GetRight() * static_cast<float>(m_isMovingRight - m_isMovingLeft);
@@ -59,6 +60,11 @@ void Character::SetMovementSpeed(float speed)
 	if (speed == 0.0f)
 		return;
 	m_movementSpeed = speed;
+}
+
+void Character::ToggleMovementBoost()
+{
+	m_movementBoost = m_movementBoost == 1.0f ? 10.0f : 1.0f;
 }
 
 void Character::SetIsMovingRight(bool b)

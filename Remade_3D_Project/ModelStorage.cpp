@@ -19,10 +19,10 @@ bool ModelStorage::LoadSingleColorModel(ID3D11Device* device, const std::string&
 
 	m_singleColorModels[name] = std::make_unique<SingleColorModel>();
 
-	if (!m_singleColorModels[name]->LoadFromFile(name.c_str()))
+	if (!m_singleColorModels.at(name).get()->LoadFromFile(name.c_str()))
 		return false;
 
-	if (!m_singleColorModels[name]->CreateVertexBuffer(device))
+	if (!m_singleColorModels.at(name).get()->CreateVertexBuffer(device))
 		return false;
 
 	return true;
@@ -35,10 +35,10 @@ bool ModelStorage::LoadTextureModel(ID3D11Device* device, const std::string& nam
 
 	m_textureModels[name] = std::make_unique<TextureModel>();
 
-	if (!m_textureModels[name]->LoadFromFile(name.c_str()))
+	if (!m_textureModels.at(name).get()->LoadFromFile(name.c_str()))
 		return false;
 
-	if (!m_textureModels[name]->CreateVertexBuffer(device))
+	if (!m_textureModels.at(name).get()->CreateVertexBuffer(device))
 		return false;
 
 	return true;
@@ -49,7 +49,7 @@ SingleColorModel * ModelStorage::GetSingleColorModel(const std::string& name)
 	/*if (!HasSingleColorModel(name))
 		return nullptr;*/
 
-	return m_singleColorModels[name].get();
+	return m_singleColorModels.at(name).get();
 }
 
 TextureModel * ModelStorage::GetTextureModel(const std::string& name)
@@ -57,7 +57,7 @@ TextureModel * ModelStorage::GetTextureModel(const std::string& name)
 	/*if (!HasTextureModel(name))
 		return nullptr;*/
 
-	return m_textureModels[name].get();
+	return m_textureModels.at(name).get();
 }
 
 bool ModelStorage::HasSingleColorModel(const std::string& name) const

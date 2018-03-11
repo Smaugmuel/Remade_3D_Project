@@ -7,7 +7,7 @@
 
 struct ID3D11Buffer;
 
-class DeferredShadowShaderGroup : public ShaderGroup
+class DeferredShadowShaderGroup final : public ShaderGroup
 {
 	struct VS_PerFrameBuffer
 	{

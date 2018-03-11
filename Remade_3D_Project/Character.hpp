@@ -18,6 +18,7 @@ public:
 	void SetLookDirection(Vector3f direction);
 
 	void SetMovementSpeed(float speed);
+	void ToggleMovementBoost();
 
 	void SetIsMovingRight(bool b);
 	void SetIsMovingLeft(bool b);
@@ -54,6 +55,7 @@ private:
 	Vector3f m_lookDirection;
 
 	float m_movementSpeed;
+	float m_movementBoost;
 };
 
 #endif

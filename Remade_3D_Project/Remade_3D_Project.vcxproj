@@ -147,6 +147,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AABA.cpp" />
+    <ClCompile Include="AABB.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="ConstantBufferStorage.cpp" />
@@ -155,8 +157,13 @@
     <ClCompile Include="DeferredLightSplitScreenShaderGroup.cpp" />
     <ClCompile Include="DeferredTextureChunkShaderGroup.cpp" />
     <ClCompile Include="DeferredTextureShaderGroup.cpp" />
+    <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="PlayState.cpp" />
+    <ClCompile Include="SceneEditor.cpp" />
     <ClCompile Include="EventDispatcher.cpp" />
     <ClCompile Include="FPS_Counter.cpp" />
+    <ClCompile Include="Frustum.cpp" />
+    <ClCompile Include="HelperFunctions.cpp" />
     <ClCompile Include="HUDObject.cpp" />
     <ClCompile Include="Buffers.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -166,12 +173,20 @@
     <ClCompile Include="HUDText.cpp" />
     <ClCompile Include="ModelStorage.cpp" />
     <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Plane.cpp" />
     <ClCompile Include="PlayerCameraManager.cpp" />
     <ClCompile Include="DeferredScreenTarget.cpp" />
     <ClCompile Include="DeferredShadowShaderGroup.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="PointLightManager.cpp" />
+    <ClCompile Include="QuadTree.cpp" />
+    <ClCompile Include="QuadTreeNode.cpp" />
+    <ClCompile Include="QuadTreeObject.cpp" />
+    <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="SamplerStorage.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="SceneEditorState.cpp" />
+    <ClCompile Include="SceneStorage.cpp" />
     <ClCompile Include="ShaderGroup.cpp" />
     <ClCompile Include="SingleColorShaderGroup.cpp" />
     <ClCompile Include="DeferredLightShadowShaderGroup.cpp" />
@@ -203,6 +218,7 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AABA.hpp" />
     <ClInclude Include="AABB.hpp" />
     <ClInclude Include="Character.hpp" />
     <ClInclude Include="ChunkRenderSettings.hpp" />
@@ -217,10 +233,18 @@
     <ClInclude Include="DeferredLightMultipleShadowLightsShaderGroup.hpp" />
     <ClInclude Include="DeferredLightSplitScreenShaderGroup.hpp" />
     <ClInclude Include="DeferredTextureShaderGroup.hpp" />
+    <ClInclude Include="GameState.hpp" />
+    <ClInclude Include="HUDModes.hpp" />
+    <ClInclude Include="OrthogonalModes.hpp" />
+    <ClInclude Include="PlayState.hpp" />
+    <ClInclude Include="RenderModes.hpp" />
+    <ClInclude Include="SceneEditor.hpp" />
     <ClInclude Include="Event.hpp" />
     <ClInclude Include="EventDispatcher.hpp" />
     <ClInclude Include="EventReceiver.hpp" />
     <ClInclude Include="FPS_Counter.hpp" />
+    <ClInclude Include="Frustum.hpp" />
+    <ClInclude Include="HelperFunctions.hpp" />
     <ClInclude Include="HUDObject.hpp" />
     <ClInclude Include="Camera.hpp" />
     <ClInclude Include="Buffers.hpp" />
@@ -232,12 +256,20 @@
     <ClInclude Include="ModelStorage.hpp" />
     <ClInclude Include="OBB.hpp" />
     <ClInclude Include="Object.hpp" />
+    <ClInclude Include="Plane.hpp" />
     <ClInclude Include="PlayerCameraManager.hpp" />
     <ClInclude Include="DeferredScreenTarget.hpp" />
     <ClInclude Include="DeferredShadowShaderGroup.hpp" />
     <ClInclude Include="PointLight.hpp" />
     <ClInclude Include="PointLightManager.hpp" />
+    <ClInclude Include="QuadTree.hpp" />
+    <ClInclude Include="QuadTreeNode.hpp" />
+    <ClInclude Include="QuadTreeObject.hpp" />
+    <ClInclude Include="RenderManager.hpp" />
     <ClInclude Include="SamplerStorage.hpp" />
+    <ClInclude Include="Scene.hpp" />
+    <ClInclude Include="SceneEditorState.hpp" />
+    <ClInclude Include="SceneStorage.hpp" />
     <ClInclude Include="ShaderGroup.hpp" />
     <ClInclude Include="SingleColorShaderGroup.hpp" />
     <ClInclude Include="DeferredLightShadowShaderGroup.hpp" />
@@ -262,7 +294,7 @@
     </ClInclude>
     <ClInclude Include="Singleton.hpp" />
     <ClInclude Include="StateMachine.hpp" />
-    <ClInclude Include="SystemInformation.hpp" />
+    <ClInclude Include="WindowSettings.hpp" />
     <ClInclude Include="Texture.hpp" />
     <ClInclude Include="TextureObject.hpp" />
     <ClInclude Include="TextureModel.hpp" />

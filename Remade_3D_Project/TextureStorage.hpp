@@ -9,7 +9,7 @@ class Texture;
 struct ID3D11Device;
 struct ID3D11ShaderResourceView;
 
-class TextureStorage : public Singleton<TextureStorage>
+class TextureStorage final : public Singleton<TextureStorage>
 {
 	friend class Singleton<TextureStorage>;
 

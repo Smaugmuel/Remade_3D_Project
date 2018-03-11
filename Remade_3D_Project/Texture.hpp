@@ -4,7 +4,7 @@
 struct ID3D11Device;
 struct ID3D11ShaderResourceView;
 
-class Texture
+class Texture final
 {
 public:
 	Texture();

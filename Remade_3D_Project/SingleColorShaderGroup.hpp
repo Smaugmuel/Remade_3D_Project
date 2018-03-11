@@ -2,7 +2,7 @@
 #define SINGLE_COLOR_SHADER_GROUP_HPP
 #include "ShaderGroup.hpp"
 
-class SingleColorShaderGroup : public ShaderGroup
+class SingleColorShaderGroup final : public ShaderGroup
 {
 public:
 	SingleColorShaderGroup();

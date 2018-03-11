@@ -7,7 +7,7 @@
 struct ID3D11Device;
 struct ID3D11SamplerState;
 
-class SamplerStorage : public Singleton<SamplerStorage>
+class SamplerStorage final : public Singleton<SamplerStorage>
 {
 	friend class Singleton<SamplerStorage>;
 	

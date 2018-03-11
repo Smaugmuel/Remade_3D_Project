@@ -7,7 +7,7 @@
 
 struct ID3D11Buffer;
 
-class DepthShaderGroup : public ShaderGroup
+class DepthShaderGroup final : public ShaderGroup
 {
 	struct VS_PerFrameBuffer
 	{

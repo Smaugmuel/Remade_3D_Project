@@ -121,22 +121,22 @@ void SingleColorModel::SetupRender(ID3D11DeviceContext * deviceContext)
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-Model* SingleColorModel::Create(ID3D11Device* device, const char* fileName)
-{
-	Model* model = new SingleColorModel;
-	if (!model->LoadFromFile(fileName))
-	{
-		delete model;
-		return nullptr;
-	}
-	if (!model->CreateVertexBuffer(device))
-	{
-		delete model;
-		return nullptr;
-	}
-
-	return model;
-}
+//Model* SingleColorModel::Create(ID3D11Device* device, const char* fileName)
+//{
+//	Model* model = new SingleColorModel;
+//	if (!model->LoadFromFile(fileName))
+//	{
+//		delete model;
+//		return nullptr;
+//	}
+//	if (!model->CreateVertexBuffer(device))
+//	{
+//		delete model;
+//		return nullptr;
+//	}
+//
+//	return model;
+//}
 
 //BaseModel* SingleColorModel::Create(const std::string& fileName, ID3D11Device* device)
 //{

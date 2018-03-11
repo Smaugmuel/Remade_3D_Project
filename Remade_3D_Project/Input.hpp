@@ -15,15 +15,15 @@ public:
 
 	bool IsKeyDown(unsigned int key) const;
 	bool IsKeyPressed(unsigned int key) const;
-	const Vector2f& MousePosition() const;
-	const Vector2f MouseMovement() const;
+	const Vector2i& MousePosition() const;
+	const Vector2i MouseMovement() const;
 
 private:
 	bool m_keysDown[256];
 	bool m_keysDownPrev[256];
 
-	Vector2f m_mousePos;
-	Vector2f m_mousePosPrev;
+	Vector2i m_mousePos;
+	Vector2i m_mousePosPrev;
 };
 
 #endif

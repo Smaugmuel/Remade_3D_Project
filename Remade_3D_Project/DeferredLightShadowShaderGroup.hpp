@@ -8,7 +8,7 @@
 
 struct ID3D11ShaderResourceView;
 
-class DeferredLightShadowShaderGroup : public ShaderGroup
+class DeferredLightShadowShaderGroup final : public ShaderGroup
 {
 public:
 	DeferredLightShadowShaderGroup();

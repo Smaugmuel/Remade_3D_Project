@@ -2,17 +2,17 @@
 #include <algorithm>
 #include "EventReceiver.hpp"
 
-Engine::EventDispatcher* Singleton<Engine::EventDispatcher>::s_instance = nullptr;
+EventDispatcher* Singleton<EventDispatcher>::s_instance = nullptr;
 
-Engine::EventDispatcher::EventDispatcher()
+EventDispatcher::EventDispatcher()
 {
 }
 
-Engine::EventDispatcher::~EventDispatcher()
+EventDispatcher::~EventDispatcher()
 {
 }
 
-void Engine::EventDispatcher::Emit(const Event & e)
+void EventDispatcher::Emit(const Event & e)
 {
 	// Don't emit if no one ever subscribed to event type
 	if (!EventTypeExists(e.type))
@@ -26,7 +26,7 @@ void Engine::EventDispatcher::Emit(const Event & e)
 	}
 }
 
-void Engine::EventDispatcher::Subscribe(const EventType & type, EventReceiver * subscriber)
+void EventDispatcher::Subscribe(const EventType & type, EventReceiver * subscriber)
 {
 	// Prevent receivers from having multiple subscriptions to one event type
 	if (Subscribed(type, subscriber))
@@ -37,7 +37,7 @@ void Engine::EventDispatcher::Subscribe(const EventType & type, EventReceiver * 
 	receivers.push_back(subscriber);
 }
 
-void Engine::EventDispatcher::Unsubscribe(const EventType & type, EventReceiver * subscriber)
+void EventDispatcher::Unsubscribe(const EventType & type, EventReceiver * subscriber)
 {
 	// The code below this would work, but is unnecessary to run if no one is subscribed
 	if (!EventTypeExists(type))
@@ -50,13 +50,13 @@ void Engine::EventDispatcher::Unsubscribe(const EventType & type, EventReceiver 
 	receivers.erase(std::remove(receivers.begin(), receivers.end(), subscriber), receivers.end());
 }
 
-bool Engine::EventDispatcher::EventTypeExists(const EventType & type) const
+bool EventDispatcher::EventTypeExists(const EventType & type) const
 {
 	// By using find() and end() instead of i.e. "map[type].size() > 0", the map key is not automatically created
 	return m_subscribers.find(type) != m_subscribers.end();
 }
 
-bool Engine::EventDispatcher::Subscribed(const EventType & type, EventReceiver * subscriber)
+bool EventDispatcher::Subscribed(const EventType & type, EventReceiver * subscriber)
 {
 	// The code below this would work, but is unnecessary to run if no one is subscribed
 	if (!EventTypeExists(type))

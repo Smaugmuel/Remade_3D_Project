@@ -8,7 +8,7 @@ struct ID3D11Buffer;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 
-class DeferredScreenTarget : public Singleton<DeferredScreenTarget>
+class DeferredScreenTarget final : public Singleton<DeferredScreenTarget>
 {
 	friend class Singleton<DeferredScreenTarget>;
 

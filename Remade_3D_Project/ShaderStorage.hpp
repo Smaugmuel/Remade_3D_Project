@@ -19,11 +19,11 @@ struct ID3D11InputLayout;
 struct D3D11_INPUT_ELEMENT_DESC;
 
 
-class ShaderStorage : public Singleton<ShaderStorage>
+class ShaderStorage final : public Singleton<ShaderStorage>
 {
 	friend class Singleton<ShaderStorage>;
 
-	struct Description
+	struct InputDescription
 	{
 		D3D11_INPUT_ELEMENT_DESC* elements;
 		unsigned int n;
@@ -34,8 +34,8 @@ class ShaderStorage : public Singleton<ShaderStorage>
 	typedef std::map<std::string, ID3D11PixelShader*> PixelShaderMap;
 	
 	typedef std::map<std::string, std::string> LinkerMap;
-	typedef std::map<std::string, Description> DescriptionMap;
-	typedef std::map<std::string, ID3D11InputLayout*> LayoutMap;
+	typedef std::map<std::string, InputDescription> InputDescriptionMap;
+	typedef std::map<std::string, ID3D11InputLayout*> InputLayoutMap;
 
 	ShaderStorage();
 	~ShaderStorage();
@@ -55,6 +55,10 @@ public:
 	bool HasGeometryShader(std::string name) const;
 	bool HasPixelShader(std::string name) const;
 
+	unsigned int NrOfVertexShaders() const;
+	unsigned int NrOfGeometryShaders() const;
+	unsigned int NrOfPixelShaders() const;
+	
 
 private:
 	std::wstring ToWideString(const std::string& str) const;
@@ -64,8 +68,8 @@ private:
 	PixelShaderMap m_pixelShaders;
 
 	LinkerMap m_linker;
-	DescriptionMap m_descriptions;
-	LayoutMap m_layouts;
+	InputDescriptionMap m_inputDescriptions;
+	InputLayoutMap m_inputLayouts;
 };
 
 #endif

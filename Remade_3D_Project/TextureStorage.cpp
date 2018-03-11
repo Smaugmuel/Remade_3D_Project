@@ -20,7 +20,7 @@ bool TextureStorage::LoadTexture(ID3D11Device * device, const std::string & name
 
 	m_textures[name] = std::make_unique<Texture>();
 
-	if (!m_textures[name]->Initialize(device, name.c_str()))
+	if (!m_textures.at(name).get()->Initialize(device, name.c_str()))
 		return false;
 
 	return true;
@@ -32,7 +32,7 @@ ID3D11ShaderResourceView * TextureStorage::GetTexture(const std::string & name)
 	{
 		return nullptr;
 	}*/
-	return m_textures[name]->GetShaderResourceView();
+	return m_textures.at(name).get()->GetShaderResourceView();
 }
 
 bool TextureStorage::HasTexture(const std::string & name) const
