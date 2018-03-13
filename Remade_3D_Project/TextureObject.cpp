@@ -62,3 +62,8 @@ const std::string & TextureObject::GetTextureName() const
 {
 	return m_textureName;
 }
+
+const std::string & TextureObject::GetDefaultTextureName() const
+{
+	return m_defaultTextureName;
+}

@@ -122,6 +122,62 @@ IntersectionData RayVsOBB(const Vector3f & origin, const Vector3f & direction, c
 	return IntersectionData(true, t_max);
 }
 
+IntersectionData RayVsOBB(const Ray & ray, const OBB & obb)
+{
+	return RayVsOBB(ray.origin, ray.direction, obb);
+}
+
+IntersectionData RayVSSphere(const Vector3f & origin, const Vector3f & direction, const Sphere & sphere)
+{
+	// Vector from ray origin to sphere center
+	Vector3f toCenter = sphere.center - origin;
+
+	// Distance of toCenter projected on direction
+	float s = toCenter.dot(direction);
+
+	// Squared distance of toVector (for better performance)
+	float distToCenterSquared = toCenter.lengthSquared();
+
+	// Check if direction is away from sphere and origin is outside of sphere
+	if (s < 0 && distToCenterSquared > sphere.radius2)
+	{
+		return IntersectionData();
+	}
+
+	// Squared distance of vector from closest point on ray to sphere center
+	float m2 = distToCenterSquared - s * s;
+
+	// Check if ray misses sphere
+	if (m2 > sphere.radius2)
+	{
+		return IntersectionData();
+	}
+
+	// Distance along ray, from point closest to sphere center, to sphere hull
+	float q = sqrtf(sphere.radius2 - m2);
+
+	float t;
+
+	// Determine which intersection point is the closest
+	if (distToCenterSquared > sphere.radius2)
+	{
+		// Origin is outside sphere, pointing towards it
+		t = s - q;
+	}
+	else
+	{
+		// Origin is inside sphere, pointing out from it
+		t = s + q;
+	}
+
+	return IntersectionData(true, t);
+}
+
+IntersectionData RayVSSphere(const Ray & ray, const Sphere & sphere)
+{
+	return RayVSSphere(ray.origin, ray.direction, sphere);
+}
+
 
 
 Collision* Singleton<Collision>::s_instance = nullptr;

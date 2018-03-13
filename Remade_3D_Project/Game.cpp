@@ -13,6 +13,7 @@
 #include "ShaderStorage.hpp"
 #include "SamplerStorage.hpp"
 #include "ConstantBufferStorage.hpp"
+#include "SceneStorage.hpp"
 
 #include "PlayerCameraManager.hpp"
 
@@ -21,6 +22,7 @@
 #include "Collision.hpp"
 
 #include "PlayState.hpp"
+#include "SceneEditorState.hpp"
 
 #include "EventDispatcher.hpp"
 
@@ -61,6 +63,8 @@ Game::~Game()
 	Collision::Delete();
 
 	EventDispatcher::Delete();
+
+	SceneStorage::Delete();
 }
 
 bool Game::Initialize()
@@ -69,8 +73,42 @@ bool Game::Initialize()
 		return false;
 	if (!Direct3D::Get()->Initialize(Window::Get()))
 		return false;
+	if (!ShaderManager::Get()->Initialize(Direct3D::Get()->GetDevice()))
+		return false;
+	if (!DeferredScreenTarget::Get()->Initialize(Direct3D::Get()->GetDevice()))
+		return false;
+	if (!SamplerStorage::Get()->Initialize(Direct3D::Get()->GetDevice()))
+		return false;
+	if (!ConstantBufferStorage::Get()->Initialize(Direct3D::Get()->GetDevice()))
+		return false;
 
-	m_gameStateMachine.Push<PlayState>();
+	/* ============================================= Storages ============================================= */
+	if (!ModelStorage::Get()->LoadTextureModel(Direct3D::Get()->GetDevice(), "cube_uv.obj"))
+		return false;
+	if (!ModelStorage::Get()->LoadTextureModel(Direct3D::Get()->GetDevice(), "turret.obj"))
+		return false;
+	if (!ModelStorage::Get()->LoadSingleColorModel(Direct3D::Get()->GetDevice(), "cube.obj"))
+		return false;
+
+	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "Torgue.png"))
+		return false;
+	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "BrickWallRaw.jpg"))
+		return false;
+	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "turret_tex_v3.png"))
+		return false;
+	
+	/*if (!SceneStorage::Get()->LoadScene("Scene1_10000_cubes"))
+		return false;
+	if (!SceneStorage::Get()->LoadScene("Scene3_1_turret"))
+		return false;
+	if (!SceneStorage::Get()->LoadScene("Scene4_100_cubes"))
+		return false;*/
+
+	/* ============================================= Cameras ============================================= */
+	if (!PlayerCameraManager::Get()->Initialize())
+		return false;
+
+	m_gameStateMachine.Push<SceneEditorState>();
 	if (!m_gameStateMachine.Peek()->Initialize())
 	{
 		return false;

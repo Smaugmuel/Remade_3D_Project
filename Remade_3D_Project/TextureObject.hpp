@@ -20,6 +20,7 @@ public:
 
 
 	const std::string& GetTextureName() const;
+	const std::string& GetDefaultTextureName() const;
 
 private:
 	std::string m_textureName;

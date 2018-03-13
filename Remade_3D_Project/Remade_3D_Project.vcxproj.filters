@@ -127,6 +127,15 @@
     <Filter Include="Header Files\Characters">
       <UniqueIdentifier>{e9dca28d-26cb-4b45-b7ef-e64af4c02b6c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Structure Files\States\EditorStates">
+      <UniqueIdentifier>{d6a8929b-e55a-4fd1-9fcb-bec2985013f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Structure Files\States\EditorStates">
+      <UniqueIdentifier>{fb722470-ac1b-4d91-874f-5b9b7ee9d21f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Characters">
+      <UniqueIdentifier>{c6ec2624-6e7a-40f8-856f-b69f09fef138}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -219,9 +228,6 @@
     <ClCompile Include="DeferredLightShadowShaderGroup.cpp">
       <Filter>Source Files\Shaders\ShaderGroups</Filter>
     </ClCompile>
-    <ClCompile Include="Character.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EventDispatcher.cpp">
       <Filter>Source Files\Structure Files\Events</Filter>
     </ClCompile>
@@ -285,9 +291,6 @@
     <ClCompile Include="Collision.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
-    <ClCompile Include="RenderManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
@@ -305,6 +308,30 @@
     </ClCompile>
     <ClCompile Include="SceneStorage.cpp">
       <Filter>Source Files\Storages</Filter>
+    </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorState.cpp">
+      <Filter>Source Files\Structure Files\States\EditorStates</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderManager.cpp">
+      <Filter>Source Files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorPlacementState.cpp">
+      <Filter>Source Files\Structure Files\States\EditorStates</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorSelectionState.cpp">
+      <Filter>Source Files\Structure Files\States\EditorStates</Filter>
+    </ClCompile>
+    <ClCompile Include="PickingRay.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>Source Files\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorMoveState.cpp">
+      <Filter>Source Files\Structure Files\States\EditorStates</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -491,9 +518,6 @@
     <ClInclude Include="Collision.hpp">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
-    <ClInclude Include="RenderManager.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Scene.hpp">
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
@@ -523,6 +547,33 @@
     </ClInclude>
     <ClInclude Include="Character.hpp">
       <Filter>Header Files\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.hpp">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorState.hpp">
+      <Filter>Header Files\Structure Files\States\EditorStates</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderManager.hpp">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Ray.hpp">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorPlacementState.hpp">
+      <Filter>Header Files\Structure Files\States\EditorStates</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorSelectionState.hpp">
+      <Filter>Header Files\Structure Files\States\EditorStates</Filter>
+    </ClInclude>
+    <ClInclude Include="PickingRay.hpp">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectAmountSettings.hpp">
+      <Filter>Header Files\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorMoveState.hpp">
+      <Filter>Header Files\Structure Files\States\EditorStates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

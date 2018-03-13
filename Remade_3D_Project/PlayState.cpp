@@ -1,7 +1,6 @@
 #include "PlayState.hpp"
 
 #include "StateMachine.hpp"
-#include "SceneEditorState.hpp"
 
 #include "EventDispatcher.hpp"
 
@@ -20,11 +19,11 @@
 #include "ShaderStorage.hpp"
 #include "SamplerStorage.hpp"
 #include "ConstantBufferStorage.hpp"
-
 #include "SceneStorage.hpp"
 
-#include "PlayerCameraManager.hpp"
 #include "Camera.hpp"
+#include "PlayerCameraManager.hpp"
+#include "Character.hpp"
 
 #include "PointLightManager.hpp"
 #include "PointLight.hpp"
@@ -38,12 +37,11 @@
 #include "HUDObject.hpp"
 #include "FPS_Counter.hpp"
 
-#include "Character.hpp"
-
 #include "OBB.hpp"
 #include "Collision.hpp"
 
 #include "Scene.hpp"
+#include "RenderManager.hpp"
 
 PlayState::PlayState(StateMachine<GameState>* stateMachine) : GameState::GameState(stateMachine)
 {
@@ -52,8 +50,8 @@ PlayState::PlayState(StateMachine<GameState>* stateMachine) : GameState::GameSta
 PlayState::~PlayState()
 {
 	//delete[] m_texturedCubes;
-	
-	SceneStorage::Delete();
+
+	RenderManager::Delete();
 }
 
 bool PlayState::Initialize()
@@ -61,33 +59,17 @@ bool PlayState::Initialize()
 	PointLightManager* lightManager;
 	Camera* cam;
 
-	if (!ShaderManager::Get()->Initialize(Direct3D::Get()->GetDevice()))
+	if (!SceneStorage::Get()->LoadScene("Scene1_10000_cubes"))
 		return false;
-	if (!DeferredScreenTarget::Get()->Initialize(Direct3D::Get()->GetDevice()))
-		return false;
-	if (!SamplerStorage::Get()->Initialize(Direct3D::Get()->GetDevice()))
-		return false;
-	if (!ConstantBufferStorage::Get()->Initialize(Direct3D::Get()->GetDevice()))
-		return false;
+	
+	m_scene = SceneStorage::Get()->GetScene("Scene1_10000_cubes");
+	
+	m_scene->LoadIntoRenderManager();
 
-	/* ============================================= Storages ============================================= */
-	if (!ModelStorage::Get()->LoadTextureModel(Direct3D::Get()->GetDevice(), "../Models/cube_uv.obj"))
-		return false;
-	if (!ModelStorage::Get()->LoadTextureModel(Direct3D::Get()->GetDevice(), "../Models/turret.obj"))
-		return false;
-	if (!ModelStorage::Get()->LoadSingleColorModel(Direct3D::Get()->GetDevice(), "../Models/cube.obj"))
-		return false;
-	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "../Textures/Torgue.png"))
-		return false;
-	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "../Textures/BrickWallRaw.jpg"))
-		return false;
-	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "../Textures/turret_tex_v3.png"))
-		return false;
-	if (!SceneStorage::Get()->LoadScene("Scene3_1_turret"))
-		return false;
 
-	m_scene = SceneStorage::Get()->GetScene("Scene3_1_turret");
 
+	
+	
 	/* =========================================== QuadTree =================================== */
 	/*m_quadTree = std::make_unique<QuadTree>();
 	m_quadTree.get()->Create(Vector3f(0, 10, 0), Vector3f(200, 10, 200));*/
@@ -115,13 +97,13 @@ bool PlayState::Initialize()
 	//		{
 	//			//int index = x + y * nX + z * nX * nY;
 	//
-	//			//if (!m_texturedCubes[index].Initialize("../Models/cube_uv.obj", "../Textures/Torgue.png"))
-	//			/*if (!m_texturedCubes[index].Initialize("../Models/turret.obj", "../Textures/turret_tex_v3.png"))
+	//			//if (!m_texturedCubes[index].Initialize("cube_uv.obj", "Torgue.png"))
+	//			/*if (!m_texturedCubes[index].Initialize("turret.obj", "turret_tex_v3.png"))
 	//				return false;*/
 	//
 	//			m_scene->AddTexturedObject(
-	//				"../Models/cube_uv.obj",
-	//				"../Textures/Torgue.png",
+	//				"cube_uv.obj",
+	//				"Torgue.png",
 	//				startPos + Vector3f(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z)) * distance,
 	//				Vector3f(0, 0, 0),
 	//				Vector3f(1, 1, 1)
@@ -139,14 +121,14 @@ bool PlayState::Initialize()
 	// /* ------------------------------------------- Floor ---------------------------------------------- */
 	//
 	//m_coloredFloor = std::make_unique<SingleColorObject>();
-	//if (!m_coloredFloor.get()->Initialize("../Models/cube.obj", Vector3f(1, 0, 0)))
+	//if (!m_coloredFloor.get()->Initialize("cube.obj", Vector3f(1, 0, 0)))
 	//	return false;
 	//
 	//m_coloredFloor.get()->SetScale(1000.0f, 0.02f, 1000.0f);
 	//m_coloredFloor.get()->SetPosition(0.0f, 0.0f, 0.0f);*/
 	//
 	//m_scene->AddSingleColoredObject(
-	//	"../Models/cube.obj",
+	//	"cube.obj",
 	//	Vector3f(1, 0, 0),
 	//	Vector3f(0, 0, 0),
 	//	Vector3f(0, 0, 0),
@@ -155,9 +137,6 @@ bool PlayState::Initialize()
 
 
 	/* ============================================= Cameras ============================================= */
-	if (!PlayerCameraManager::Get()->Initialize())
-		return false;
-
 	Vector3f firstObjectPosition = m_scene->GetTexturedObjects()[0]->GetPosition();
 
 	cam = PlayerCameraManager::Get()->CreateCamera();
@@ -175,7 +154,7 @@ bool PlayState::Initialize()
 
 	/* ================================================ HUD ====================================================== */
 	m_HUDObject = std::make_unique<HUDObject>();
-	if (!m_HUDObject.get()->Initialize(Direct3D::Get()->GetDevice(), "../Textures/Torgue.png", Vector2i(0, 0), Vector2i(400, 400)))
+	if (!m_HUDObject.get()->Initialize(Direct3D::Get()->GetDevice(), "Torgue.png", Vector2i(0, 0), Vector2i(400, 400)))
 		return false;
 	m_HUDObject.get()->SetPosition(Vector2i(500, 500));
 	m_HUDObject.get()->SetDimensions(Vector2i(200, 200));
@@ -259,18 +238,6 @@ void PlayState::ProcessInput()
 		manager->GetCurrentCamera()->SetTarget(0.0f, 0.0f, 0.0f);
 	}
 
-	// Enter editor state
-	if (input->IsKeyDown('E'))
-	{
-		m_stateMachine->Push<SceneEditorState>();
-		
-		if (!m_stateMachine->Peek()->Initialize())
-		{
-			// Return to this state
-			m_stateMachine->Pop();
-		}
-	}
-
 	// Change cube texture and turn floor green
 	if (input->IsKeyPressed('T'))
 	{
@@ -281,12 +248,12 @@ void PlayState::ProcessInput()
 
 		if (toggle)
 		{
-			obj->SetTextureName("../Textures/BrickWallRaw.jpg");
+			obj->SetTextureName("BrickWallRaw.jpg");
 			//m_coloredFloor.get()->SetColor(0.0f, 1.0f, 0.0f);
 		}
 		else
 		{
-			obj->SetTextureName("../Textures/Torgue.png");
+			obj->SetTextureName("Torgue.png");
 			//m_coloredFloor.get()->SetColor(1.0f, 0.0f, 0.0f);
 		}
 	}
@@ -401,7 +368,9 @@ void PlayState::Update(float dt)
 		lightManager->GetPointLight(i)->Update();
 	}
 
-	TextureObject** texturedObjects = m_scene->GetTexturedObjects();
+	m_scene->Update(dt);
+
+	/*TextureObject** texturedObjects = m_scene->GetTexturedObjects();
 	n = m_scene->GetNrOfTexturedObjects();
 
 	for (unsigned int i = 0; i < n; i++)
@@ -419,7 +388,7 @@ void PlayState::Update(float dt)
 		//m_texturedCubes[i].Rotate(0, dt, 0);
 		//m_texturedCubes[i].Update();
 		singleColoredObjects[i]->Update();
-	}
+	}*/
 
 	//m_coloredFloor.get()->Update();
 
@@ -475,20 +444,41 @@ void PlayState::CubeIntersection()
 	obb.vectors[1] = Vector3f(0, 1, 0);
 	obb.vectors[2] = Vector3f(0, 0, 1);
 
-	TextureObject* object = m_scene->GetTexturedObjects()[0];
+	Sphere sphere;
+	sphere.radius2 = obb.halfSides[0] * obb.halfSides[0], obb.halfSides[1] * obb.halfSides[1], obb.halfSides[2] * obb.halfSides[2];
 
-	obb.center = object->GetPosition();
 
-	IntersectionData data;
-	data = RayVsOBB(origin, direction, obb);
+	TextureObject** objects = m_scene->GetTexturedObjects();
+	unsigned int n = m_scene->GetNrOfTexturedObjects();
 
-	if (data.intersection)
+	for (unsigned int i = 0; i < n; i++)
 	{
-		object->SetTextureName("../Textures/BrickWallRaw.jpg");
-	}
-	else
-	{
-		object->SetDefaultTexture();
+		IntersectionData data;
+
+		sphere.center = objects[i]->GetPosition();
+		data = RayVSSphere(origin, direction, sphere);
+
+		if (data.intersection)
+		{
+			obb.center = sphere.center;
+			data = RayVsOBB(origin, direction, obb);
+
+			if (data.intersection)
+			{
+				if (objects[i]->GetTextureName() != "BrickWallRaw.jpg")
+				{
+					RenderManager::Get()->ChangeTexture(objects[i], "BrickWallRaw.jpg");
+					//object->SetTextureName("BrickWallRaw.jpg");
+				}
+				continue;
+			}
+		}
+
+		if (objects[i]->GetTextureName() != "Torgue.png")
+		{
+			RenderManager::Get()->ChangeTexture(objects[i], "Torgue.png");
+			//object->SetDefaultTexture();
+		}
 	}
 
 	m_HUDObject.get()->SetPosition(mousePos);
@@ -565,73 +555,77 @@ void PlayState::Render()
 
 void PlayState::RenderNormal()
 {
-	Direct3D* d3d = Direct3D::Get();
-	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
-	ShaderManager* shaders = ShaderManager::Get();
-	Camera* cam = PlayerCameraManager::Get()->GetCurrentCamera();
+	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
 	Camera* cam0 = PlayerCameraManager::Get()->GetCamera(0);
 
-	ModelStorage* modelStorage = ModelStorage::Get();
-	TextureStorage* textureStorage = TextureStorage::Get();
 	ConstantBufferStorage* bufferStorage = ConstantBufferStorage::Get();
-	TextureModel* textureModel;
-	SingleColorModel* singleColorModel;
-	ID3D11ShaderResourceView* texture;
 
-	TextureObject** texturedObjects = m_scene->GetTexturedObjects();
-	SingleColorObject** singleColoredObjects = m_scene->GetSingleColoredObjects();
-
+	//ShaderManager* shaders = ShaderManager::Get();
+	//Camera* cam = PlayerCameraManager::Get()->GetCurrentCamera();
+	//ModelStorage* modelStorage = ModelStorage::Get();
+	//TextureStorage* textureStorage = TextureStorage::Get();
+	//TextureModel* textureModel;
+	//SingleColorModel* singleColorModel;
+	//ID3D11ShaderResourceView* texture;
+	//
+	//TextureObject** texturedObjects = m_scene->GetTexturedObjects();
+	//SingleColorObject** singleColoredObjects = m_scene->GetSingleColoredObjects();
+	//
 	//std::vector<TextureObject*> texturedObjects = m_scene->GetTexturedObjects();
 	//std::vector<SingleColorObject*> singleColoredObjects = m_scene->GetSingleColoredObjects();
-
+	//
 	//unsigned int nrOfCubes = m_nrOfCubes;//m_texturedCubes.size();
-	unsigned int n;
-
-	/* ========================= Render texture objects ========================== */
-	shaders->SetShaderType(deviceContext, ShaderType::TEXTURE);
+	//
+	////* ========================= Render texture objects ========================== */
+	//
+	//bufferStorage->SetVSPointLight(deviceContext, cam0->GetPosition(), 1.0f);
+	//
+	//shaders->SetShaderType(deviceContext, ShaderType::TEXTURE);
+	//
+	////* ------------------------- Render cubes ------------------------- */
+	////textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].GetModelName());
+	//textureModel = modelStorage->GetTextureModel(texturedObjects[0]->GetModelName());
+	//textureModel->SetupRender(deviceContext);
+	//
+	////texture = textureStorage->GetTexture(m_texturedCubes[0].GetTextureName());
+	//texture = textureStorage->GetTexture(texturedObjects[0]->GetTextureName());
+	//shaders->SetPerObjectTextureConstantBuffer(deviceContext, texture);
+	//
+	//n = m_scene->GetNrOfTexturedObjects();
+	//for (unsigned int i = 0; i < n; i++)
+	//{
+	//	//bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[i].GetWorldMatrix());
+	//	bufferStorage->SetVSWorldMatrix(deviceContext, texturedObjects[i]->GetWorldMatrix());
+	//
+	//	textureModel->Render(deviceContext);
+	//}
+	////* ========================= Render single color objects ========================== */
+	//shaders->SetShaderType(deviceContext, ShaderType::SINGLE_COLOR);
+	//
+	////bufferStorage->SetPSPointLight(deviceContext, cam0->GetPosition(), 1.0f);
+	//
+	////* ------------------------- Render floor ------------------------- */
+	//singleColorModel = modelStorage->GetSingleColorModel(singleColoredObjects[0]->GetModelName());
+	//
+	//n = m_scene->GetNrOfSingleColoredObjects();
+	//for (unsigned int i = 0; i < n; i++)
+	//{
+	//	bufferStorage->SetVSWorldMatrix(deviceContext, singleColoredObjects[i]->GetWorldMatrix());
+	//	bufferStorage->SetVSColor(deviceContext, singleColoredObjects[i]->GetColor());
+	//}
+	////singleColorModel = modelStorage->GetSingleColorModel(m_coloredFloor.get()->GetModelName());
+	//
+	//bufferStorage->SetVSWorldMatrix(deviceContext, m_coloredFloor.get()->GetWorldMatrix());
+	//bufferStorage->SetVSColor(deviceContext, m_coloredFloor.get()->GetColor());
+	//
+	//singleColorModel->SetupRender(deviceContext);
+	//singleColorModel->Render(deviceContext);
 
 	bufferStorage->SetVSPointLight(deviceContext, cam0->GetPosition(), 1.0f);
-
-	/* ------------------------- Render cubes ------------------------- */
-	//textureModel = modelStorage->GetTextureModel(m_texturedCubes[0].GetModelName());
-	textureModel = modelStorage->GetTextureModel(texturedObjects[0]->GetModelName());
-	textureModel->SetupRender(deviceContext);
-
-	//texture = textureStorage->GetTexture(m_texturedCubes[0].GetTextureName());
-	texture = textureStorage->GetTexture(texturedObjects[0]->GetTextureName());
-	shaders->SetPerObjectTextureConstantBuffer(deviceContext, texture);
-
-	n = m_scene->GetNrOfTexturedObjects();
-	for (unsigned int i = 0; i < n; i++)
-	{
-		//bufferStorage->SetVSWorldMatrix(deviceContext, m_texturedCubes[i].GetWorldMatrix());
-		bufferStorage->SetVSWorldMatrix(deviceContext, texturedObjects[i]->GetWorldMatrix());
-
-		textureModel->Render(deviceContext);
-	}
-
-
-	/* ========================= Render single color objects ========================== */
-	shaders->SetShaderType(deviceContext, ShaderType::SINGLE_COLOR);
+	RenderManager::Get()->RenderTexturedObjects();
 
 	bufferStorage->SetPSPointLight(deviceContext, cam0->GetPosition(), 1.0f);
-
-	/* ------------------------- Render floor ------------------------- */
-	singleColorModel = modelStorage->GetSingleColorModel(singleColoredObjects[0]->GetModelName());
-
-	n = m_scene->GetNrOfSingleColoredObjects();
-	for (unsigned int i = 0; i < n; i++)
-	{
-		bufferStorage->SetVSWorldMatrix(deviceContext, singleColoredObjects[i]->GetWorldMatrix());
-		bufferStorage->SetVSColor(deviceContext, singleColoredObjects[i]->GetColor());
-	}
-	//singleColorModel = modelStorage->GetSingleColorModel(m_coloredFloor.get()->GetModelName());
-
-	/*bufferStorage->SetVSWorldMatrix(deviceContext, m_coloredFloor.get()->GetWorldMatrix());
-	bufferStorage->SetVSColor(deviceContext, m_coloredFloor.get()->GetColor());*/
-
-	singleColorModel->SetupRender(deviceContext);
-	singleColorModel->Render(deviceContext);
+	RenderManager::Get()->RenderSingleColoredObjects();
 }
 void PlayState::RenderDeferredFirstPass()
 {

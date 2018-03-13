@@ -157,7 +157,11 @@
     <ClCompile Include="DeferredLightSplitScreenShaderGroup.cpp" />
     <ClCompile Include="DeferredTextureChunkShaderGroup.cpp" />
     <ClCompile Include="DeferredTextureShaderGroup.cpp" />
+    <ClCompile Include="EditorMoveState.cpp" />
+    <ClCompile Include="EditorState.cpp" />
     <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="EditorPlacementState.cpp" />
+    <ClCompile Include="PickingRay.cpp" />
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="SceneEditor.cpp" />
     <ClCompile Include="EventDispatcher.cpp" />
@@ -187,6 +191,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneEditorState.cpp" />
     <ClCompile Include="SceneStorage.cpp" />
+    <ClCompile Include="EditorSelectionState.cpp" />
     <ClCompile Include="ShaderGroup.cpp" />
     <ClCompile Include="SingleColorShaderGroup.cpp" />
     <ClCompile Include="DeferredLightShadowShaderGroup.cpp" />
@@ -210,6 +215,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureObject.cpp" />
     <ClCompile Include="TextureModel.cpp" />
@@ -233,10 +239,16 @@
     <ClInclude Include="DeferredLightMultipleShadowLightsShaderGroup.hpp" />
     <ClInclude Include="DeferredLightSplitScreenShaderGroup.hpp" />
     <ClInclude Include="DeferredTextureShaderGroup.hpp" />
+    <ClInclude Include="EditorMoveState.hpp" />
+    <ClInclude Include="EditorState.hpp" />
     <ClInclude Include="GameState.hpp" />
     <ClInclude Include="HUDModes.hpp" />
+    <ClInclude Include="ObjectAmountSettings.hpp" />
     <ClInclude Include="OrthogonalModes.hpp" />
+    <ClInclude Include="EditorPlacementState.hpp" />
+    <ClInclude Include="PickingRay.hpp" />
     <ClInclude Include="PlayState.hpp" />
+    <ClInclude Include="Ray.hpp" />
     <ClInclude Include="RenderModes.hpp" />
     <ClInclude Include="SceneEditor.hpp" />
     <ClInclude Include="Event.hpp" />
@@ -270,6 +282,7 @@
     <ClInclude Include="Scene.hpp" />
     <ClInclude Include="SceneEditorState.hpp" />
     <ClInclude Include="SceneStorage.hpp" />
+    <ClInclude Include="EditorSelectionState.hpp" />
     <ClInclude Include="ShaderGroup.hpp" />
     <ClInclude Include="SingleColorShaderGroup.hpp" />
     <ClInclude Include="DeferredLightShadowShaderGroup.hpp" />
@@ -293,6 +306,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Singleton.hpp" />
+    <ClInclude Include="Sphere.hpp" />
     <ClInclude Include="StateMachine.hpp" />
     <ClInclude Include="WindowSettings.hpp" />
     <ClInclude Include="Texture.hpp" />

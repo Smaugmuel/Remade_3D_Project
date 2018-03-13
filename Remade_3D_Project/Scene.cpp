@@ -3,6 +3,8 @@
 #include "TextureObject.hpp"
 #include "SingleColorObject.hpp"
 
+#include "RenderManager.hpp"
+
 #include <fstream>
 #include <sstream>
 
@@ -16,6 +18,39 @@ Scene::Scene()
 Scene::~Scene()
 {
 	Reset();
+}
+
+void Scene::Update(float dt)
+{
+	for (unsigned int i = 0; i < m_nrOfTexturedObjects; i++)
+	{
+		//m_texturedObjects[i].Rotate(0, dt, 0);
+		//m_texturedObjects[i].Update();
+		m_texturedObjects[i]->Update();
+	}
+
+	for (unsigned int i = 0; i < m_nrOfSingleColoredObjects; i++)
+	{
+		//m_singleColoredObjects[i].Rotate(0, dt, 0);
+		//m_singleColoredObjects[i].Update();
+		m_singleColoredObjects[i]->Update();
+	}
+}
+
+void Scene::LoadIntoRenderManager()
+{
+	RenderManager* renderManager = RenderManager::Get();
+	renderManager->Reset();
+
+	for (unsigned int i = 0; i < m_nrOfTexturedObjects; i++)
+	{
+		renderManager->AddTexturedObject(m_texturedObjects[i]);
+	}
+
+	for (unsigned int i = 0; i < m_nrOfSingleColoredObjects; i++)
+	{
+		renderManager->AddSingleColoredObject(m_singleColoredObjects[i]);
+	}
 }
 
 void Scene::AddTexturedObject(const std::string & modelName, const std::string & textureName, const Vector3f & position, const Vector3f & rotation, const Vector3f & scale)

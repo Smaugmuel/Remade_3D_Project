@@ -17,7 +17,10 @@ bool Texture::Initialize(ID3D11Device * device, const char* fileName)
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 	//std::string narrow = converter.to_bytes(wide_utf16_source_string);
 	//std::wstring wide = converter.from_bytes(narrow_utf8_source_string);
-	std::wstring wide = converter.from_bytes(fileName);
+
+	std::string fullName = "../Textures/" + std::string(fileName);
+
+	std::wstring wide = converter.from_bytes(fullName);
 
 	if (FAILED(DirectX::CreateWICTextureFromFile(device, wide.c_str(), nullptr, &m_shaderResourceView)))
 	{

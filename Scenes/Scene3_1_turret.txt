@@ -6,13 +6,13 @@ nC 1
 p 0 4 0
 r 0 0 0
 s 1 1 1
-m ../Models/turret.obj
-t ../Textures/turret_tex_v3.png
+m turret.obj
+t turret_tex_v3.png
 
 
 p 0 0 0
 r 0 0 0
 s 1000 0.02 1000
-m ../Models/cube.obj
+m cube.obj
 c 1 0 0
 

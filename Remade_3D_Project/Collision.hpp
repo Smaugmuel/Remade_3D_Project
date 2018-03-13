@@ -3,8 +3,10 @@
 #include "Singleton.hpp"
 
 #include "Vector3.hpp"
+#include "Ray.hpp"
 #include "AABB.hpp"
 #include "OBB.hpp"
+#include "Sphere.hpp"
 #include "Plane.hpp"
 #include "Frustum.hpp"
 
@@ -22,7 +24,9 @@ struct IntersectionData
 
 //IntersectionData RayVsAABB(const Vector3f& origin, const Vector3f& direction, const AABB& aabb);
 IntersectionData RayVsOBB(const Vector3f& origin, const Vector3f& direction, const OBB& obb);
-
+IntersectionData RayVsOBB(const Ray& ray, const OBB& obb);
+IntersectionData RayVSSphere(const Vector3f& origin, const Vector3f& direction, const Sphere& sphere);
+IntersectionData RayVSSphere(const Ray& ray, const Sphere& sphere);
 
 class Collision : public Singleton<Collision>
 {

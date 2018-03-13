@@ -3,7 +3,7 @@
 #include "Singleton.hpp"
 #include "EventReceiver.hpp"
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <string>
 
 class TextureObject;
@@ -13,37 +13,52 @@ class RenderManager : public Singleton<RenderManager>, public EventReceiver
 {
 	friend class Singleton<RenderManager>;
 
-	// To do:
-	// 1 Set up texture shader
-	// 1.1 Set up textures
-	// 1.1.1 Set up models
-	// 1.1.1.1 Render each object of this texture and model
-	// 2 Set up single color shader
-	// 2.1 Set up models
-	// 2.1.1 Render each object of this model
+	// Having nested unordered maps directly caused two warnings about name exceeding length
+	// These warnings did not occur with normal maps
+	// Using structs as containers prevents these warning
 
+	struct PerTexturedObjectVector
+	{
+		std::vector<TextureObject*> elements;
+	};
+	struct PerTexturedModelMap
+	{
+		std::unordered_map<std::string, PerTexturedObjectVector> elements;
+	};
+	struct PerTexturedTextureMap
+	{
+		std::unordered_map<std::string, PerTexturedModelMap> elements;
+	};
 
-	typedef std::vector<TextureObject*> PerTexturedObjectVector;
-	typedef std::map<std::string, PerTexturedObjectVector> PerTexturedModelMap;
-	typedef std::map<std::string, PerTexturedModelMap> PerTexturedTextureMap;
-	typedef std::map<std::string, PerTexturedTextureMap> PerTexturedShaderMap;
-
-	typedef std::vector<SingleColorObject*> PerSingleColoredObjectVector;
-	typedef std::map<std::string, PerSingleColoredObjectVector> PerSingleColoredModelMap;
-	typedef std::map<std::string, PerSingleColoredObjectVector> PerSingleColoredShaderMap;
-
+	struct PerSingleColoredObjectVector
+	{
+		std::vector<SingleColorObject*> elements;
+	};
+	struct PerSingleColoredModelMap
+	{
+		std::unordered_map<std::string, PerSingleColoredObjectVector> elements;
+	};
 
 	RenderManager();
 	~RenderManager();
 
 public:
+	void Reset();
 
-	void Render();
+	void RenderTexturedObjects();
+	void RenderSingleColoredObjects();
 
+	void AddTexturedObject(TextureObject* obj);
+	void AddSingleColoredObject(SingleColorObject* obj);
+	
+	void ChangeTexture(TextureObject* obj, std::string newTextureName);
 
 private:
+
 	void ReceiveEvent(const Event& e) override;
 
+	PerTexturedTextureMap m_texturedObjects;
+	PerSingleColoredModelMap m_singleColoredObjects;
 };
 
 #endif

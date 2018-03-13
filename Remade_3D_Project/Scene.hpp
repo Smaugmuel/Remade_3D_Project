@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include "Vector3.hpp"
+#include "ObjectAmountSettings.hpp"
 
 class TextureObject;
 class SingleColorObject;
@@ -31,6 +32,10 @@ public:
 	Scene();
 	virtual ~Scene();
 
+	void Update(float dt);
+
+	void LoadIntoRenderManager();
+
 	void AddTexturedObject(const std::string& modelName, const std::string& textureName, const Vector3f& position, const Vector3f& rotation, const Vector3f& scale);
 	void AddSingleColoredObject(const std::string& modelName, const Vector3f& color, const Vector3f& position, const Vector3f& rotation, const Vector3f& scale);
 
@@ -52,10 +57,7 @@ private:
 	void RenderSingleColoredObjects();*/
 
 
-	static const unsigned int MAX_NR_OF_TEXTURED_OBJECTS = 10000;
 	unsigned int m_nrOfTexturedObjects;
-
-	static const unsigned int MAX_NR_OF_SINGLE_COLORED_OBJECTS = 1;
 	unsigned int m_nrOfSingleColoredObjects;
 
 	TextureObject* m_texturedObjects[MAX_NR_OF_TEXTURED_OBJECTS];

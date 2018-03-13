@@ -1,38 +1,36 @@
 #include "SceneEditorState.hpp"
 
+#include "StateMachine.hpp"
+#include "EditorSelectionState.hpp"
+#include "EditorMoveState.hpp"
+#include "EditorPlacementState.hpp"
+
 #include "Window.hpp"
 #include "Direct3D.hpp"
 #include "Input.hpp"
+
+#include "WindowSettings.hpp"
 
 #include "ShaderManager.hpp"
 #include "ShaderStorage.hpp"
 #include "ConstantBufferStorage.hpp"
 #include "ModelStorage.hpp"
 #include "TextureStorage.hpp"
-
-#include "WindowSettings.hpp"
+#include "SceneStorage.hpp"
 
 #include "EventDispatcher.hpp"
 
 #include "FPS_Counter.hpp"
 
-#include "SceneStorage.hpp"
 #include "Scene.hpp"
 
 #include "PointLightManager.hpp"
 
 #include "Camera.hpp"
 #include "PlayerCameraManager.hpp"
-
 #include "Character.hpp"
 
-#include "TextureObject.hpp"
-#include "SingleColorObject.hpp"
-
-#include "TextureModel.hpp"
-#include "SingleColorModel.hpp"
-
-#include "Collision.hpp"
+#include "RenderManager.hpp"
 
 SceneEditorState::SceneEditorState(StateMachine<GameState>* stateMachine) : GameState::GameState(stateMachine)
 {
@@ -40,15 +38,41 @@ SceneEditorState::SceneEditorState(StateMachine<GameState>* stateMachine) : Game
 
 SceneEditorState::~SceneEditorState()
 {
+	RenderManager::Delete();
+
+	delete m_editorStateMachine;
 }
 
 bool SceneEditorState::Initialize()
 {
-	m_scene = SceneStorage::Get()->GetScene("Scene3_1_turret");
+	Camera* cam;
 
-	m_ghostObject = std::make_unique<TextureObject>();
-	if (!m_ghostObject.get()->Initialize("../Models/turret.obj", "../Textures/turret_tex_v3.png"))
+	/* ============================================= Initial scene ======================================= */
+	if (!SceneStorage::Get()->LoadScene("Scene1_10000_cubes"))
 		return false;
+	
+	m_scene = SceneStorage::Get()->GetScene("Scene1_10000_cubes");
+	m_scene->LoadIntoRenderManager();
+
+	/* ======================================= Initial editor state ====================================== */
+	m_editorMode = EditorModes::SELECTION;
+	
+	m_editorStateMachine = new StateMachine<EditorState>;
+	m_editorStateMachine->Push<EditorSelectionState>(m_scene);
+	if (!m_editorStateMachine->Peek()->Initialize())
+		return false;
+
+	/* ============================================= Cameras ============================================= */
+	unsigned int nrOfObjects = m_scene->GetNrOfTexturedObjects();
+	unsigned int nrOfObjectsPerSide = sqrt(nrOfObjects);
+
+	Vector3f startPos = Vector3f((nrOfObjectsPerSide - 1) * -0.5f, 1.0f, (nrOfObjectsPerSide - 1) * -0.5f) * 4;
+
+	cam = PlayerCameraManager::Get()->CreateCamera();
+	cam->SetDimensions(Window::Get()->GetDimensions());
+	cam->SetPosition(startPos + Vector3f(0, 5, -5));
+	cam->SetTarget(startPos);
+	cam->Update();
 
 	/* ============================================= Player character ============================================== */
 	m_player = std::make_unique<Character>();
@@ -83,6 +107,7 @@ void SceneEditorState::ProcessInput()
 		// Send event to leave editor
 	}
 
+	// Move player
 	player->SetIsMovingRight(input->IsKeyDown('D'));
 	player->SetIsMovingLeft(input->IsKeyDown('A'));
 	player->SetIsMovingForward(input->IsKeyDown('W'));
@@ -120,11 +145,75 @@ void SceneEditorState::ProcessInput()
 	if (input->IsKeyDown('R'))
 	{
 		manager->GetCurrentCamera()->SetTarget(0.0f, 0.0f, 0.0f);
+		player->SetLookDirection(manager->GetCurrentCamera()->GetTargetDirection());
 	}
 
-	// Load or save current scene
+	// Switch, save, load scenes
 	if (input->IsKeyDown(VK_CONTROL))
 	{
+		// Change scenes
+		if (input->IsKeyPressed(48 + 1))
+		{
+			if (m_scene->GetName() != "Scene1_10000_cubes")
+			{
+				if (!SceneStorage::Get()->LoadScene("Scene1_10000_cubes"))
+				{
+					EventDispatcher::Get()->Emit(Event(EventType::POP_GAMESTATE));
+					return;
+					// Send event to leave editor
+				}
+
+				m_scene = SceneStorage::Get()->GetScene("Scene1_10000_cubes");
+				m_scene->LoadIntoRenderManager();
+			}
+		}
+		if (input->IsKeyPressed(48 + 2))
+		{
+			if (m_scene->GetName() != "Scene2_10000_turrets")
+			{
+				if (!SceneStorage::Get()->LoadScene("Scene2_10000_turrets"))
+				{
+					EventDispatcher::Get()->Emit(Event(EventType::POP_GAMESTATE));
+					return;
+					// Send event to leave editor
+				}
+
+				m_scene = SceneStorage::Get()->GetScene("Scene2_10000_turrets");
+				m_scene->LoadIntoRenderManager();
+			}
+		}
+		if (input->IsKeyPressed(48 + 3))
+		{
+			if (m_scene->GetName() != "Scene3_1_turret")
+			{
+				if (!SceneStorage::Get()->LoadScene("Scene3_1_turret"))
+				{
+					EventDispatcher::Get()->Emit(Event(EventType::POP_GAMESTATE));
+					return;
+					// Send event to leave editor
+				}
+
+				m_scene = SceneStorage::Get()->GetScene("Scene3_1_turret");
+				m_scene->LoadIntoRenderManager();
+			}
+		}
+		if (input->IsKeyPressed(48 + 4))
+		{
+			if (m_scene->GetName() != "Scene4_100_cubes")
+			{
+				if (!SceneStorage::Get()->LoadScene("Scene4_100_cubes"))
+				{
+					EventDispatcher::Get()->Emit(Event(EventType::POP_GAMESTATE));
+					return;
+					// Send event to leave editor
+				}
+
+				m_scene = SceneStorage::Get()->GetScene("Scene4_100_cubes");
+				m_scene->LoadIntoRenderManager();
+			}
+		}
+
+		// Load or save current scene
 		if (input->IsKeyPressed('O'))
 		{
 			m_scene->SaveToFile(m_scene->GetName());
@@ -134,38 +223,50 @@ void SceneEditorState::ProcessInput()
 			m_scene->LoadFromFile(m_scene->GetName());
 		}
 	}
-
-	// Create an object at ghost object
-	if (input->IsKeyPressed(VK_LBUTTON))
+	else
 	{
-		TextureObject* obj = m_ghostObject.get();
-		m_scene->AddTexturedObject(obj->GetModelName(), obj->GetTextureName(), obj->GetPosition(), obj->GetRotation(), obj->GetScale());
+		if (input->IsKeyPressed(48 + 1) && m_editorMode != EditorModes::SELECTION)
+		{
+			m_editorMode = EditorModes::SELECTION;
+
+			m_editorStateMachine->Replace<EditorSelectionState>(m_scene);
+			m_editorStateMachine->Peek()->Initialize();
+		}
+		if (input->IsKeyPressed(48 + 2) && m_editorMode != EditorModes::MOVE)
+		{
+			m_editorMode = EditorModes::MOVE;
+
+			TextureObject* selectedObject = m_editorStateMachine->Peek()->GetSelectedObject();
+			m_editorStateMachine->Replace<EditorMoveState>();
+			
+			m_editorStateMachine->Peek()->Initialize();
+			m_editorStateMachine->Peek()->SetSelectedObject(selectedObject);
+		}
+		if (input->IsKeyPressed(48 + 3) && m_editorMode != EditorModes::PLACEMENT)
+		{
+			m_editorMode = EditorModes::PLACEMENT;
+
+			m_editorStateMachine->Replace<EditorPlacementState>(m_scene);
+			m_editorStateMachine->Peek()->Initialize();
+		}
 	}
 
-	// Rotate cubes or camera
-	if (input->IsKeyDown(VK_RBUTTON))
+	// Rotate camera
+	
+	if (!input->IsKeyDown(VK_LBUTTON))
 	{
 		if (mouseMovement != Vector2f(0, 0))
 		{
-			//std::vector<TextureObject*> objects = m_scene->GetTexturedObjects();
-			TextureObject** objects = m_scene->GetTexturedObjects();
-			unsigned int nrOfCubes = m_scene->GetNrOfTexturedObjects();
+			mouseMovement *= 0.015f;
 
-			for (unsigned int i = 0; i < nrOfCubes; i++)
-			{
-				//m_texturedCubes[i].Rotate(mouseMovement.y * 0.01f * (i + 1), mouseMovement.x * 0.01f * (i + 1), 0.0f);
-				objects[i]->Rotate(mouseMovement.y * 0.01f * (i + 1), mouseMovement.x * 0.01f * (i + 1), 0.0f);
-			}
+			manager->GetCurrentCamera()->RotateUp(mouseMovement.y);
+			manager->GetCurrentCamera()->RotateRight(mouseMovement.x);
+			player->SetLookDirection(manager->GetCurrentCamera()->GetTargetDirection());
 		}
 	}
-	else
-	{
-		mouseMovement *= 0.015f;
 
-		manager->GetCurrentCamera()->RotateUp(mouseMovement.y);
-		manager->GetCurrentCamera()->RotateRight(mouseMovement.x);
-		player->SetLookDirection(manager->GetCurrentCamera()->GetTargetDirection());
-	}
+	// Process input of current editor state
+	m_editorStateMachine->Peek()->ProcessInput();
 }
 
 void SceneEditorState::Update(float dt)
@@ -193,33 +294,11 @@ void SceneEditorState::Update(float dt)
 		lightManager->GetPointLight(i)->Update();
 	}
 
-	TextureObject** texturedObjects = m_scene->GetTexturedObjects();
-	n = m_scene->GetNrOfTexturedObjects();
+	m_scene->Update(dt);
 
-	for (unsigned int i = 0; i < n; i++)
-	{
-		//m_texturedCubes[i].Rotate(0, dt, 0);
-		//m_texturedCubes[i].Update();
-		texturedObjects[i]->Update();
-	}
-
-	m_ghostObject.get()->Update();
-
-	SingleColorObject** singleColoredObjects = m_scene->GetSingleColoredObjects();
-	n = m_scene->GetNrOfSingleColoredObjects();
-
-	for (unsigned int i = 0; i < n; i++)
-	{
-		//m_texturedCubes[i].Rotate(0, dt, 0);
-		//m_texturedCubes[i].Update();
-		singleColoredObjects[i]->Update();
-	}
-
-	//m_coloredFloor.get()->Update();
+	m_editorStateMachine->Peek()->Update(dt);
 
 	m_fpsCounter.get()->Update(dt);
-
-	CubeIntersection();
 
 	ConstantBufferStorage::Get()->SetVSViewMatrix(Direct3D::Get()->GetDeviceContext(), cam->GetViewMatrix());
 }
@@ -231,61 +310,6 @@ void SceneEditorState::MapProjectionMatrix()
 	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
 
 	storage->SetVSProjectionMatrix(deviceContext, cam->GetProjectionMatrix());
-}
-
-void SceneEditorState::CubeIntersection()
-{
-	Camera* cam = PlayerCameraManager::Get()->GetCurrentCamera();
-	Vector3f corners[8];
-
-	// The 8 corners of frustum in world coordinates
-	FrustumCorners(cam->GetViewMatrix(), cam->GetProjectionMatrix(), corners);
-
-	// Mouse coordinates on screen, in range [(0, 0), (WNDW, WNDH)]
-	Vector2i mousePos = Input::Get()->MousePosition();
-
-	// Mouse coordinates in percent, in range [(0, 0), (1, 1)]
-	Vector2f mousePercentage = mousePos;
-	mousePercentage.x /= WNDW;
-	mousePercentage.y /= WNDH;
-	mousePercentage.y = 1 - mousePercentage.y;
-
-	Vector3f mouseDirectionOnFarPlaneX = (corners[5] - corners[1]) * mousePercentage.x;
-	Vector3f mouseDirectionOnFarPlaneY = (corners[3] - corners[1]) * mousePercentage.y;
-	Vector3f mouseDirectionOnNearPlaneX = (corners[4] - corners[0]) * mousePercentage.x;
-	Vector3f mouseDirectionOnNearPlaneY = (corners[2] - corners[0]) * mousePercentage.y;
-
-	Vector3f mousePositionOnFarPlane = (corners[1] + mouseDirectionOnFarPlaneX + mouseDirectionOnFarPlaneY);
-	Vector3f mousePositionOnNearPlane = (corners[0] + mouseDirectionOnNearPlaneX + mouseDirectionOnNearPlaneY);
-
-	Vector3f direction = (mousePositionOnFarPlane - mousePositionOnNearPlane).normalized();
-	Vector3f origin = mousePositionOnNearPlane;
-
-	m_ghostObject.get()->SetPosition(origin + direction * 10);
-
-	OBB obb;
-	obb.halfSides[0] = 1;
-	obb.halfSides[1] = 1;
-	obb.halfSides[2] = 1;
-	obb.vectors[0] = Vector3f(1, 0, 0);
-	obb.vectors[1] = Vector3f(0, 1, 0);
-	obb.vectors[2] = Vector3f(0, 0, 1);
-
-	TextureObject* object = m_scene->GetTexturedObjects()[0];
-
-	obb.center = object->GetPosition();
-
-	IntersectionData data;
-	data = RayVsOBB(origin, direction, obb);
-
-	if (data.intersection)
-	{
-		object->SetTextureName("../Textures/BrickWallRaw.jpg");
-	}
-	else
-	{
-		object->SetDefaultTexture();
-	}
 }
 
 void SceneEditorState::Render()
@@ -303,64 +327,15 @@ void SceneEditorState::Render()
 
 void SceneEditorState::RenderNormal()
 {
-	Direct3D* d3d = Direct3D::Get();
-	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
-	ShaderManager* shaders = ShaderManager::Get();
-	Camera* cam = PlayerCameraManager::Get()->GetCurrentCamera();
+	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
 	Camera* cam0 = PlayerCameraManager::Get()->GetCamera(0);
-
-	ModelStorage* modelStorage = ModelStorage::Get();
-	TextureStorage* textureStorage = TextureStorage::Get();
 	ConstantBufferStorage* bufferStorage = ConstantBufferStorage::Get();
-	TextureModel* textureModel;
-	SingleColorModel* singleColorModel;
-	ID3D11ShaderResourceView* texture;
 
-	TextureObject** texturedObjects = m_scene->GetTexturedObjects();
-	SingleColorObject** singleColoredObjects = m_scene->GetSingleColoredObjects();
-
-	unsigned int n;
-
-	/* ========================= Render texture objects ========================== */
-	shaders->SetShaderType(deviceContext, ShaderType::TEXTURE);
 	bufferStorage->SetVSPointLight(deviceContext, cam0->GetPosition(), 1.0f);
-
-	/* ------------------------- Render cubes ------------------------- */
-	textureModel = modelStorage->GetTextureModel(texturedObjects[0]->GetModelName());
-	textureModel->SetupRender(deviceContext);
-
-	texture = textureStorage->GetTexture(texturedObjects[0]->GetTextureName());
-	shaders->SetPerObjectTextureConstantBuffer(deviceContext, texture);
-
-	n = m_scene->GetNrOfTexturedObjects();
-	for (unsigned int i = 0; i < n; i++)
-	{
-		bufferStorage->SetVSWorldMatrix(deviceContext, texturedObjects[i]->GetWorldMatrix());
-
-		textureModel->Render(deviceContext);
-	}
-
-	bufferStorage->SetVSWorldMatrix(deviceContext, m_ghostObject.get()->GetWorldMatrix());
-	textureModel->Render(deviceContext);
-
-
-	/* ========================= Render single color objects ========================== */
-	shaders->SetShaderType(deviceContext, ShaderType::SINGLE_COLOR);
+	RenderManager::Get()->RenderTexturedObjects();
 
 	bufferStorage->SetPSPointLight(deviceContext, cam0->GetPosition(), 1.0f);
-
-	/* ------------------------- Render floor ------------------------- */
-	singleColorModel = modelStorage->GetSingleColorModel(singleColoredObjects[0]->GetModelName());
-
-	n = m_scene->GetNrOfSingleColoredObjects();
-	for (unsigned int i = 0; i < n; i++)
-	{
-		bufferStorage->SetVSWorldMatrix(deviceContext, singleColoredObjects[i]->GetWorldMatrix());
-		bufferStorage->SetVSColor(deviceContext, singleColoredObjects[i]->GetColor());
-	}
-
-	singleColorModel->SetupRender(deviceContext);
-	singleColorModel->Render(deviceContext);
+	RenderManager::Get()->RenderSingleColoredObjects();
 }
 
 void SceneEditorState::RenderHUDText()
