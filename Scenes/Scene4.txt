@@ -1,4 +1,4 @@
-Scene Scene4_100_cubes
+Scene Scene4
 
 nT 100
 nC 1

@@ -19,6 +19,10 @@ public:
 	void Move(float x, float y, float z);
 	void Rotate(const Vector3f& offset);
 	void Rotate(float x, float y, float z);
+	void RotateLocal(const Vector3f& vec, float angle);
+	void RotateLocal(float x, float y, float z, float angle);
+	void RotateGlobal(const Vector3f& vec, float angle);
+	void RotateGlobal(float x, float y, float z, float angle);
 
 	virtual void SetPosition(const Vector3f& position);
 	virtual void SetPosition(float x, float y, float z);
@@ -33,6 +37,7 @@ public:
 	const Vector3f& GetRotation() const;
 	const Vector3f& GetScale() const;
 
+	DirectX::XMMATRIX GetRotationMatrix() const;
 	DirectX::XMMATRIX GetWorldMatrix() const;
 
 	const std::string& GetModelName() const;
@@ -41,13 +46,25 @@ protected:
 	std::string m_modelName;
 
 private:
+	void UpdateTranslationMatrix();
+	void UpdateRotationMatrixFromEuler();
+	void UpdateRotationEulerFromMatrix();
+	void UpdateScalingMatrix();
 	void UpdateWorldMatrix();
 
 	Vector3f m_position;
 	Vector3f m_rotation;
 	Vector3f m_scale;
 
+	DirectX::XMFLOAT4X4 m_translationMatrix;
+	DirectX::XMFLOAT4X4 m_rotationMatrix;
+	DirectX::XMFLOAT4X4 m_scalingMatrix;
 	DirectX::XMFLOAT4X4 m_worldMatrix;
+	
+	bool m_update_translation_flag;
+	bool m_update_rotation_from_euler_flag;
+	bool m_update_rotation_from_matrix_flag;
+	bool m_update_scaling_flag;
 	bool m_update_world_flag;
 };
 

@@ -61,8 +61,6 @@ public:
 	
 
 private:
-	std::wstring ToWideString(const std::string& str) const;
-
 	VertexShaderMap m_vertexShaders;
 	GeometryShaderMap m_geometryShaders;
 	PixelShaderMap m_pixelShaders;

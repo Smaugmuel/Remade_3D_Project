@@ -1,4 +1,4 @@
-Scene Scene1_10000_cubes
+Scene Scene1
 
 nT 10000
 nC 1

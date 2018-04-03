@@ -157,10 +157,17 @@
     <ClCompile Include="DeferredLightSplitScreenShaderGroup.cpp" />
     <ClCompile Include="DeferredTextureChunkShaderGroup.cpp" />
     <ClCompile Include="DeferredTextureShaderGroup.cpp" />
+    <ClCompile Include="EditorLoadState.cpp" />
     <ClCompile Include="EditorMoveState.cpp" />
+    <ClCompile Include="EditorRotateState.cpp" />
+    <ClCompile Include="EditorSaveState.cpp" />
+    <ClCompile Include="EditorScaleState.cpp" />
     <ClCompile Include="EditorState.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="EditorPlacementState.cpp" />
+    <ClCompile Include="GUIManager.cpp" />
+    <ClCompile Include="MainMenuState.cpp" />
+    <ClCompile Include="MatrixEulerConversion.cpp" />
     <ClCompile Include="PickingRay.cpp" />
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="SceneEditor.cpp" />
@@ -216,16 +223,21 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Sphere.cpp" />
+    <ClCompile Include="StringConverter.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureObject.cpp" />
     <ClCompile Include="TextureModel.cpp" />
     <ClCompile Include="TextureShaderGroup.cpp" />
     <ClCompile Include="TextureStorage.cpp" />
     <ClCompile Include="Window.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABA.hpp" />
     <ClInclude Include="AABB.hpp" />
+    <ClInclude Include="EditorLoadState.hpp" />
+    <ClInclude Include="GUIManager.hpp" />
+    <ClInclude Include="MenuButton.hpp" />
     <ClInclude Include="Character.hpp" />
     <ClInclude Include="ChunkRenderSettings.hpp" />
     <ClInclude Include="Collision.hpp" />
@@ -240,9 +252,16 @@
     <ClInclude Include="DeferredLightSplitScreenShaderGroup.hpp" />
     <ClInclude Include="DeferredTextureShaderGroup.hpp" />
     <ClInclude Include="EditorMoveState.hpp" />
+    <ClInclude Include="EditorRotateState.hpp" />
+    <ClInclude Include="EditorSaveState.hpp" />
+    <ClInclude Include="EditorScaleState.hpp" />
     <ClInclude Include="EditorState.hpp" />
+    <ClInclude Include="EventTypes.hpp" />
     <ClInclude Include="GameState.hpp" />
     <ClInclude Include="HUDModes.hpp" />
+    <ClInclude Include="Menu.hpp" />
+    <ClInclude Include="MainMenuState.hpp" />
+    <ClInclude Include="MatrixEulerConversion.hpp" />
     <ClInclude Include="ObjectAmountSettings.hpp" />
     <ClInclude Include="OrthogonalModes.hpp" />
     <ClInclude Include="EditorPlacementState.hpp" />
@@ -308,6 +327,7 @@
     <ClInclude Include="Singleton.hpp" />
     <ClInclude Include="Sphere.hpp" />
     <ClInclude Include="StateMachine.hpp" />
+    <ClInclude Include="StringConverter.hpp" />
     <ClInclude Include="WindowSettings.hpp" />
     <ClInclude Include="Texture.hpp" />
     <ClInclude Include="TextureObject.hpp" />
@@ -317,6 +337,7 @@
     <ClInclude Include="Vector2.hpp" />
     <ClInclude Include="Vector3.hpp" />
     <ClInclude Include="Window.hpp" />
+    <ClInclude Include="World.hpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="GS_D_TextureChunk.hlsl">

@@ -3,22 +3,24 @@
 #include "EditorState.hpp"
 
 class TextureObject;
-class Scene;
+class HUDObject;
 
 class EditorPlacementState : public EditorState
 {
 public:
-	EditorPlacementState(StateMachine<EditorState>* stateMachine, Scene* scene);
+	EditorPlacementState();
 	~EditorPlacementState();
 
 	bool Initialize() override;
 	void ProcessInput() override;
 	void Update(float dt) override;
 	void Render() override;
+	void RenderHUD() override;
 
 private:
-	Scene* m_scene;
 	TextureObject* m_previewObject;
+
+	HUDObject* m_placeIcon;
 };
 
 #endif

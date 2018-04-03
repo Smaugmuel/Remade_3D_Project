@@ -24,7 +24,7 @@ void Scene::Update(float dt)
 {
 	for (unsigned int i = 0; i < m_nrOfTexturedObjects; i++)
 	{
-		//m_texturedObjects[i].Rotate(0, dt, 0);
+		//m_texturedObjects[i]->Rotate(0, dt, 0);
 		//m_texturedObjects[i].Update();
 		m_texturedObjects[i]->Update();
 	}

@@ -1,9 +1,16 @@
 #include "SceneEditorState.hpp"
 
+// For this game state
 #include "StateMachine.hpp"
+
+// For each editor state
 #include "EditorSelectionState.hpp"
 #include "EditorMoveState.hpp"
+#include "EditorRotateState.hpp"
+#include "EditorScaleState.hpp"
 #include "EditorPlacementState.hpp"
+#include "EditorSaveState.hpp"
+#include "EditorLoadState.hpp"
 
 #include "Window.hpp"
 #include "Direct3D.hpp"
@@ -26,60 +33,90 @@
 
 #include "PointLightManager.hpp"
 
+// For cameras and movements
 #include "Camera.hpp"
 #include "PlayerCameraManager.hpp"
 #include "Character.hpp"
 
 #include "RenderManager.hpp"
 
-SceneEditorState::SceneEditorState(StateMachine<GameState>* stateMachine) : GameState::GameState(stateMachine)
+
+//#include "World.hpp"
+
+SceneEditorState::SceneEditorState(StateMachine<GameState>* stateMachine) : GameState::GameState(stateMachine), m_editorMode(EditorModes::SELECT)
 {
+	for (unsigned int i = 0; i < static_cast<unsigned int>(EditorModes::NR_OF_EDITOR_MODES); i++)
+	{
+		m_editorStates[i] = nullptr;
+	}
+
+	EventDispatcher::Get()->Subscribe(EventType::SWITCHED_SCENE, this);
 }
 
 SceneEditorState::~SceneEditorState()
 {
 	RenderManager::Delete();
 
-	delete m_editorStateMachine;
+	for (unsigned int i = 0; i < static_cast<unsigned int>(EditorModes::NR_OF_EDITOR_MODES); i++)
+	{
+		delete m_editorStates[i];
+	}
+
+	EventDispatcher::Get()->Unsubscribe(EventType::SWITCHED_SCENE, this);
 }
 
 bool SceneEditorState::Initialize()
 {
-	Camera* cam;
+	/* ======================================= Editor states ====================================== */
+	m_editorMode = EditorModes::SELECT;
+	
+	m_editorStates[static_cast<unsigned int>(EditorModes::SELECT)] = new EditorSelectionState;
+	m_editorStates[static_cast<unsigned int>(EditorModes::MOVE)] = new EditorMoveState;
+	m_editorStates[static_cast<unsigned int>(EditorModes::ROTATE)] = new EditorRotateState;
+	m_editorStates[static_cast<unsigned int>(EditorModes::SCALE)] = new EditorScaleState;
+	m_editorStates[static_cast<unsigned int>(EditorModes::PLACE)] = new EditorPlacementState;
+	m_editorStates[static_cast<unsigned int>(EditorModes::SAVE)] = new EditorSaveState;
+	m_editorStates[static_cast<unsigned int>(EditorModes::LOAD)] = new EditorLoadState;
+
+	for (unsigned int i = 0; i < static_cast<unsigned int>(EditorModes::NR_OF_EDITOR_MODES); i++)
+	{
+		if (!m_editorStates[i]->Initialize())
+		{
+			return false;
+		}
+	}
+
+	// Initialize the world
+	//World::Get();
 
 	/* ============================================= Initial scene ======================================= */
-	if (!SceneStorage::Get()->LoadScene("Scene1_10000_cubes"))
+	if (!SceneStorage::Get()->LoadScene("Scene4"))
 		return false;
 	
-	m_scene = SceneStorage::Get()->GetScene("Scene1_10000_cubes");
+	m_scene = SceneStorage::Get()->GetScene("Scene4");
 	m_scene->LoadIntoRenderManager();
-
-	/* ======================================= Initial editor state ====================================== */
-	m_editorMode = EditorModes::SELECTION;
 	
-	m_editorStateMachine = new StateMachine<EditorState>;
-	m_editorStateMachine->Push<EditorSelectionState>(m_scene);
-	if (!m_editorStateMachine->Peek()->Initialize())
-		return false;
-
+	EventDispatcher::Get()->Emit(Event(EventType::SWITCHED_SCENE, static_cast<void*>(m_scene)));
+	
 	/* ============================================= Cameras ============================================= */
 	unsigned int nrOfObjects = m_scene->GetNrOfTexturedObjects();
-	unsigned int nrOfObjectsPerSide = sqrt(nrOfObjects);
-
+	unsigned int nrOfObjectsPerSide = static_cast<unsigned int>(sqrt(nrOfObjects));
+	
 	Vector3f startPos = Vector3f((nrOfObjectsPerSide - 1) * -0.5f, 1.0f, (nrOfObjectsPerSide - 1) * -0.5f) * 4;
 
-	cam = PlayerCameraManager::Get()->CreateCamera();
+	PlayerCameraManager::Delete();
+	Camera* cam = PlayerCameraManager::Get()->CreateCamera();
 	cam->SetDimensions(Window::Get()->GetDimensions());
 	cam->SetPosition(startPos + Vector3f(0, 5, -5));
 	cam->SetTarget(startPos);
 	cam->Update();
-
+	
 	/* ============================================= Player character ============================================== */
 	m_player = std::make_unique<Character>();
 	m_player.get()->SetMovementSpeed(5.0f);
 	m_player.get()->SetPosition(PlayerCameraManager::Get()->GetCurrentCamera()->GetPosition());
 	m_player.get()->SetLookDirection(PlayerCameraManager::Get()->GetCurrentCamera()->GetTargetDirection());
-
+	
 	/* ============================================ FPS counter ==================================================== */
 	m_fpsCounter = std::make_unique<FPSCounter>();
 	m_fpsCounter.get()->Initialize(Direct3D::Get()->GetDevice(), Direct3D::Get()->GetDeviceContext());
@@ -93,10 +130,10 @@ void SceneEditorState::ProcessInput()
 {
 	Input* input = Input::Get();
 	PlayerCameraManager* manager = PlayerCameraManager::Get();
-	Character* player = m_player.get();
+	Character* player = /*World::Get()->GetPlayer();*/m_player.get();
 	Vector2f mouseMovement;
 
-	input->Update();
+	//input->Update();
 
 	mouseMovement = input->MouseMovement();
 
@@ -141,119 +178,58 @@ void SceneEditorState::ProcessInput()
 		manager->CreateCamera();
 	}
 
-	// Look at origin
-	if (input->IsKeyDown('R'))
+	// Perform these actions only when CTRL is not held down
+	if (!input->IsKeyDown(VK_CONTROL))
 	{
-		manager->GetCurrentCamera()->SetTarget(0.0f, 0.0f, 0.0f);
-		player->SetLookDirection(manager->GetCurrentCamera()->GetTargetDirection());
+		// Switch editor mode
+		for (unsigned int i = 0; i < static_cast<unsigned int>(EditorModes::NR_OF_EDITOR_MODES); i++)
+		{
+			if (input->IsKeyPressed(49 + i))
+			{
+				m_editorMode = static_cast<EditorModes>(i);
+				break;
+			}
+		}
+
+		// Look at origin
+		if (input->IsKeyDown('R'))
+		{
+			manager->GetCurrentCamera()->SetTarget(0.0f, 0.0f, 0.0f);
+			player->SetLookDirection(manager->GetCurrentCamera()->GetTargetDirection());
+		}
+
+		//if (input->IsKeyPressed(48 + 1))
+		//{
+		//	m_editorMode = EditorModes::SELECT;
+		//
+		//	/*m_editorStateMachine->Replace<EditorSelectionState>(m_scene);
+		//	m_editorStateMachine->Peek()->Initialize();*/
+		//}
+		//if (input->IsKeyPressed(48 + 2))
+		//{
+		//	m_editorMode = EditorModes::MOVE;
+		//
+		//	/*TextureObject* selectedObject = m_editorStateMachine->Peek()->GetSelectedObject();
+		//	m_editorStateMachine->Replace<EditorMoveState>();
+		//	
+		//	m_editorStateMachine->Peek()->Initialize();
+		//	m_editorStateMachine->Peek()->SetSelectedObject(selectedObject);*/
+		//}
+		//if (input->IsKeyPressed(48 + 3))
+		//{
+		//	m_editorMode = EditorModes::PLACE;
+		//
+		//	/*m_editorStateMachine->Replace<EditorPlacementState>(m_scene);
+		//	m_editorStateMachine->Peek()->Initialize();*/
+		//}
+		//if (input->IsKeyPressed(48 + 4))
+		//{
+		//	m_editorMode = EditorModes::SAVE;
+		//}
 	}
 
-	// Switch, save, load scenes
-	if (input->IsKeyDown(VK_CONTROL))
-	{
-		// Change scenes
-		if (input->IsKeyPressed(48 + 1))
-		{
-			if (m_scene->GetName() != "Scene1_10000_cubes")
-			{
-				if (!SceneStorage::Get()->LoadScene("Scene1_10000_cubes"))
-				{
-					EventDispatcher::Get()->Emit(Event(EventType::POP_GAMESTATE));
-					return;
-					// Send event to leave editor
-				}
-
-				m_scene = SceneStorage::Get()->GetScene("Scene1_10000_cubes");
-				m_scene->LoadIntoRenderManager();
-			}
-		}
-		if (input->IsKeyPressed(48 + 2))
-		{
-			if (m_scene->GetName() != "Scene2_10000_turrets")
-			{
-				if (!SceneStorage::Get()->LoadScene("Scene2_10000_turrets"))
-				{
-					EventDispatcher::Get()->Emit(Event(EventType::POP_GAMESTATE));
-					return;
-					// Send event to leave editor
-				}
-
-				m_scene = SceneStorage::Get()->GetScene("Scene2_10000_turrets");
-				m_scene->LoadIntoRenderManager();
-			}
-		}
-		if (input->IsKeyPressed(48 + 3))
-		{
-			if (m_scene->GetName() != "Scene3_1_turret")
-			{
-				if (!SceneStorage::Get()->LoadScene("Scene3_1_turret"))
-				{
-					EventDispatcher::Get()->Emit(Event(EventType::POP_GAMESTATE));
-					return;
-					// Send event to leave editor
-				}
-
-				m_scene = SceneStorage::Get()->GetScene("Scene3_1_turret");
-				m_scene->LoadIntoRenderManager();
-			}
-		}
-		if (input->IsKeyPressed(48 + 4))
-		{
-			if (m_scene->GetName() != "Scene4_100_cubes")
-			{
-				if (!SceneStorage::Get()->LoadScene("Scene4_100_cubes"))
-				{
-					EventDispatcher::Get()->Emit(Event(EventType::POP_GAMESTATE));
-					return;
-					// Send event to leave editor
-				}
-
-				m_scene = SceneStorage::Get()->GetScene("Scene4_100_cubes");
-				m_scene->LoadIntoRenderManager();
-			}
-		}
-
-		// Load or save current scene
-		if (input->IsKeyPressed('O'))
-		{
-			m_scene->SaveToFile(m_scene->GetName());
-		}
-		else if (input->IsKeyPressed('I'))
-		{
-			m_scene->LoadFromFile(m_scene->GetName());
-		}
-	}
-	else
-	{
-		if (input->IsKeyPressed(48 + 1) && m_editorMode != EditorModes::SELECTION)
-		{
-			m_editorMode = EditorModes::SELECTION;
-
-			m_editorStateMachine->Replace<EditorSelectionState>(m_scene);
-			m_editorStateMachine->Peek()->Initialize();
-		}
-		if (input->IsKeyPressed(48 + 2) && m_editorMode != EditorModes::MOVE)
-		{
-			m_editorMode = EditorModes::MOVE;
-
-			TextureObject* selectedObject = m_editorStateMachine->Peek()->GetSelectedObject();
-			m_editorStateMachine->Replace<EditorMoveState>();
-			
-			m_editorStateMachine->Peek()->Initialize();
-			m_editorStateMachine->Peek()->SetSelectedObject(selectedObject);
-		}
-		if (input->IsKeyPressed(48 + 3) && m_editorMode != EditorModes::PLACEMENT)
-		{
-			m_editorMode = EditorModes::PLACEMENT;
-
-			m_editorStateMachine->Replace<EditorPlacementState>(m_scene);
-			m_editorStateMachine->Peek()->Initialize();
-		}
-	}
-
-	// Rotate camera
-	
-	if (!input->IsKeyDown(VK_LBUTTON))
+	// Rotate camera if mouse wheel is down
+	if (input->IsKeyDown(VK_MBUTTON))
 	{
 		if (mouseMovement != Vector2f(0, 0))
 		{
@@ -266,7 +242,9 @@ void SceneEditorState::ProcessInput()
 	}
 
 	// Process input of current editor state
-	m_editorStateMachine->Peek()->ProcessInput();
+	/*m_editorStateMachine->Peek()->ProcessInput();*/
+
+	m_editorStates[static_cast<unsigned int>(m_editorMode)]->ProcessInput();
 }
 
 void SceneEditorState::Update(float dt)
@@ -278,12 +256,15 @@ void SceneEditorState::Update(float dt)
 	PlayerCameraManager* cameraManager = PlayerCameraManager::Get();
 	Camera* cam = cameraManager->GetCurrentCamera();
 
+	Character* player = /*World::Get()->GetPlayer();*/m_player.get();
+
 	angle += dt;
 
-	m_player.get()->Update(dt);
+	player->Update(dt);
+	//player->Update(dt);
 
-	cam->SetPosition(m_player.get()->GetPosition());
-	cam->SetTarget(m_player.get()->GetPosition() + m_player.get()->GetLookDirection());
+	cam->SetPosition(player->GetPosition());
+	cam->SetTarget(player->GetPosition() + player->GetLookDirection());
 	cameraManager->Update();
 
 	n = lightManager->GetNrOfPointLights();
@@ -294,10 +275,13 @@ void SceneEditorState::Update(float dt)
 		lightManager->GetPointLight(i)->Update();
 	}
 
+	//World::Get()->GetScene()->Update(dt);
 	m_scene->Update(dt);
 
-	m_editorStateMachine->Peek()->Update(dt);
+	//m_editorStateMachine->Peek()->Update(dt);
+	m_editorStates[static_cast<unsigned int>(m_editorMode)]->Update(dt);
 
+	//World::Get()->GetFPSCounter()->Update(dt);
 	m_fpsCounter.get()->Update(dt);
 
 	ConstantBufferStorage::Get()->SetVSViewMatrix(Direct3D::Get()->GetDeviceContext(), cam->GetViewMatrix());
@@ -320,7 +304,7 @@ void SceneEditorState::Render()
 
 	RenderNormal();
 
-	RenderHUDText();
+	RenderHUD();
 
 	d3d->Present();
 }
@@ -331,21 +315,43 @@ void SceneEditorState::RenderNormal()
 	Camera* cam0 = PlayerCameraManager::Get()->GetCamera(0);
 	ConstantBufferStorage* bufferStorage = ConstantBufferStorage::Get();
 
+	// Render textured objects
 	bufferStorage->SetVSPointLight(deviceContext, cam0->GetPosition(), 1.0f);
 	RenderManager::Get()->RenderTexturedObjects();
 
+	// For some unknown reason, this can't happen after single colored objects are rendered
+	m_editorStates[static_cast<unsigned int>(m_editorMode)]->Render();
+
+	// Render single colored objects
 	bufferStorage->SetPSPointLight(deviceContext, cam0->GetPosition(), 1.0f);
 	RenderManager::Get()->RenderSingleColoredObjects();
 }
 
-void SceneEditorState::RenderHUDText()
+void SceneEditorState::RenderHUD()
 {
 	Direct3D* d3d = Direct3D::Get();
 
 	d3d->DisableZBuffer();
 
+	m_editorStates[static_cast<unsigned int>(m_editorMode)]->RenderHUD();
+
+
+	//World::Get()->GetFPSCounter()->Render();
 	m_fpsCounter.get()->Render();
 
 	d3d->EnableZBuffer();
 	d3d->SetDefaultBlendState();
+}
+
+void SceneEditorState::ReceiveEvent(const Event & e)
+{
+	switch (e.type)
+	{
+	case EventType::SWITCHED_SCENE:
+		//World::Get()->SetScene(static_cast<Scene*>(e.value));
+		m_scene = static_cast<Scene*>(e.value);
+		break;
+	default:
+		break;
+	}
 }

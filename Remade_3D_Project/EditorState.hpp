@@ -1,14 +1,14 @@
 #ifndef EDITOR_STATE_HPP
 #define EDITOR_STATE_HPP
-
-template<typename StateCategory> class StateMachine;
+#include "EventReceiver.hpp"
 
 class TextureObject;
+class Scene;
 
-class EditorState
+class EditorState : public EventReceiver
 {
 protected:
-	EditorState(StateMachine<EditorState>* stateMachine);
+	EditorState();
 
 public:
 	virtual ~EditorState();
@@ -17,13 +17,13 @@ public:
 	virtual void ProcessInput() = 0;
 	virtual void Update(float dt) = 0;
 	virtual void Render() = 0;
-
-	void SetSelectedObject(TextureObject* object);
-	TextureObject* GetSelectedObject() const;
+	virtual void RenderHUD() = 0;
 
 protected:
-	StateMachine<EditorState>* m_stateMachine;
+	void ReceiveEvent(const Event& e) override;
+
 	TextureObject* m_selectedObject;
+	Scene* m_scene;
 };
 
 #endif

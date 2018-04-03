@@ -15,18 +15,35 @@
 // For changing the objects
 #include "RenderManager.hpp"
 
-EditorSelectionState::EditorSelectionState(StateMachine<EditorState>* stateMachine, Scene* scene) :
-	EditorState::EditorState(stateMachine), m_scene(scene)
+// For the select icon
+#include "HUDObject.hpp"
+#include "Direct3D.hpp"
+#include "TextureStorage.hpp"
+#include "ShaderManager.hpp"
+
+#include "EventDispatcher.hpp"
+
+EditorSelectionState::EditorSelectionState() : EditorState::EditorState(), m_selectIcon(nullptr)
 {
 }
 
 EditorSelectionState::~EditorSelectionState()
 {
+	delete m_selectIcon;
 }
 
 bool EditorSelectionState::Initialize()
 {
 	m_selectedObject = nullptr;
+
+	m_selectIcon = new HUDObject;
+	if (!m_selectIcon->Initialize(Direct3D::Get()->GetDevice(), "Icons/SelectIcon.png", Vector2i(300, 300), Vector2i(32, 32)))
+	{
+		return false;
+	}
+	m_selectIcon->SetPosition(Vector2i(0, 64));
+	m_selectIcon->SetDimensions(Vector2i(32, 32));
+
 	return true;
 }
 
@@ -46,6 +63,18 @@ void EditorSelectionState::Update(float dt)
 
 void EditorSelectionState::Render()
 {
+}
+
+void EditorSelectionState::RenderHUD()
+{
+	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
+
+	ID3D11ShaderResourceView* iconTexture = m_selectIcon->GetShaderResourceView();
+	deviceContext->PSSetShaderResources(0, 1, &iconTexture);
+
+	ShaderManager::Get()->SetShaderType(deviceContext, ShaderType::HUD);
+
+	m_selectIcon->Render(deviceContext);
 }
 
 void EditorSelectionState::SelectCube(const Ray& ray)
@@ -139,4 +168,7 @@ void EditorSelectionState::SelectCube(const Ray& ray)
 		// Unselect object
 		m_selectedObject = nullptr;
 	}
+
+
+	EventDispatcher::Get()->Emit(Event(EventType::SWITCHED_SELECTED_OBJECT, static_cast<void*>(m_selectedObject)));
 }

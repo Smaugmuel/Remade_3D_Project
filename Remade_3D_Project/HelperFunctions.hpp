@@ -18,6 +18,12 @@ namespace HF
 		return val1 < val2 ? val1 : val2;
 	}
 
+	template<typename T> void Swap(T& a, T& b)
+	{
+		T temp = a;
+		a = b;
+		b = temp;
+	}
 
 	unsigned int HighestBitIndex(unsigned int val);
 }

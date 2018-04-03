@@ -1,21 +1,27 @@
 #ifndef SCENE_EDITOR_STATE_HPP
 #define SCENE_EDITOR_STATE_HPP
 #include "GameState.hpp"
-#include "EditorState.hpp"
+#include "EventReceiver.hpp"
 #include <memory>
 
 class Scene;
+class EditorState;
 class Character;
 class FPSCounter;
 
 enum class EditorModes
 {
-	SELECTION,
+	SELECT,
 	MOVE,
-	PLACEMENT
+	ROTATE,
+	SCALE,
+	PLACE,
+	SAVE,
+	LOAD,
+	NR_OF_EDITOR_MODES
 };
 
-class SceneEditorState : public GameState
+class SceneEditorState : public GameState, public EventReceiver
 {
 public:
 	SceneEditorState(StateMachine<GameState>* stateMachine);
@@ -29,16 +35,16 @@ public:
 private:
 	void MapProjectionMatrix();
 
-	//void CubeIntersection();
-
 	void RenderNormal();
-	void RenderHUDText();
+	void RenderHUD();
 
-	Scene* m_scene;
+	void ReceiveEvent(const Event& e) override;
+
 
 	EditorModes m_editorMode;
-	StateMachine<EditorState>* m_editorStateMachine;
+	EditorState* m_editorStates[static_cast<unsigned int>(EditorModes::NR_OF_EDITOR_MODES)];
 
+	Scene* m_scene;
 	std::unique_ptr<Character> m_player;
 	std::unique_ptr<FPSCounter> m_fpsCounter;
 };

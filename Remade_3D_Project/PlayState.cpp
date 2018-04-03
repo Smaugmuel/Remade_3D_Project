@@ -50,8 +50,6 @@ PlayState::PlayState(StateMachine<GameState>* stateMachine) : GameState::GameSta
 PlayState::~PlayState()
 {
 	//delete[] m_texturedCubes;
-
-	RenderManager::Delete();
 }
 
 bool PlayState::Initialize()
@@ -59,16 +57,12 @@ bool PlayState::Initialize()
 	PointLightManager* lightManager;
 	Camera* cam;
 
-	if (!SceneStorage::Get()->LoadScene("Scene1_10000_cubes"))
+	if (!SceneStorage::Get()->LoadScene("Scene1"))
 		return false;
 	
-	m_scene = SceneStorage::Get()->GetScene("Scene1_10000_cubes");
-	
+	m_scene = SceneStorage::Get()->GetScene("Scene1");
 	m_scene->LoadIntoRenderManager();
 
-
-
-	
 	
 	/* =========================================== QuadTree =================================== */
 	/*m_quadTree = std::make_unique<QuadTree>();
@@ -139,6 +133,9 @@ bool PlayState::Initialize()
 	/* ============================================= Cameras ============================================= */
 	Vector3f firstObjectPosition = m_scene->GetTexturedObjects()[0]->GetPosition();
 
+	// Reset cameras
+	PlayerCameraManager::Delete();
+
 	cam = PlayerCameraManager::Get()->CreateCamera();
 	cam->SetDimensions(Window::Get()->GetDimensions());
 	cam->SetPosition(firstObjectPosition + Vector3f(0, 5, -5));
@@ -160,8 +157,11 @@ bool PlayState::Initialize()
 	m_HUDObject.get()->SetDimensions(Vector2i(200, 200));
 
 	/* ============================================= Lights ====================================================== */
+	PointLightManager::Delete();
+	
 	lightManager = PointLightManager::Get();
 	lightManager->AddPointLight();
+
 	PointLight* light = lightManager->GetPointLight(0);
 
 	if (!light->Initialize(Direct3D::Get()->GetDevice(), Window::Get()->GetDimensions() * 4))
@@ -190,7 +190,7 @@ void PlayState::ProcessInput()
 	PlayerCameraManager* manager = PlayerCameraManager::Get();
 	Character* player = m_player.get();
 
-	input->Update();
+	//input->Update();
 
 	if (input->IsKeyPressed(VK_ESCAPE))
 	{
@@ -329,7 +329,7 @@ void PlayState::ProcessInput()
 			for (unsigned int i = 0; i < nrOfCubes; i++)
 			{
 				//m_texturedCubes[i].Rotate(mouseMovement.y * 0.01f * (i + 1), mouseMovement.x * 0.01f * (i + 1), 0.0f);
-				objects[i]->Rotate(mouseMovement.y * 0.01f * (i + 1), mouseMovement.x * 0.01f * (i + 1), 0.0f);
+				//objects[i]->Rotate(mouseMovement.y * 0.01f * (i + 1), mouseMovement.x * 0.01f * (i + 1), 0.0f);
 			}
 		}
 	}
@@ -394,7 +394,7 @@ void PlayState::Update(float dt)
 
 	m_fpsCounter.get()->Update(dt);
 
-	CubeIntersection();
+	//CubeIntersection();
 
 	ConstantBufferStorage::Get()->SetVSViewMatrix(Direct3D::Get()->GetDeviceContext(), cam->GetViewMatrix());
 }

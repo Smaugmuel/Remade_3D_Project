@@ -1,4 +1,4 @@
-Scene Scene3_1_turret
+Scene Scene3
 
 nT 1
 nC 1
@@ -11,7 +11,7 @@ t turret_tex_v3.png
 
 
 p 0 0 0
-r 0 0 0
+r -0 0 0
 s 1000 0.02 1000
 m cube.obj
 c 1 0 0

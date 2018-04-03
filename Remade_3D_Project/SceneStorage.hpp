@@ -4,6 +4,7 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 #include <string>
 
 class Scene;
@@ -18,15 +19,18 @@ class SceneStorage final : public Singleton<SceneStorage>
 	~SceneStorage();
 
 public:
+	void UpdateExistingSceneNamesFromFolder();
+	const std::vector<std::wstring>& GetExistingSceneNames() const;
+
 	bool LoadScene(const std::string& name);
 
 	Scene * GetScene(const std::string& name);
 
 	bool HasScene(const std::string& name) const;
 
-
 private:
 	SceneMap m_scenes;
+	std::vector<std::wstring> m_existingSceneNames;
 };
 
 #endif

@@ -1,8 +1,7 @@
 #include "ShaderStorage.hpp"
 #include <d3d11.h>
 #include <d3dcompiler.h>
-#include <locale>
-#include <codecvt>
+#include "StringConverter.hpp"
 
 ShaderStorage* Singleton<ShaderStorage>::s_instance = nullptr;
 
@@ -238,10 +237,4 @@ unsigned int ShaderStorage::NrOfGeometryShaders() const
 unsigned int ShaderStorage::NrOfPixelShaders() const
 {
 	return static_cast<unsigned int>(m_pixelShaders.size());
-}
-
-std::wstring ShaderStorage::ToWideString(const std::string& str) const
-{
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	return converter.from_bytes(str);
 }

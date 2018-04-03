@@ -84,6 +84,7 @@ private:
 
 	StateMachine<GameState> m_gameStateMachine;
 	bool m_pop_game_state_flag;
+	bool m_shutdown_flag;
 
 
 	/*unsigned int m_nrOfCubes;

@@ -1,10 +1,6 @@
 #ifndef EVENT_HPP
 #define EVENT_HPP
-
-enum class EventType
-{
-	POP_GAMESTATE
-};
+#include "EventTypes.hpp"
 
 struct Event
 {

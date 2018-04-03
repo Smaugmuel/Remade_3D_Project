@@ -4,22 +4,24 @@
 #include "Ray.hpp"
 
 class Scene;
+class HUDObject;
 
 class EditorSelectionState : public EditorState
 {
 public:
-	EditorSelectionState(StateMachine<EditorState>* stateMachine, Scene* scene);
+	EditorSelectionState();
 	~EditorSelectionState();
 
 	bool Initialize() override;
 	void ProcessInput() override;
 	void Update(float dt) override;
 	void Render() override;
+	void RenderHUD() override;
 
 private:
 	void SelectCube(const Ray& ray);
 
-	Scene* m_scene;
+	HUDObject* m_selectIcon;
 };
 
 #endif

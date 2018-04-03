@@ -1,0 +1,10 @@
+#ifndef COMPONENT_TYPE_HPP
+#define COMPONENT_TYPE_HPP
+
+enum ComponentType
+{
+	TRANSFORM_COMPONENT,
+	PHYSIC_COMPONENT
+};
+
+#endif

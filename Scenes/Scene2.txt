@@ -1,4 +1,4 @@
-Scene Scene2_10000_turrets
+Scene Scene2
 
 nT 10000
 nC 1

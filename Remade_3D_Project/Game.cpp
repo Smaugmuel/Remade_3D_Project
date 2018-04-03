@@ -5,6 +5,7 @@
 #include "Direct3D.hpp"
 #include "ShaderManager.hpp"
 #include "DeferredScreenTarget.hpp"
+#include "RenderManager.hpp"
 
 #include "WindowSettings.hpp"
 
@@ -22,9 +23,13 @@
 #include "Collision.hpp"
 
 #include "PlayState.hpp"
-#include "SceneEditorState.hpp"
+#include "MainMenuState.hpp"
+//#include "SceneEditorState.hpp"
 
 #include "EventDispatcher.hpp"
+
+
+#include "World.hpp"
 
 //#include "QuadTree.hpp"
 
@@ -40,31 +45,36 @@ Game* Singleton<Game>::s_instance = nullptr;
 Game::Game()
 {
 	EventDispatcher::Get()->Subscribe(EventType::POP_GAMESTATE, this);
+	EventDispatcher::Get()->Subscribe(EventType::FAILED_TO_INITIALIZE, this);
 }
 
 Game::~Game()
 {
+	EventDispatcher::Get()->Subscribe(EventType::POP_GAMESTATE, this);
+	EventDispatcher::Get()->Subscribe(EventType::FAILED_TO_INITIALIZE, this);
+
 	Window::Delete();
 	Input::Delete();
 	Direct3D::Delete();
 	ShaderManager::Delete();
 	DeferredScreenTarget::Delete();
+	RenderManager::Delete();
 	
-	PlayerCameraManager::Delete();
-	
-	PointLightManager::Delete();
-
 	ModelStorage::Delete();
 	TextureStorage::Delete();
 	ShaderStorage::Delete();
 	SamplerStorage::Delete();
 	ConstantBufferStorage::Delete();
-
-	Collision::Delete();
+	SceneStorage::Delete();
 
 	EventDispatcher::Delete();
 
-	SceneStorage::Delete();
+	PlayerCameraManager::Delete();
+	PointLightManager::Delete();
+	Collision::Delete();
+
+
+	World::Delete();
 }
 
 bool Game::Initialize()
@@ -96,25 +106,37 @@ bool Game::Initialize()
 		return false;
 	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "turret_tex_v3.png"))
 		return false;
+	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "Icons/SelectIcon.png"))
+		return false;
+	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "Icons/MoveIcon.png"))
+		return false;
+	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "Icons/PlaceIcon.png"))
+		return false;
+	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "Icons/SaveIcon.png"))
+		return false;
 	
-	/*if (!SceneStorage::Get()->LoadScene("Scene1_10000_cubes"))
+	/*if (!SceneStorage::Get()->LoadScene("Scene1"))
 		return false;
-	if (!SceneStorage::Get()->LoadScene("Scene3_1_turret"))
+	if (!SceneStorage::Get()->LoadScene("Scene3"))
 		return false;
-	if (!SceneStorage::Get()->LoadScene("Scene4_100_cubes"))
+	if (!SceneStorage::Get()->LoadScene("Scene4"))
 		return false;*/
 
 	/* ============================================= Cameras ============================================= */
 	if (!PlayerCameraManager::Get()->Initialize())
 		return false;
 
-	m_gameStateMachine.Push<SceneEditorState>();
+	/* ============================================= States ============================================== */
+	//m_gameStateMachine.Push<PlayState>();
+	//m_gameStateMachine.Push<SceneEditorState>();
+	m_gameStateMachine.Push<MainMenuState>();
 	if (!m_gameStateMachine.Peek()->Initialize())
 	{
 		return false;
 	}
 
 	m_pop_game_state_flag = false;
+	m_shutdown_flag = false;
 
 	return true;
 }
@@ -135,23 +157,42 @@ void Game::Run()
 		}
 		else
 		{
+			/* ======================================== Update delta time ======================================== */
 			t1 = t2;
 			t2 = Clock::now();
 
 			long long nanoSeconds = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count();
 			float deltaTime = static_cast<float>(nanoSeconds * 0.000000001);
 
+			/* ========================================== Update input =========================================== */
+			Input::Get()->Update();
+
+			/* =========================== Exit game if there is no current game state =========================== */
 			if (m_gameStateMachine.Empty())
 				break;
 
+			/* ======================================== Process game state ======================================= */
 			m_gameStateMachine.Peek()->ProcessInput();
 			m_gameStateMachine.Peek()->Update(deltaTime);
 			m_gameStateMachine.Peek()->Render();
 
+
+			/* =============================== Process requests to exit game states ============================== */
 			if (m_pop_game_state_flag)
 			{
 				m_gameStateMachine.Pop();
 				m_pop_game_state_flag = false;
+
+				// Process initialization failures
+				// (Could replace the Initialize() in most classes, since they won't need to return false)
+				if (m_shutdown_flag)
+				{
+					while (!m_gameStateMachine.Empty())
+					{
+						m_gameStateMachine.Pop();
+						m_shutdown_flag = false;
+					}
+				}
 			}
 		}
 	}
@@ -161,8 +202,11 @@ void Game::ReceiveEvent(const Event & e)
 {
 	switch (e.type)
 	{
+	case EventType::FAILED_TO_INITIALIZE:
+		m_shutdown_flag = true;
 	case EventType::POP_GAMESTATE:
 		m_pop_game_state_flag = true;
+		break;
 	default:
 		break;
 	}
