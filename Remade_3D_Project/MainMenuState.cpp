@@ -18,8 +18,6 @@
 #include "SpriteFont.h"
 #include "SpriteBatch.h"
 #include "SimpleMath.h"
-//#include <locale>
-//#include <codecvt>
 
 MainMenuState::MainMenuState(StateMachine<GameState>* stateMachine) : GameState::GameState(stateMachine)
 {

@@ -2,9 +2,6 @@
 #define EDITOR_SCALE_STATE_HPP
 #include "EditorState.hpp"
 
-class TextureObject;
-class HUDObject;
-
 class EditorScaleState : public EditorState
 {
 public:
@@ -16,9 +13,6 @@ public:
 	void Update(float dt) override;
 	void Render() override;
 	void RenderHUD() override;
-
-private:
-	HUDObject * m_scaleIcon;
 };
 
 #endif

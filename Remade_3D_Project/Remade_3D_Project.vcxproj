@@ -174,7 +174,6 @@
     <ClCompile Include="EventDispatcher.cpp" />
     <ClCompile Include="FPS_Counter.cpp" />
     <ClCompile Include="Frustum.cpp" />
-    <ClCompile Include="HelperFunctions.cpp" />
     <ClCompile Include="HUDObject.cpp" />
     <ClCompile Include="Buffers.cpp" />
     <ClCompile Include="Camera.cpp" />

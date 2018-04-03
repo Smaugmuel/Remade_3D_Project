@@ -3,9 +3,6 @@
 #include "EditorState.hpp"
 #include "Vector3.hpp"
 
-class TextureObject;
-class HUDObject;
-
 class EditorRotateState : public EditorState
 {
 public:
@@ -22,7 +19,7 @@ private:
 	Vector3f m_screenDirectionX;
 	Vector3f m_screenDirectionY;
 
-	HUDObject* m_rotateIcon;
+	//HUDObject* m_rotateIcon;
 };
 
 #endif

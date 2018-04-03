@@ -4,39 +4,27 @@
 #include "Input.hpp"
 #include <Windows.h>
 
-// For calculating directions
-//#include "PickingRay.hpp"
+// For rotating the object
 #include "PlayerCameraManager.hpp"
 #include "Camera.hpp"
 #include "Frustum.hpp"
-
-// For changing the object
 #include "TextureObject.hpp"
 
-// For the rotate icon
-#include "HUDObject.hpp"
-#include "Direct3D.hpp"
-#include "ShaderManager.hpp"
 
-
-EditorRotateState::EditorRotateState() : EditorState::EditorState(), m_rotateIcon(nullptr)
+EditorRotateState::EditorRotateState() : EditorState::EditorState()
 {
 }
 
 EditorRotateState::~EditorRotateState()
 {
-	delete m_rotateIcon;
 }
 
 bool EditorRotateState::Initialize()
 {
-	m_rotateIcon = new HUDObject;
-	if (!m_rotateIcon->Initialize(Direct3D::Get()->GetDevice(), "Icons/RotateIcon.png", Vector2i(300, 300), Vector2i(32, 32)))
+	if (!EditorState::InitializeIcon("Icons/RotateIcon.png"))
 	{
 		return false;
 	}
-	m_rotateIcon->SetPosition(Vector2i(0, 64));
-	m_rotateIcon->SetDimensions(Vector2i(32, 32));
 
 	return true;
 }
@@ -92,12 +80,5 @@ void EditorRotateState::Render()
 
 void EditorRotateState::RenderHUD()
 {
-	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
-
-	ID3D11ShaderResourceView* iconTexture = m_rotateIcon->GetShaderResourceView();
-	deviceContext->PSSetShaderResources(0, 1, &iconTexture);
-
-	ShaderManager::Get()->SetShaderType(deviceContext, ShaderType::HUD);
-
-	m_rotateIcon->Render(Direct3D::Get()->GetDeviceContext());
+	EditorState::RenderHUD();
 }

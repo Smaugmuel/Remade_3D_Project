@@ -3,9 +3,6 @@
 #include "EditorState.hpp"
 #include "Ray.hpp"
 
-class Scene;
-class HUDObject;
-
 class EditorSelectionState : public EditorState
 {
 public:
@@ -20,8 +17,6 @@ public:
 
 private:
 	void SelectCube(const Ray& ray);
-
-	HUDObject* m_selectIcon;
 };
 
 #endif

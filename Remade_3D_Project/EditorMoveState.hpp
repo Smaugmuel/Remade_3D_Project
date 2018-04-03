@@ -3,8 +3,6 @@
 #include "EditorState.hpp"
 #include "Vector3.hpp"
 
-class HUDObject;
-
 class EditorMoveState : public EditorState
 {
 public:
@@ -22,8 +20,6 @@ private:
 	Vector3f m_screenDirectionY;
 
 	float m_distanceMultiplier;
-
-	HUDObject* m_moveIcon;
 };
 
 #endif

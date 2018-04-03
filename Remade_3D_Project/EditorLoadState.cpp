@@ -1,42 +1,27 @@
 #include "EditorLoadState.hpp"
 
-// For input
 #include "Input.hpp"
-
-// For loading files
 #include "StringConverter.hpp"
-
-// For the load icon
-#include "HUDObject.hpp"
-#include "Direct3D.hpp"
-#include "ShaderManager.hpp"
+#include "EventDispatcher.hpp"
 
 // For the scene menu
 #include "Menu.hpp"
-#include "Direct3D.hpp"
 #include "SpriteFont.h"
 #include "SpriteBatch.h"
 #include "SimpleMath.h"
-#include "WindowSettings.hpp"
+#include "Direct3D.hpp"
 
-// For loading scenes
+// For switching and loading scenes
 #include "SceneStorage.hpp"
 #include "Scene.hpp"
 
-// For error management
-#include "EventDispatcher.hpp"
 
-EditorLoadState::EditorLoadState() : EditorState::EditorState(), m_loadIcon(nullptr), m_sceneMenu(nullptr)
+EditorLoadState::EditorLoadState() : EditorState::EditorState(), m_sceneMenu(nullptr)
 {
 }
 
 EditorLoadState::~EditorLoadState()
 {
-	if (m_loadIcon)
-	{
-		delete m_loadIcon;
-		m_loadIcon = nullptr;
-	}
 	if (m_sceneMenu)
 	{
 		delete m_sceneMenu;
@@ -57,13 +42,10 @@ EditorLoadState::~EditorLoadState()
 bool EditorLoadState::Initialize()
 {
 	/* ============================================= Create the load icon ========================================== */
-	m_loadIcon = new HUDObject;
-	if (!m_loadIcon->Initialize(Direct3D::Get()->GetDevice(), "Icons/LoadIcon.png", Vector2i(300, 300), Vector2i(32, 32)))
+	if (!EditorState::InitializeIcon("Icons/LoadIcon.png"))
 	{
 		return false;
 	}
-	m_loadIcon->SetPosition(Vector2i(0, 64));
-	m_loadIcon->SetDimensions(Vector2i(32, 32));
 
 	// Create the resources needed for rendering the text of the buttons
 	m_spriteFont = new DirectX::SpriteFont(Direct3D::Get()->GetDevice(), L"../Fonts/courier32.spritefont");
@@ -92,7 +74,7 @@ void EditorLoadState::ProcessInput()
 			if (buttons[i].GetAABA().Contains(input->MousePosition()))
 			{
 				// Load the chosen scene
-				LoadScene(ToString(buttons[i].GetText()));
+				LoadScene(StringConverter::ToString(buttons[i].GetText()));
 				break;
 			}
 		}
@@ -118,17 +100,10 @@ void EditorLoadState::Render()
 void EditorLoadState::RenderHUD()
 {
 	Direct3D* d3d = Direct3D::Get();
-	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 	const std::vector<MenuButton<EditorLoadState, const std::string&>>& buttons = m_sceneMenu->RetrieveButtons();
 
 	/* ================================ Render load icon ================================= */
-	ID3D11ShaderResourceView* iconTexture = m_loadIcon->GetShaderResourceView();
-	deviceContext->PSSetShaderResources(0, 1, &iconTexture);
-
-	ShaderManager::Get()->SetShaderType(deviceContext, ShaderType::HUD);
-
-	m_loadIcon->Render(deviceContext);
-
+	EditorState::RenderHUD();
 	
 	/* ================================ Render scene buttons ================================= */
 	d3d->DisableZBuffer();
@@ -195,25 +170,30 @@ void EditorLoadState::CreateButtonsFromScenesInFolder()
 
 void EditorLoadState::LoadScene(const std::string & sceneName)
 {
-	if (!SceneStorage::Get()->LoadScene(sceneName))
+	SceneStorage* sceneStorage = SceneStorage::Get();
+	EventDispatcher* eventDispatcher = EventDispatcher::Get();
+
+	// Leave editor if scene failed to load
+	if (!sceneStorage->LoadScene(sceneName))
 	{
-		// Send event to leave editor
-		EventDispatcher::Get()->Emit(Event(EventType::POP_GAMESTATE));
+		eventDispatcher->Emit(Event(EventType::POP_GAMESTATE));
 		return;
 	}
 
-	Scene* scene = SceneStorage::Get()->GetScene(sceneName);
+	Scene* scene = sceneStorage->GetScene(sceneName);
 
+	// Do nothing if the chosen scene is the current one
 	if (scene == m_scene)
 	{
-		// This scene is the current one
 		return;
 	}
 
 	m_scene = scene;
+
+	// Set up scene for rendering
 	m_scene->LoadIntoRenderManager();
 
 	// Notify of a scene change, and reset selection
-	EventDispatcher::Get()->Emit(Event(EventType::SWITCHED_SCENE, m_scene));
-	EventDispatcher::Get()->Emit(Event(EventType::SWITCHED_SELECTED_OBJECT, nullptr));
+	eventDispatcher->Emit(Event(EventType::SWITCHED_SCENE, m_scene));
+	eventDispatcher->Emit(Event(EventType::SWITCHED_SELECTED_OBJECT, nullptr));
 }

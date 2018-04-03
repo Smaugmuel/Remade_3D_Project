@@ -7,29 +7,20 @@
 // For changing the object
 #include "TextureObject.hpp"
 
-// For the scale icon
-#include "HUDObject.hpp"
-#include "Direct3D.hpp"
-#include "ShaderManager.hpp"
-
-EditorScaleState::EditorScaleState() : EditorState::EditorState(), m_scaleIcon(nullptr)
+EditorScaleState::EditorScaleState() : EditorState::EditorState()
 {
 }
 
 EditorScaleState::~EditorScaleState()
 {
-	delete m_scaleIcon;
 }
 
 bool EditorScaleState::Initialize()
 {
-	m_scaleIcon = new HUDObject;
-	if (!m_scaleIcon->Initialize(Direct3D::Get()->GetDevice(), "Icons/ScaleIcon.png", Vector2i(300, 300), Vector2i(32, 32)))
+	if (!EditorState::InitializeIcon("Icons/ScaleIcon.png"))
 	{
 		return false;
 	}
-	m_scaleIcon->SetPosition(Vector2i(0, 64));
-	m_scaleIcon->SetDimensions(Vector2i(32, 32));
 
 	return true;
 }
@@ -72,12 +63,5 @@ void EditorScaleState::Render()
 
 void EditorScaleState::RenderHUD()
 {
-	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
-
-	ID3D11ShaderResourceView* iconTexture = m_scaleIcon->GetShaderResourceView();
-	deviceContext->PSSetShaderResources(0, 1, &iconTexture);
-
-	ShaderManager::Get()->SetShaderType(deviceContext, ShaderType::HUD);
-
-	m_scaleIcon->Render(Direct3D::Get()->GetDeviceContext());
+	EditorState::RenderHUD();
 }

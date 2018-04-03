@@ -1,10 +1,13 @@
 #include "PickingRay.hpp"
 
-#include "Camera.hpp"
-#include "PlayerCameraManager.hpp"
-#include "Collision.hpp"
-#include "WindowSettings.hpp"
+// For getting mouse position
 #include "Input.hpp"
+#include "WindowSettings.hpp"
+
+// For getting the corners of the camera's frustum
+#include "PlayerCameraManager.hpp"
+#include "Camera.hpp"
+#include "Frustum.hpp"
 
 Ray HF::CreatePickingRay()
 {

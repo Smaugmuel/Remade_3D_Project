@@ -4,45 +4,29 @@
 #include "Input.hpp"
 #include <windows.h>
 
-// For creating the picking ray
+// For selecting the cube
 #include "PickingRay.hpp"
-
-// For checking the ray against objects
 #include "Collision.hpp"
 #include "TextureObject.hpp"
 #include "Scene.hpp"
-
-// For changing the objects
 #include "RenderManager.hpp"
-
-// For the select icon
-#include "HUDObject.hpp"
-#include "Direct3D.hpp"
-#include "TextureStorage.hpp"
-#include "ShaderManager.hpp"
 
 #include "EventDispatcher.hpp"
 
-EditorSelectionState::EditorSelectionState() : EditorState::EditorState(), m_selectIcon(nullptr)
+EditorSelectionState::EditorSelectionState() : EditorState::EditorState()
 {
 }
 
 EditorSelectionState::~EditorSelectionState()
 {
-	delete m_selectIcon;
 }
 
 bool EditorSelectionState::Initialize()
 {
-	m_selectedObject = nullptr;
-
-	m_selectIcon = new HUDObject;
-	if (!m_selectIcon->Initialize(Direct3D::Get()->GetDevice(), "Icons/SelectIcon.png", Vector2i(300, 300), Vector2i(32, 32)))
+	if (!EditorState::InitializeIcon("Icons/SelectIcon.png"))
 	{
 		return false;
 	}
-	m_selectIcon->SetPosition(Vector2i(0, 64));
-	m_selectIcon->SetDimensions(Vector2i(32, 32));
 
 	return true;
 }
@@ -67,14 +51,7 @@ void EditorSelectionState::Render()
 
 void EditorSelectionState::RenderHUD()
 {
-	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
-
-	ID3D11ShaderResourceView* iconTexture = m_selectIcon->GetShaderResourceView();
-	deviceContext->PSSetShaderResources(0, 1, &iconTexture);
-
-	ShaderManager::Get()->SetShaderType(deviceContext, ShaderType::HUD);
-
-	m_selectIcon->Render(deviceContext);
+	EditorState::RenderHUD();
 }
 
 void EditorSelectionState::SelectCube(const Ray& ray)

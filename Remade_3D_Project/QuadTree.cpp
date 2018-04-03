@@ -216,7 +216,7 @@ bool QuadTree::Insert(QuadTreeObject * object)
 	unsigned int y = minY ^ maxY;
 	if (!x)
 	{
-		// All bits where the same, therefore min - max = 0 and can fit at the lowest level
+		// All bits were the same, therefore min - max = 0 and can fit at the lowest level
 		x = NR_OF_LEVELS - 1;
 	}
 	else
@@ -226,7 +226,7 @@ bool QuadTree::Insert(QuadTreeObject * object)
 	}
 	if (!y)
 	{
-		// All bits where the same, therefore min - max = 0 and can fit at the lowest level
+		// All bits were the same, therefore min - max = 0 and can fit at the lowest level
 		y = NR_OF_LEVELS - 1;
 	}
 	else

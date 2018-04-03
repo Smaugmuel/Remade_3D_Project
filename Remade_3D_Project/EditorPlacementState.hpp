@@ -3,7 +3,6 @@
 #include "EditorState.hpp"
 
 class TextureObject;
-class HUDObject;
 
 class EditorPlacementState : public EditorState
 {
@@ -18,9 +17,7 @@ public:
 	void RenderHUD() override;
 
 private:
-	TextureObject* m_previewObject;
-
-	HUDObject* m_placeIcon;
+	TextureObject * m_previewObject;
 };
 
 #endif

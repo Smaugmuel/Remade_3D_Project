@@ -63,7 +63,7 @@ bool ShaderStorage::CreateVertexShader(ID3D11Device * device, std::string name)
 
 	ID3D10Blob* blob;
 	HRESULT result;
-	std::wstring wstr = ToWideString(name);
+	std::wstring wstr = StringConverter::ToWideString(name);
 
 	result = D3DCompileFromFile(
 		wstr.c_str(),
@@ -111,7 +111,7 @@ bool ShaderStorage::CreateGeometryShader(ID3D11Device * device, std::string name
 
 	ID3D10Blob* blob;
 	HRESULT result;
-	std::wstring wstr = ToWideString(name);
+	std::wstring wstr = StringConverter::ToWideString(name);
 
 	result = D3DCompileFromFile(
 		wstr.c_str(),
@@ -145,7 +145,7 @@ bool ShaderStorage::CreatePixelShader(ID3D11Device * device, std::string name)
 
 	ID3D10Blob* blob;
 	HRESULT result;
-	std::wstring wstr = ToWideString(name);
+	std::wstring wstr = StringConverter::ToWideString(name);
 
 	result = D3DCompileFromFile(
 		wstr.c_str(),

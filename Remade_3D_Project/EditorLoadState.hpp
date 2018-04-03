@@ -3,7 +3,6 @@
 #include "EditorState.hpp"
 #include <string>
 
-class HUDObject;
 template<typename CallbackClassType, typename ... ParamTypes> class Menu;
 
 namespace DirectX
@@ -28,7 +27,6 @@ private:
 	void CreateButtonsFromScenesInFolder();
 	void LoadScene(const std::string& sceneName);
 
-	HUDObject * m_loadIcon;
 	Menu<EditorLoadState, const std::string&>* m_sceneMenu;
 
 	DirectX::SpriteFont* m_spriteFont;

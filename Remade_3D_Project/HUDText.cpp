@@ -3,8 +3,7 @@
 #include "SimpleMath.h"
 #include "SpriteFont.h"
 #include "SpriteBatch.h"
-#include <locale>
-#include <codecvt>
+#include "StringConverter.hpp"
 
 HUDText::HUDText()
 {
@@ -23,9 +22,7 @@ void HUDText::CreateSpriteBatch(ID3D11DeviceContext* deviceContext)
 
 void HUDText::LoadFont(ID3D11Device * device, const char * fileName)
 {
-	// Convert to wide string
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	std::wstring fileNameWide = converter.from_bytes(fileName);
+	std::wstring fileNameWide = StringConverter::ToWideString(fileName);
 
 	m_font = std::make_unique<DirectX::SpriteFont>(device, fileNameWide.c_str());
 }
@@ -44,9 +41,7 @@ void HUDText::Render()
 
 void HUDText::SetText(const char * text)
 {
-	// Convert to wide string
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	m_text = converter.from_bytes(text);
+	m_text = StringConverter::ToWideString(text);
 }
 
 void HUDText::SetPosition(Vector2f position)

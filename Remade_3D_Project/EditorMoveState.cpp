@@ -4,38 +4,27 @@
 #include "Input.hpp"
 #include <Windows.h>
 
-// For calculating directions
+// For moving the object
 //#include "PickingRay.hpp"
 #include "PlayerCameraManager.hpp"
 #include "Camera.hpp"
+#include "TextureObject.hpp"
 #include "Frustum.hpp"
 
-// For changing the object
-#include "TextureObject.hpp"
-
-// For the move icon
-#include "HUDObject.hpp"
-#include "Direct3D.hpp"
-#include "ShaderManager.hpp"
-
-EditorMoveState::EditorMoveState() : EditorState::EditorState(), m_moveIcon(nullptr), m_distanceMultiplier(0.0f)
+EditorMoveState::EditorMoveState() : EditorState::EditorState(), m_distanceMultiplier(0.0f)
 {
 }
 
 EditorMoveState::~EditorMoveState()
 {
-	delete m_moveIcon;
 }
 
 bool EditorMoveState::Initialize()
 {
-	m_moveIcon = new HUDObject;
-	if (!m_moveIcon->Initialize(Direct3D::Get()->GetDevice(), "Icons/MoveIcon.png", Vector2i(300, 300), Vector2i(32, 32)))
+	if (!EditorState::InitializeIcon("Icons/MoveIcon.png"))
 	{
 		return false;
 	}
-	m_moveIcon->SetPosition(Vector2i(0, 64));
-	m_moveIcon->SetDimensions(Vector2i(32, 32));
 
 	return true;
 }
@@ -94,12 +83,5 @@ void EditorMoveState::Render()
 
 void EditorMoveState::RenderHUD()
 {
-	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
-
-	ID3D11ShaderResourceView* iconTexture = m_moveIcon->GetShaderResourceView();
-	deviceContext->PSSetShaderResources(0, 1, &iconTexture);
-
-	ShaderManager::Get()->SetShaderType(deviceContext, ShaderType::HUD);
-
-	m_moveIcon->Render(Direct3D::Get()->GetDeviceContext());
+	EditorState::RenderHUD();
 }
