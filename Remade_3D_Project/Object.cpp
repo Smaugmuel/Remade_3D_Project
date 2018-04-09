@@ -217,6 +217,11 @@ const std::string & Object::GetModelName() const
 	return m_modelName;
 }
 
+const OBB & Object::GetOBB() const
+{
+	return m_obb;
+}
+
 void Object::UpdateTranslationMatrix()
 {
 	DirectX::XMStoreFloat4x4(&m_translationMatrix, DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z));
@@ -284,6 +289,8 @@ void Object::UpdateWorldMatrix()
 		DirectX::XMMatrixTranspose(DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z));*/
 
 	DirectX::XMStoreFloat4x4(&m_worldMatrix, transformation);
+
+	UpdateOBB();
 
 	m_update_world_flag = false;
 }

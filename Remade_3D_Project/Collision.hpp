@@ -37,8 +37,10 @@ class Collision : public Singleton<Collision>
 public:
 	bool FrustumVSOBB(const Frustum& frustum, const OBB& obb);
 	bool FrustumVSPoint(const Frustum& frustum, Vector3f point);
-
 	float DistancePlaneToPoint(const Plane& plane, Vector3f point);
+
+	bool OBBVSOBB(const OBB& b1, const OBB& b2);
+	bool SeparatingAxisTheorem(const Vector3f& faceNormal, Vector3f* corners1, unsigned int nrOfCorners1, Vector3f* corners2, unsigned int nrOfCorners2);
 };
 
 #endif

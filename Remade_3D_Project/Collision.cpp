@@ -236,13 +236,168 @@ bool Collision::FrustumVSOBB(const Frustum & frustum, const OBB & obb)
 
 	return true;
 }
-
 bool Collision::FrustumVSPoint(const Frustum & frustum, Vector3f point)
 {
 	return false;
 }
-
 float Collision::DistancePlaneToPoint(const Plane & plane, Vector3f point)
 {
 	return plane.normal.dot(point) + plane.d;
+}
+
+
+bool Collision::OBBVSOBB(const OBB & b1, const OBB & b2)
+{
+	float squaredDistanceBetweenCenters = (b1.center - b2.center).lengthSquared();
+
+	/* =================================== Early return 1: Inprecise bounding sphere intersection test =================================== */
+	float radiusSquared1 = b1.halfSides[0] * b1.halfSides[0] + b1.halfSides[1] * b1.halfSides[1] + b1.halfSides[2] * b1.halfSides[2];
+	float radiusSquared2 = b2.halfSides[0] * b2.halfSides[0] + b2.halfSides[1] * b2.halfSides[1] + b2.halfSides[2] * b2.halfSides[2];
+
+	float sumOfSquaredRadii = radiusSquared1 + radiusSquared2;
+	float squaredSumOfSquaredRadii = sumOfSquaredRadii * sumOfSquaredRadii;
+
+	// Check if distance between centers is less than sum of squared radii
+	if (squaredDistanceBetweenCenters > squaredSumOfSquaredRadii)
+	{
+		return false;
+	}
+
+	/* =================================== Early return 2: Bounding sphere intersection test ============================================= */
+	float radius1 = std::sqrtf(radiusSquared1);
+	float radius2 = std::sqrtf(radiusSquared2);
+	
+	float sumOfRadii = radius1 + radius2;
+	float squaredSumOfRadii = sumOfRadii * sumOfRadii;
+
+	// Check if distance between centers is less than sum of radii
+	if (squaredDistanceBetweenCenters > squaredSumOfRadii)
+	{
+		return false;
+	}
+
+	/* =================================== Separating Axis Theorem intersection tests ==================================================== */
+	Vector3f obbHalfEdges1[3];
+	Vector3f obbHalfEdges2[3];
+
+	Vector3f corners1[8];
+	Vector3f corners2[8];
+
+	// Calculate the vectors of both obb's half sides
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		obbHalfEdges1[i] = b1.vectors[i] * b1.halfSides[i];
+		obbHalfEdges2[i] = b2.vectors[i] * b2.halfSides[i];
+	}
+
+	// Calculate corners of first OBB
+	corners1[0] = b1.center - obbHalfEdges1[0] - obbHalfEdges1[1] - obbHalfEdges1[2];
+	corners1[1] = b1.center - obbHalfEdges1[0] - obbHalfEdges1[1] + obbHalfEdges1[2];
+	corners1[2] = b1.center - obbHalfEdges1[0] + obbHalfEdges1[1] - obbHalfEdges1[2];
+	corners1[3] = b1.center - obbHalfEdges1[0] + obbHalfEdges1[1] + obbHalfEdges1[2];
+	corners1[4] = b1.center + obbHalfEdges1[0] - obbHalfEdges1[1] - obbHalfEdges1[2];
+	corners1[5] = b1.center + obbHalfEdges1[0] - obbHalfEdges1[1] + obbHalfEdges1[2];
+	corners1[6] = b1.center + obbHalfEdges1[0] + obbHalfEdges1[1] - obbHalfEdges1[2];
+	corners1[7] = b1.center + obbHalfEdges1[0] + obbHalfEdges1[1] + obbHalfEdges1[2];
+
+	// Calculate corners of second OBB
+	corners2[0] = b2.center - obbHalfEdges2[0] - obbHalfEdges2[1] - obbHalfEdges2[2];
+	corners2[1] = b2.center - obbHalfEdges2[0] - obbHalfEdges2[1] + obbHalfEdges2[2];
+	corners2[2] = b2.center - obbHalfEdges2[0] + obbHalfEdges2[1] - obbHalfEdges2[2];
+	corners2[3] = b2.center - obbHalfEdges2[0] + obbHalfEdges2[1] + obbHalfEdges2[2];
+	corners2[4] = b2.center + obbHalfEdges2[0] - obbHalfEdges2[1] - obbHalfEdges2[2];
+	corners2[5] = b2.center + obbHalfEdges2[0] - obbHalfEdges2[1] + obbHalfEdges2[2];
+	corners2[6] = b2.center + obbHalfEdges2[0] + obbHalfEdges2[1] - obbHalfEdges2[2];
+	corners2[7] = b2.center + obbHalfEdges2[0] + obbHalfEdges2[1] + obbHalfEdges2[2];
+
+
+	/* =================================== Early return 3: Separating plane along vector between centers ============================== */
+	if (!SeparatingAxisTheorem((b1.center - b2.center).normalized(), corners1, 8, corners2, 8))
+	{
+		return false;
+	}
+
+
+	/* =================================== Separating Axis Theorem using face normals from first obb ================================== */
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		if (!SeparatingAxisTheorem(b1.vectors[i], corners1, 8, corners2, 8))
+		{
+			return false;
+		}
+	}
+
+	/* =================================== Separating Axis Theorem using face normals from second obb ================================= */
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		if (!SeparatingAxisTheorem(b2.vectors[i], corners1, 8, corners2, 8))
+		{
+			return false;
+		}
+	}
+
+	// The tests above will give a false positive if two edges of the cubes are near each other but not intersecting
+	// In other words, when there exists a separating plane, whose normal is not equal to any of the tested obb face normals above
+
+	/* =================================== Separating Axis Theorem using vectors perpendicular to two edges of the obb's ============== */
+	for (unsigned int i = 0; i < 3; i++)
+	{
+		for (unsigned int j = 0; j < 3; j++)
+		{
+			if (!SeparatingAxisTheorem(b1.vectors[i].crossRH(b2.vectors[j]).normalized(), corners1, 8, corners2, 8))
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool Collision::SeparatingAxisTheorem(const Vector3f & faceNormal, Vector3f * corners1, unsigned int nrOfCorners1, Vector3f * corners2, unsigned int nrOfCorners2)
+{
+	float distancesFromOriginToProjectedCorners1[8];
+	float distancesFromOriginToProjectedCorners2[8];
+	float min1, min2, max1, max2;
+
+	min1 = min2 = INFINITY;
+	max1 = max2 = -INFINITY;
+
+	// Project each corner of first object onto face normal
+	for (unsigned int i = 0; i < nrOfCorners1; i++)
+	{
+		distancesFromOriginToProjectedCorners1[i] = faceNormal.dot(corners1[i]);
+
+		if (distancesFromOriginToProjectedCorners1[i] < min1)
+		{
+			min1 = distancesFromOriginToProjectedCorners1[i];
+		}
+		if (distancesFromOriginToProjectedCorners1[i] > max1)
+		{
+			max1 = distancesFromOriginToProjectedCorners1[i];
+		}
+	}
+
+	// Project each corner of second object onto face normal
+	for (unsigned int i = 0; i < nrOfCorners2; i++)
+	{
+		distancesFromOriginToProjectedCorners2[i] = faceNormal.dot(corners2[i]);
+
+		if (distancesFromOriginToProjectedCorners2[i] < min2)
+		{
+			min2 = distancesFromOriginToProjectedCorners2[i];
+		}
+		if (distancesFromOriginToProjectedCorners2[i] > max2)
+		{
+			max2 = distancesFromOriginToProjectedCorners2[i];
+		}
+	}
+
+	// Check if projected corners overlap
+	if (min1 > max2 || min2 > max1)
+	{
+		return false;
+	}
+
+	return true;
 }

@@ -147,7 +147,7 @@ void MainMenuState::Render()
 	d3d->Present();
 }
 
-void MainMenuState::PressedPlay()
+void MainMenuState::PressedPlay(const std::wstring& text)
 {
 	m_stateMachine->Push<PlayState>();
 	if (!m_stateMachine->Peek()->Initialize())
@@ -155,7 +155,7 @@ void MainMenuState::PressedPlay()
 		EventDispatcher::Get()->Emit(Event(EventType::FAILED_TO_INITIALIZE));
 	}
 }
-void MainMenuState::PressedEdit()
+void MainMenuState::PressedEdit(const std::wstring& text)
 {
 	m_stateMachine->Push<SceneEditorState>();
 	if (!m_stateMachine->Peek()->Initialize())
@@ -163,7 +163,7 @@ void MainMenuState::PressedEdit()
 		EventDispatcher::Get()->Emit(Event(EventType::FAILED_TO_INITIALIZE));
 	}
 }
-void MainMenuState::PressedExit()
+void MainMenuState::PressedExit(const std::wstring& text)
 {
 	EventDispatcher::Get()->Emit(Event(EventType::POP_GAMESTATE));
 }

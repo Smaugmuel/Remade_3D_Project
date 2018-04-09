@@ -42,12 +42,28 @@ void EditorScaleState::ProcessInput()
 			if (mouseMovement != Vector2f(0, 0))
 			{
 				// Mouse moved
-
 				mouseMovement *= 0.0025f;
 
-				m_selectedObject->SetScale(m_selectedObject->GetScale() * (1 + mouseMovement.x));
+				Vector3f scale = m_selectedObject->GetScale();
 
-				//m_selectedObject->SetRotation(MatrixToEuler(m_selectedObject->GetWorldMatrix()));
+				if (input->IsKeyDown('X'))
+				{
+					scale.x *= (1 + mouseMovement.x);
+				}
+				else if (input->IsKeyDown('Y'))
+				{
+					scale.y *= (1 + mouseMovement.x);
+				}
+				else if (input->IsKeyDown('Z'))
+				{
+					scale.z *= (1 + mouseMovement.x);
+				}
+				else
+				{
+					scale *= (1 + mouseMovement.x);
+				}
+
+				m_selectedObject->SetScale(scale);
 			}
 		}
 	}

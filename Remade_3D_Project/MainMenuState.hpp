@@ -1,6 +1,7 @@
 #ifndef MAIN_MENU_STATE_HPP
 #define MAIN_MENU_STATE_HPP
 #include "GameState.hpp"
+#include <string>
 
 namespace DirectX
 {
@@ -22,9 +23,9 @@ public:
 	void Render() override;
 
 private:
-	void PressedPlay();
-	void PressedEdit();
-	void PressedExit();
+	void PressedPlay(const std::wstring& text);
+	void PressedEdit(const std::wstring& text);
+	void PressedExit(const std::wstring& text);
 
 
 	Menu<MainMenuState> * m_menu;

@@ -1,6 +1,7 @@
 #ifndef MODEL_HPP
 #define MODEL_HPP
 //#include <string>
+#include "OBB.hpp"
 
 //class Material;
 struct ID3D11Device;
@@ -42,13 +43,17 @@ public:
 
 	virtual bool LoadFromFile(const char* fileName) = 0;
 	virtual bool CreateVertexBuffer(ID3D11Device* device) = 0;
-
+	virtual bool CreateOBB() = 0;
 	virtual void SetupRender(ID3D11DeviceContext* deviceContext) = 0;
 	void Render(ID3D11DeviceContext* deviceContext);
+
+	const OBB& GetOBB() const;
 
 protected:
 	ID3D11Buffer* m_vertexBuffer;
 	unsigned int m_nrOfVerts;
+
+	OBB m_obb;
 
 	//Material* m_material;
 };

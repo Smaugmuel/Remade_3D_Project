@@ -25,9 +25,9 @@ public:
 
 private:
 	void CreateButtonsFromScenesInFolder();
-	void LoadScene(const std::string& sceneName);
+	void LoadScene(const std::wstring& sceneName);
 
-	Menu<EditorLoadState, const std::string&>* m_sceneMenu;
+	Menu<EditorLoadState>* m_sceneMenu;
 
 	DirectX::SpriteFont* m_spriteFont;
 	DirectX::SpriteBatch* m_spriteBatch;

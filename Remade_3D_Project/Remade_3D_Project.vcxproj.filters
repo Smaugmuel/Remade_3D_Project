@@ -366,6 +366,12 @@
     <ClCompile Include="World.cpp">
       <Filter>Source Files\Not In use</Filter>
     </ClCompile>
+    <ClCompile Include="HelperFunctions.cpp">
+      <Filter>Source Files\Helper Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EditorRemoveState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -642,7 +648,10 @@
       <Filter>Header Files\Not In Use</Filter>
     </ClInclude>
     <ClInclude Include="Singleton.hpp">
-      <Filter>Header Files\Helper Files</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EditorRemoveState.hpp">
+      <Filter>Header Files\States\EditorStates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

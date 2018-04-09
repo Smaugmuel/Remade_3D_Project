@@ -27,6 +27,9 @@ bool ModelStorage::LoadSingleColorModel(ID3D11Device* device, const std::string&
 	if (!m_singleColorModels.at(name).get()->CreateVertexBuffer(device))
 		return false;
 
+	if (!m_singleColorModels.at(name).get()->CreateOBB())
+		return false;
+
 	return true;
 }
 
@@ -43,6 +46,9 @@ bool ModelStorage::LoadTextureModel(ID3D11Device* device, const std::string& nam
 		return false;
 
 	if (!m_textureModels.at(name).get()->CreateVertexBuffer(device))
+		return false;
+
+	if (!m_textureModels.at(name).get()->CreateOBB())
 		return false;
 
 	return true;
@@ -72,4 +78,62 @@ bool ModelStorage::HasSingleColorModel(const std::string& name) const
 bool ModelStorage::HasTextureModel(const std::string& name) const
 {
 	return m_textureModels.find(name) != m_textureModels.end();
+}
+
+unsigned int ModelStorage::GetNrOfSingleColorModels() const
+{
+	return m_singleColorModels.size();
+}
+
+unsigned int ModelStorage::GetNrOfTextureModels() const
+{
+	return m_textureModels.size();
+}
+
+const std::string & ModelStorage::GetSingleColorModelName(unsigned int i) const
+{
+	if (i < 0 || i > m_singleColorModels.size() - 1)
+	{
+		return "";
+	}
+
+	std::map<std::string, std::unique_ptr<SingleColorModel>>::const_iterator it = m_singleColorModels.begin();
+	std::map<std::string, std::unique_ptr<SingleColorModel>>::const_iterator end = m_singleColorModels.end();
+	std::string name;
+	unsigned int counter = 0;
+
+	for (it; it != end; ++it)
+	{
+		if (counter++ == i)
+		{
+			name = it->first;
+			break;
+		}
+	}
+
+	return name;
+}
+
+const std::string & ModelStorage::GetTextureModelName(unsigned int i) const
+{
+	if (i < 0 || i > m_textureModels.size() - 1)
+	{
+		return "";
+	}
+
+	std::map<std::string, std::unique_ptr<TextureModel>>::const_iterator it = m_textureModels.begin();
+	std::map<std::string, std::unique_ptr<TextureModel>>::const_iterator end = m_textureModels.end();
+	std::string name;
+	unsigned int counter = 0;
+
+	for (it; it != end; ++it)
+	{
+		if (counter++ == i)
+		{
+			name = it->first;
+			break;
+		}
+	}
+
+	return name;
 }

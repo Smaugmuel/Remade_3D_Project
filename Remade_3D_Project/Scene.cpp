@@ -100,6 +100,42 @@ void Scene::AddSingleColoredObject(const std::string & modelName, const Vector3f
 	m_singleColoredObjects[m_nrOfSingleColoredObjects++] = object;
 }
 
+bool Scene::RemoveTexturedObject(TextureObject * object)
+{
+	for (unsigned int i = 0; i < m_nrOfTexturedObjects; i++)
+	{
+		if (m_texturedObjects[i] == object)
+		{
+			delete object;
+			m_texturedObjects[i] = m_texturedObjects[m_nrOfTexturedObjects - 1];
+			m_texturedObjects[m_nrOfTexturedObjects - 1] = nullptr;
+			m_nrOfTexturedObjects--;
+			
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool Scene::RemoveSingleColoredObject(SingleColorObject * object)
+{
+	for (unsigned int i = 0; i < m_nrOfSingleColoredObjects; i++)
+	{
+		if (m_singleColoredObjects[i] == object)
+		{
+			delete object;
+			m_singleColoredObjects[i] = m_singleColoredObjects[m_nrOfSingleColoredObjects - 1];
+			m_singleColoredObjects[m_nrOfSingleColoredObjects - 1] = nullptr;
+			m_nrOfSingleColoredObjects--;
+			
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool Scene::LoadFromFile(std::string fileName)
 {
 	std::ifstream inFile("../Scenes/" + fileName + ".txt");

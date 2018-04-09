@@ -45,6 +45,16 @@ void EditorPlacementState::ProcessInput()
 {
 	Input* input = Input::Get();
 
+	if (input->IsKeyPressed(VK_RBUTTON))
+	{
+		unsigned int nrOfTextureModels = ModelStorage::Get()->GetNrOfTextureModels();
+		
+		static int modelIndex = 0;
+		modelIndex = (modelIndex + 1) % nrOfTextureModels;
+
+		ModelStorage::Get()->GetTextureModelName(modelIndex);
+	}
+
 	// Create a new object at preview object
 	if (input->IsKeyPressed(VK_LBUTTON))
 	{

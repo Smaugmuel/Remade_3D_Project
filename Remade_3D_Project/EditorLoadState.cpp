@@ -6,6 +6,8 @@
 
 // For the scene menu
 #include "Menu.hpp"
+
+// For rendering the buttons
 #include "SpriteFont.h"
 #include "SpriteBatch.h"
 #include "SimpleMath.h"
@@ -52,7 +54,7 @@ bool EditorLoadState::Initialize()
 	m_spriteBatch = new DirectX::SpriteBatch(Direct3D::Get()->GetDeviceContext());
 
 	// Create menu and its buttons from the scenes found in the directory
-	m_sceneMenu = new Menu<EditorLoadState, const std::string&>;
+	m_sceneMenu = new Menu<EditorLoadState>;
 	CreateButtonsFromScenesInFolder();
 
 	return true;
@@ -64,20 +66,7 @@ void EditorLoadState::ProcessInput()
 
 	if (input->IsKeyPressed(VK_LBUTTON))
 	{
-		const std::vector<MenuButton<EditorLoadState, const std::string&>>& buttons = m_sceneMenu->RetrieveButtons();
-		
-		// Process buttons manually, since the names need to be known
-		// Would it be fine to always send a button's name when it calls its function?
-		// It would require each callback function to receive at least a string
-		for (unsigned int i = 0; i < buttons.size(); i++)
-		{
-			if (buttons[i].GetAABA().Contains(input->MousePosition()))
-			{
-				// Load the chosen scene
-				LoadScene(StringConverter::ToString(buttons[i].GetText()));
-				break;
-			}
-		}
+		m_sceneMenu->ProcessMouseClick(input->MousePosition());
 	}
 
 	if (input->IsKeyDown(VK_CONTROL))
@@ -100,7 +89,7 @@ void EditorLoadState::Render()
 void EditorLoadState::RenderHUD()
 {
 	Direct3D* d3d = Direct3D::Get();
-	const std::vector<MenuButton<EditorLoadState, const std::string&>>& buttons = m_sceneMenu->RetrieveButtons();
+	std::vector<MenuButton<EditorLoadState>> buttons = m_sceneMenu->RetrieveButtons();
 
 	/* ================================ Render load icon ================================= */
 	EditorState::RenderHUD();
@@ -114,7 +103,7 @@ void EditorLoadState::RenderHUD()
 	for (unsigned int i = 0; i < n; i++)
 	{
 		// Convert position and size to SimpleMath vector
-		const MenuButton<EditorLoadState, const std::string&>* button = &buttons[i];
+		const MenuButton<EditorLoadState>* button = &buttons[i];
 		const AABA& aaba = button->GetAABA();
 		DirectX::SimpleMath::Vector2 position(aaba.center.x, aaba.center.y);
 		DirectX::SimpleMath::Vector2 origin(aaba.halfSides.x, aaba.halfSides.y);
@@ -157,7 +146,7 @@ void EditorLoadState::CreateButtonsFromScenesInFolder()
 		halfDimensions = DirectX::SimpleMath::Vector2(m_spriteFont->MeasureString(wSceneNames[i].c_str())) / 2.0f;
 		position.x = halfDimensions.x;
 		position.y = 96 + halfDimensions.y * (1 + i * 2);
-
+		
 		m_sceneMenu->CreateButton(
 			this,
 			&EditorLoadState::LoadScene,
@@ -168,19 +157,21 @@ void EditorLoadState::CreateButtonsFromScenesInFolder()
 	}
 }
 
-void EditorLoadState::LoadScene(const std::string & sceneName)
+void EditorLoadState::LoadScene(const std::wstring & sceneName)
 {
 	SceneStorage* sceneStorage = SceneStorage::Get();
 	EventDispatcher* eventDispatcher = EventDispatcher::Get();
 
+	std::string str = StringConverter::ToString(sceneName);
+
 	// Leave editor if scene failed to load
-	if (!sceneStorage->LoadScene(sceneName))
+	if (!sceneStorage->LoadScene(str))
 	{
 		eventDispatcher->Emit(Event(EventType::POP_GAMESTATE));
 		return;
 	}
 
-	Scene* scene = sceneStorage->GetScene(sceneName);
+	Scene* scene = sceneStorage->GetScene(str);
 
 	// Do nothing if the chosen scene is the current one
 	if (scene == m_scene)

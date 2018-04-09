@@ -23,6 +23,8 @@ public:
 	const std::string& GetDefaultTextureName() const;
 
 private:
+	void UpdateOBB() override;
+
 	std::string m_textureName;
 	std::string m_defaultTextureName;
 };

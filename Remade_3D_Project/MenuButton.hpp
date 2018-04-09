@@ -8,7 +8,7 @@ template<typename CallbackClassType, typename ... ParamTypes>
 class MenuButton
 {
 public:
-	typedef void (CallbackClassType::*CallbackFunction)(ParamTypes...);
+	typedef void (CallbackClassType::*CallbackFunction)(const std::wstring&, ParamTypes...);
 
 	MenuButton(CallbackClassType* callbackClass, CallbackFunction function, const std::wstring& text, const Vector2i& center, const Vector2i& halfDimensions)
 	{
@@ -26,7 +26,7 @@ public:
 	{
 		if (m_aaba.Contains(mousePos))
 		{
-			(m_callbackClass->*(m_callbackFunction))(args...);
+			(m_callbackClass->*(m_callbackFunction))(m_text, args...);
 		}
 	}
 

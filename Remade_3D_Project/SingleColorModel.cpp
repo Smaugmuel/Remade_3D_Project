@@ -112,6 +112,32 @@ bool SingleColorModel::CreateVertexBuffer(ID3D11Device* device)
 	return true;
 }
 
+bool SingleColorModel::CreateOBB()
+{
+	Vector3f low(10000000, 10000000, 10000000);
+	Vector3f high = low * -1;
+
+	for (unsigned int i = 0; i < m_nrOfVerts; i++)
+	{
+		Vector3f p = m_vertices[i].position;
+		
+		if (p.x < low.x)  low.x  = p.x;
+		if (p.x > high.x) high.x = p.x;
+		if (p.y < low.y)  low.y  = p.y;
+		if (p.y > high.y) high.y = p.y;
+		if (p.z < low.z)  low.z  = p.z;
+		if (p.z > high.z) high.z = p.z;
+	}
+
+	// Vectors are already defaulted
+	m_obb.center = (low + high) * 0.5f;
+	m_obb.halfSides[0] = (high.x - low.x) * 0.5f;
+	m_obb.halfSides[1] = (high.y - low.y) * 0.5f;
+	m_obb.halfSides[2] = (high.z - low.z) * 0.5f;
+
+	return true;
+}
+
 void SingleColorModel::SetupRender(ID3D11DeviceContext * deviceContext)
 {
 	unsigned int vertexSize = sizeof(SingleColorVertex);

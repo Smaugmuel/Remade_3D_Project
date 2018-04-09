@@ -40,7 +40,6 @@
 
 #include "RenderManager.hpp"
 
-
 //#include "World.hpp"
 
 SceneEditorState::SceneEditorState(StateMachine<GameState>* stateMachine) : GameState::GameState(stateMachine), m_editorMode(EditorModes::SELECT)
@@ -197,35 +196,6 @@ void SceneEditorState::ProcessInput()
 			manager->GetCurrentCamera()->SetTarget(0.0f, 0.0f, 0.0f);
 			player->SetLookDirection(manager->GetCurrentCamera()->GetTargetDirection());
 		}
-
-		//if (input->IsKeyPressed(48 + 1))
-		//{
-		//	m_editorMode = EditorModes::SELECT;
-		//
-		//	/*m_editorStateMachine->Replace<EditorSelectionState>(m_scene);
-		//	m_editorStateMachine->Peek()->Initialize();*/
-		//}
-		//if (input->IsKeyPressed(48 + 2))
-		//{
-		//	m_editorMode = EditorModes::MOVE;
-		//
-		//	/*TextureObject* selectedObject = m_editorStateMachine->Peek()->GetSelectedObject();
-		//	m_editorStateMachine->Replace<EditorMoveState>();
-		//	
-		//	m_editorStateMachine->Peek()->Initialize();
-		//	m_editorStateMachine->Peek()->SetSelectedObject(selectedObject);*/
-		//}
-		//if (input->IsKeyPressed(48 + 3))
-		//{
-		//	m_editorMode = EditorModes::PLACE;
-		//
-		//	/*m_editorStateMachine->Replace<EditorPlacementState>(m_scene);
-		//	m_editorStateMachine->Peek()->Initialize();*/
-		//}
-		//if (input->IsKeyPressed(48 + 4))
-		//{
-		//	m_editorMode = EditorModes::SAVE;
-		//}
 	}
 
 	// Rotate camera if mouse wheel is down
@@ -240,9 +210,6 @@ void SceneEditorState::ProcessInput()
 			player->SetLookDirection(manager->GetCurrentCamera()->GetTargetDirection());
 		}
 	}
-
-	// Process input of current editor state
-	/*m_editorStateMachine->Peek()->ProcessInput();*/
 
 	m_editorStates[static_cast<unsigned int>(m_editorMode)]->ProcessInput();
 }

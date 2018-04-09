@@ -2,6 +2,7 @@
 #define OBJECT_HPP
 #include <DirectXMath.h>
 #include "Vector3.hpp"
+#include "OBB.hpp"
 #include <string>
 
 class Object
@@ -42,8 +43,12 @@ public:
 
 	const std::string& GetModelName() const;
 
+	const OBB& GetOBB() const;
+
 protected:
 	std::string m_modelName;
+
+	OBB m_obb;
 
 private:
 	void UpdateTranslationMatrix();
@@ -52,6 +57,8 @@ private:
 	void UpdateScalingMatrix();
 	void UpdateWorldMatrix();
 
+	virtual void UpdateOBB() = 0;
+	
 	Vector3f m_position;
 	Vector3f m_rotation;
 	Vector3f m_scale;

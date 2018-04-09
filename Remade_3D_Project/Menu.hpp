@@ -39,7 +39,7 @@ template<typename CallbackClassType, typename ... ParamTypes>
 class Menu
 {
 public:
-	typedef void (CallbackClassType::*CallbackFunction)(ParamTypes...);
+	typedef void (CallbackClassType::*CallbackFunction)(const std::wstring&, ParamTypes...);
 
 	Menu()
 	{

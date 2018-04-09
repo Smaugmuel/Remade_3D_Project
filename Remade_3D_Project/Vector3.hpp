@@ -180,6 +180,10 @@ struct Vector3 final
 	{
 		return reflectThisOn(Vector3<Type>(mirror));
 	}
+	const Type ProjectPointOnThis(const Vector3<Type>& point) const
+	{
+		return this->dot(point);
+	}
 
 	const DirectX::XMFLOAT3 XMF() const
 	{

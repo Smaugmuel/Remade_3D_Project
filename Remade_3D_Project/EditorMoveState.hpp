@@ -16,6 +16,9 @@ public:
 	void RenderHUD() override;
 
 private:
+	void CheckCollisionsOfSelectedCube();
+
+
 	Vector3f m_screenDirectionX;
 	Vector3f m_screenDirectionY;
 

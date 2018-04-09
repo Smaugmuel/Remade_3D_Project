@@ -1,5 +1,9 @@
 #include "SingleColorObject.hpp"
 
+// Only for updating obb. Other solution would be preferred
+#include "ModelStorage.hpp"
+#include "SingleColorModel.hpp"
+
 SingleColorObject::SingleColorObject()
 {
 }
@@ -43,4 +47,27 @@ void SingleColorObject::SetColor(float r, float g, float b)
 const Vector3f & SingleColorObject::GetColor() const
 {
 	return m_color;
+}
+
+void SingleColorObject::UpdateOBB()
+{
+	DirectX::XMMATRIX mat = GetRotationMatrix();
+
+	if (!ModelStorage::Get()->HasSingleColorModel(m_modelName))
+	{
+		return;
+	}
+
+	m_obb = ModelStorage::Get()->GetSingleColorModel(m_modelName)->GetOBB();
+
+
+	m_obb.center += GetPosition();
+
+	m_obb.vectors[0] = DirectX::XMVector3Transform(m_obb.vectors[0].XMV(), mat);
+	m_obb.vectors[1] = DirectX::XMVector3Transform(m_obb.vectors[1].XMV(), mat);
+	m_obb.vectors[2] = DirectX::XMVector3Transform(m_obb.vectors[2].XMV(), mat);
+
+	m_obb.halfSides[0] *= GetScale().x;
+	m_obb.halfSides[1] *= GetScale().y;
+	m_obb.halfSides[2] *= GetScale().z;
 }

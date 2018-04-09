@@ -39,6 +39,21 @@ void EditorSelectionState::ProcessInput()
 	{
 		SelectCube(HF::CreatePickingRay());
 	}
+
+	if (input->IsKeyPressed(VK_DELETE))
+	{
+		if (m_selectedObject)
+		{
+			if (m_scene->RemoveTexturedObject(m_selectedObject))
+			{
+				m_scene->LoadIntoRenderManager();
+				
+				m_selectedObject = nullptr;
+
+				EventDispatcher::Get()->Emit(Event(EventType::SWITCHED_SELECTED_OBJECT, static_cast<void*>(m_selectedObject)));
+			}
+		}
+	}
 }
 
 void EditorSelectionState::Update(float dt)
@@ -59,7 +74,6 @@ void EditorSelectionState::SelectCube(const Ray& ray)
 	RenderManager* renderManager = RenderManager::Get();
 
 	OBB obb;
-	Sphere sphere;
 	IntersectionData data;
 	
 	TextureObject** objects;
@@ -67,19 +81,6 @@ void EditorSelectionState::SelectCube(const Ray& ray)
 
 	float closestCubeDistance = INFINITY;
 	int closestCube = -1;
-
-
-	// Create a default OBB (AABB for now)
-	obb.halfSides[0] = 1;
-	obb.halfSides[1] = 1;
-	obb.halfSides[2] = 1;
-	obb.vectors[0] = Vector3f(1, 0, 0);
-	obb.vectors[1] = Vector3f(0, 1, 0);
-	obb.vectors[2] = Vector3f(0, 0, 1);
-
-	// Create a sphere around OBB
-	sphere.radius = 0.0f;	// False radius, but it is unused
-	sphere.radius2 = obb.halfSides[0] * obb.halfSides[0] + obb.halfSides[1] * obb.halfSides[1] + obb.halfSides[2] * obb.halfSides[2];
 
 	// Retrieve objects from scene
 	objects = m_scene->GetTexturedObjects();
@@ -93,31 +94,17 @@ void EditorSelectionState::SelectCube(const Ray& ray)
 
 	for (unsigned int i = 0; i < n; i++)
 	{
-		sphere.center = objects[i]->GetPosition();
-		
-		// Check if ray intersects with sphere around cube
-		data = RayVSSphere(ray.origin, ray.direction, sphere);
+		obb = objects[i]->GetOBB();
+
+		// Check if ray intersects with cube
+		data = RayVsOBB(ray.origin, ray.direction, obb);
 		if (data.intersection)
 		{
-			obb.center = sphere.center;
-			
-			// Check if ray intersects with cube
-			data = RayVsOBB(ray.origin, ray.direction, obb);
-			if (data.intersection)
+			// Check if this intersection is the closest one
+			if (data.distance < closestCubeDistance)
 			{
-				// Check if this intersection is the closest one
-				if (data.distance < closestCubeDistance)
-				{
-					closestCubeDistance = data.distance;
-					closestCube = i;
-				}
-
-				//// Change texture to highlight cube
-				//if (objects[i]->GetTextureName() != "BrickWallRaw.jpg")
-				//{
-				//	renderManager->ChangeTexture(objects[i], "BrickWallRaw.jpg");
-				//}
-				//continue;
+				closestCubeDistance = data.distance;
+				closestCube = i;
 			}
 		}
 

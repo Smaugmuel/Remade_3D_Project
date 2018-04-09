@@ -58,13 +58,27 @@ void EditorRotateState::ProcessInput()
 			if (mouseMovement != Vector2f(0, 0))
 			{
 				// Mouse moved
-
 				mouseMovement *= 0.0025f;
 
-				m_selectedObject->RotateGlobal(m_screenDirectionX, mouseMovement.y);
-				m_selectedObject->RotateGlobal(m_screenDirectionY, mouseMovement.x);
+				if (input->IsKeyDown('X'))
+				{
+					m_selectedObject->RotateGlobal(Vector3f(1, 0, 0), mouseMovement.x);
+				}
+				else if (input->IsKeyDown('Y'))
+				{
+					m_selectedObject->RotateGlobal(Vector3f(0, 1, 0), mouseMovement.x);
+				}
+				else if (input->IsKeyDown('Z'))
+				{
+					m_selectedObject->RotateGlobal(Vector3f(0, 0, 1), mouseMovement.x);
+				}
+				else
+				{
+					m_selectedObject->RotateGlobal(m_screenDirectionX, mouseMovement.y);
+					m_selectedObject->RotateGlobal(m_screenDirectionY, mouseMovement.x);
 
-				//m_selectedObject->SetRotation(MatrixToEuler(m_selectedObject->GetWorldMatrix()));
+					//m_selectedObject->SetRotation(MatrixToEuler(m_selectedObject->GetWorldMatrix()));
+				}
 			}
 		}
 	}

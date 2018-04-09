@@ -17,6 +17,8 @@ public:
 	const Vector3f& GetColor() const;
 
 private:
+	void UpdateOBB() override;
+
 	Vector3f m_color;
 };
 

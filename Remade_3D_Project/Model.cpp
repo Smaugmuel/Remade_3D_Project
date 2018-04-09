@@ -213,3 +213,8 @@ void Model::Render(ID3D11DeviceContext * deviceContext)
 {
 	deviceContext->Draw(m_nrOfVerts, 0);
 }
+
+const OBB& Model::GetOBB() const
+{
+	return m_obb;
+}
