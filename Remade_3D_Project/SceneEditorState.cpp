@@ -42,6 +42,9 @@
 
 //#include "World.hpp"
 
+
+#include "LineBeam.hpp"
+
 SceneEditorState::SceneEditorState(StateMachine<GameState>* stateMachine) : GameState::GameState(stateMachine), m_editorMode(EditorModes::SELECT)
 {
 	for (unsigned int i = 0; i < static_cast<unsigned int>(EditorModes::NR_OF_EDITOR_MODES); i++)
@@ -60,6 +63,8 @@ SceneEditorState::~SceneEditorState()
 	{
 		delete m_editorStates[i];
 	}
+
+	delete m_beam;
 
 	EventDispatcher::Get()->Unsubscribe(EventType::SWITCHED_SCENE, this);
 }
@@ -119,6 +124,13 @@ bool SceneEditorState::Initialize()
 	/* ============================================ FPS counter ==================================================== */
 	m_fpsCounter = std::make_unique<FPSCounter>();
 	m_fpsCounter.get()->Initialize(Direct3D::Get()->GetDevice(), Direct3D::Get()->GetDeviceContext());
+
+	// Laser beam
+	m_beam = new LineBeam;
+	if (!m_beam->Initialize(Vector3f(-25, 5, -20)))
+	{
+		return false;
+	}
 
 	MapProjectionMatrix();
 
@@ -242,6 +254,8 @@ void SceneEditorState::Update(float dt)
 		lightManager->GetPointLight(i)->Update();
 	}
 
+	m_beam->Update(dt);
+
 	//World::Get()->GetScene()->Update(dt);
 	m_scene->Update(dt);
 
@@ -292,6 +306,9 @@ void SceneEditorState::RenderNormal()
 	// Render single colored objects
 	bufferStorage->SetPSPointLight(deviceContext, cam0->GetPosition(), 1.0f);
 	RenderManager::Get()->RenderSingleColoredObjects();
+
+
+	m_beam->Render();
 }
 
 void SceneEditorState::RenderHUD()

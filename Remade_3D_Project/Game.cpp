@@ -103,6 +103,8 @@ bool Game::Initialize()
 		return false;
 	if (!ModelStorage::Get()->LoadSingleColorModel(Direct3D::Get()->GetDevice(), "cube.obj"))
 		return false;
+	if (!ModelStorage::Get()->CreateLineModel(Direct3D::Get()->GetDevice()))
+		return false;
 
 	/*if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "Torgue.png"))
 		return false;

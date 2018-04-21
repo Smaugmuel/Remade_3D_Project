@@ -14,6 +14,7 @@ class SingleColorShaderGroup;
 class TextureShaderGroup;
 class DepthShaderGroup;
 class HUDShaderGroup;
+class LineShaderGroup;
 class DeferredSingleColorShaderGroup;
 class DeferredTextureShaderGroup;
 class DeferredShadowShaderGroup;
@@ -36,7 +37,8 @@ enum ShaderType
 	D_SPLIT,
 	D_MULTIPLE,
 	D_MULTIPLE_SHADOWS,
-	D_TEXTURE_CHUNK
+	D_TEXTURE_CHUNK,
+	LINE
 };
 
 
@@ -54,6 +56,7 @@ public:
 	void SetPerFrameSingleColorConstantBuffer(ID3D11DeviceContext* deviceContext, Vector3f lightPosition, float lightIntensity);
 	void SetPerFrameTextureConstantBuffer(ID3D11DeviceContext* deviceContext, Vector3f lightPosition, float lightIntensity);
 	void SetPerFrameDepthConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix);
+	void SetPerFrameLineConstantBuffer(ID3D11DeviceContext* deviceContext);
 	void SetPerFrameDeferredSingleColorConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix);
 	void SetPerFrameDeferredTextureConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix);
 	void SetPerFrameDeferredShadowConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix);
@@ -66,6 +69,7 @@ public:
 	void SetPerObjectTextureConstantBuffer(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView* texture);
 	void SetPerObjectDepthConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & worldMatrix);
 	void SetPerObjectHUDConstantBuffer(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView* texture);
+	void SetPerObjectLineConstantBuffer(ID3D11DeviceContext* deviceContext);
 	void SetPerObjectDeferredSingleColorConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & worldMatrix, Vector3f color);
 	void SetPerObjectDeferredTextureConstantBuffer(ID3D11DeviceContext* deviceContext, ID3D11ShaderResourceView* texture);
 	void SetPerObjectDeferredShadowConstantBuffer(ID3D11DeviceContext* deviceContext, const DirectX::XMMATRIX & worldMatrix);
@@ -76,6 +80,7 @@ private:
 	std::unique_ptr<TextureShaderGroup> m_textureShaders;
 	std::unique_ptr<DepthShaderGroup> m_depthShaders;
 	std::unique_ptr<HUDShaderGroup> m_HUDShaders;
+	std::unique_ptr<LineShaderGroup> m_lineShaders;
 	std::unique_ptr<DeferredSingleColorShaderGroup> m_d_colorShaders;
 	std::unique_ptr<DeferredTextureShaderGroup> m_d_textureShaders;
 	std::unique_ptr<DeferredShadowShaderGroup> m_d_s_shaders;

@@ -8,6 +8,7 @@
 #include "TextureShaderGroup.hpp"
 #include "DepthShaderGroup.hpp"
 #include "HUDShaderGroup.hpp"
+#include "LineShaderGroup.hpp"
 #include "DeferredSingleColorShaderGroup.hpp"
 #include "DeferredTextureShaderGroup.hpp"
 #include "DeferredShadowShaderGroup.hpp"
@@ -42,6 +43,10 @@ bool ShaderManager::Initialize(ID3D11Device* device)
 
 	m_HUDShaders = std::make_unique<HUDShaderGroup>();
 	if (!m_HUDShaders->Initialize(device))
+		return false;
+
+	m_lineShaders = std::make_unique<LineShaderGroup>();
+	if (!m_lineShaders->Initialize(device))
 		return false;
 
 	m_d_colorShaders = std::make_unique<DeferredSingleColorShaderGroup>();
@@ -126,6 +131,9 @@ void ShaderManager::SetShaderType(ID3D11DeviceContext* deviceContext, const Shad
 	case ShaderType::D_TEXTURE_CHUNK:
 		m_d_textureChunkShaders.get()->SetupShaders(deviceContext);
 		break;
+	case ShaderType::LINE:
+		m_lineShaders.get()->SetupShaders(deviceContext);
+		break;
 	default:
 		break;
 	}
@@ -161,6 +169,10 @@ void ShaderManager::SetPerFrameTextureConstantBuffer(ID3D11DeviceContext * devic
 void ShaderManager::SetPerFrameDepthConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix)
 {
 	m_depthShaders.get()->SetupPerFrameBuffer(deviceContext, viewMatrix, projectionMatrix);
+}
+void ShaderManager::SetPerFrameLineConstantBuffer(ID3D11DeviceContext * deviceContext)
+{
+	m_lineShaders.get()->SetupPerFrameBuffer(deviceContext);
 }
 void ShaderManager::SetPerFrameDeferredSingleColorConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & viewMatrix, const DirectX::XMMATRIX & projectionMatrix)
 {
@@ -206,6 +218,10 @@ void ShaderManager::SetPerObjectDepthConstantBuffer(ID3D11DeviceContext * device
 void ShaderManager::SetPerObjectHUDConstantBuffer(ID3D11DeviceContext * deviceContext, ID3D11ShaderResourceView * texture)
 {
 	m_HUDShaders.get()->SetupPerObjectBuffer(deviceContext, texture);
+}
+void ShaderManager::SetPerObjectLineConstantBuffer(ID3D11DeviceContext * deviceContext)
+{
+	m_lineShaders.get()->SetupPerObjectBuffer(deviceContext);
 }
 void ShaderManager::SetPerObjectDeferredSingleColorConstantBuffer(ID3D11DeviceContext * deviceContext, const DirectX::XMMATRIX & worldMatrix, Vector3f color)
 {

@@ -1,6 +1,7 @@
 #include "ModelStorage.hpp"
 #include "SingleColorModel.hpp"
 #include "TextureModel.hpp"
+#include "LineModel.hpp"
 
 ModelStorage* Singleton<ModelStorage>::s_instance = nullptr;
 
@@ -54,6 +55,19 @@ bool ModelStorage::LoadTextureModel(ID3D11Device* device, const std::string& nam
 	return true;
 }
 
+bool ModelStorage::CreateLineModel(ID3D11Device * device)
+{
+	if (HasLineModel())
+		return true;
+	
+	m_lineModel = std::make_unique<LineModel>();
+
+	if (!m_lineModel->CreateVertexBuffer(device))
+		return false;
+
+	return true;
+}
+
 SingleColorModel * ModelStorage::GetSingleColorModel(const std::string& name)
 {
 	/*if (!HasSingleColorModel(name))
@@ -70,6 +84,11 @@ TextureModel * ModelStorage::GetTextureModel(const std::string& name)
 	return m_textureModels.at(name).get();
 }
 
+LineModel * ModelStorage::GetLineModel()
+{
+	return m_lineModel.get();
+}
+
 bool ModelStorage::HasSingleColorModel(const std::string& name) const
 {
 	return m_singleColorModels.find(name) != m_singleColorModels.end();
@@ -78,6 +97,11 @@ bool ModelStorage::HasSingleColorModel(const std::string& name) const
 bool ModelStorage::HasTextureModel(const std::string& name) const
 {
 	return m_textureModels.find(name) != m_textureModels.end();
+}
+
+bool ModelStorage::HasLineModel() const
+{
+	return m_lineModel != nullptr;
 }
 
 unsigned int ModelStorage::GetNrOfSingleColorModels() const

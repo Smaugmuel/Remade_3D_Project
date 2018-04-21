@@ -27,6 +27,13 @@ ShaderStorage::ShaderStorage()
 	desc->elements[1] = { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
 	desc->elements[2] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
 
+	// Position, Color
+	desc = &m_inputDescriptions["PC"];
+	desc->n = 2;
+	desc->elements = new D3D11_INPUT_ELEMENT_DESC[2];
+	desc->elements[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+	desc->elements[1] = { "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+
 	// Position, UV
 	desc = &m_inputDescriptions["PU"];
 	desc->n = 2;
@@ -45,6 +52,7 @@ ShaderStorage::ShaderStorage()
 	m_linker["VS_D_Texture.hlsl"] = "PNU";
 	m_linker["VS_PosNormColor.hlsl"] = "PNC";
 	m_linker["VS_PosUV.hlsl"] = "PU";
+	m_linker["VS_PosColor.hlsl"] = "PC";
 	m_linker["VS_Depth.hlsl"] = "P";
 	m_linker["VS_D_TextureChunk.hlsl"] = "PNU";
 }

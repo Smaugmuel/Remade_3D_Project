@@ -384,6 +384,21 @@
     <ClCompile Include="DeferredScreenTarget.cpp">
       <Filter>Source Files\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="LineModel.cpp">
+      <Filter>Source Files\Objects\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="LineShaderGroup.cpp">
+      <Filter>Source Files\Rendering\Shaders\ShaderGroups</Filter>
+    </ClCompile>
+    <ClCompile Include="LineObject.cpp">
+      <Filter>Source Files\Objects\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Lightning.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LineBeam.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp">
@@ -668,6 +683,21 @@
     <ClInclude Include="ButtonManager.hpp">
       <Filter>Header Files\Menus</Filter>
     </ClInclude>
+    <ClInclude Include="LineModel.hpp">
+      <Filter>Header Files\Objects\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="LineObject.hpp">
+      <Filter>Header Files\Objects\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="LineShaderGroup.hpp">
+      <Filter>Header Files\Rendering\Shaders\ShaderGroups</Filter>
+    </ClInclude>
+    <ClInclude Include="Lightning.hpp">
+      <Filter>Header Files\Objects\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="LineBeam.hpp">
+      <Filter>Header Files\Objects\Objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PS_SingleColor.hlsl">
@@ -719,6 +749,12 @@
       <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
     <FxCompile Include="GS_D_TextureChunk.hlsl">
+      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="VS_PosColor.hlsl">
+      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PS_Line.hlsl">
       <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
     </FxCompile>
   </ItemGroup>

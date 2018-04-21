@@ -9,6 +9,8 @@ class EditorState;
 class Character;
 class FPSCounter;
 
+class LineBeam;
+
 enum class EditorModes
 {
 	SELECT,
@@ -47,6 +49,8 @@ private:
 	Scene* m_scene;
 	std::unique_ptr<Character> m_player;
 	std::unique_ptr<FPSCounter> m_fpsCounter;
+
+	LineBeam* m_beam;
 };
 
 #endif

@@ -3,9 +3,6 @@
 #include "Model.hpp"
 #include "Vector3.hpp"
 
-struct ID3D11Device;
-struct ID3D11DeviceContext;
-
 struct SingleColorVertex
 {
 	SingleColorVertex()
