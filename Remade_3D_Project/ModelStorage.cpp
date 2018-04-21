@@ -90,7 +90,7 @@ unsigned int ModelStorage::GetNrOfTextureModels() const
 	return m_textureModels.size();
 }
 
-const std::string & ModelStorage::GetSingleColorModelName(unsigned int i) const
+std::string ModelStorage::GetSingleColorModelName(unsigned int i) const
 {
 	if (i < 0 || i > m_singleColorModels.size() - 1)
 	{
@@ -114,7 +114,7 @@ const std::string & ModelStorage::GetSingleColorModelName(unsigned int i) const
 	return name;
 }
 
-const std::string & ModelStorage::GetTextureModelName(unsigned int i) const
+std::string ModelStorage::GetTextureModelName(unsigned int i) const
 {
 	if (i < 0 || i > m_textureModels.size() - 1)
 	{

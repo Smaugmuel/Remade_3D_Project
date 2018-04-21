@@ -145,6 +145,15 @@
     <Filter Include="Source Files\Not In use\QuadTree">
       <UniqueIdentifier>{ab57c291-7ae7-487b-82f4-5bb51b604781}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Objects\Materials">
+      <UniqueIdentifier>{9b057280-dac6-47ae-94e9-29ec4288c682}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Objects\Materials">
+      <UniqueIdentifier>{dc920a0b-41e4-45cb-9363-b50ba70463ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Objects\Objects">
+      <UniqueIdentifier>{000fc4f5-821b-47af-92cc-bf6627b7e0e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game.cpp">
@@ -158,12 +167,6 @@
     </ClCompile>
     <ClCompile Include="TextureModel.cpp">
       <Filter>Source Files\Objects\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="SingleColorObject.cpp">
-      <Filter>Source Files\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="Object.cpp">
-      <Filter>Source Files\Objects</Filter>
     </ClCompile>
     <ClCompile Include="ModelFactory.cpp">
       <Filter>Source Files\Not In use</Filter>
@@ -197,9 +200,6 @@
     </ClCompile>
     <ClCompile Include="DepthShaderGroup.cpp">
       <Filter>Source Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClCompile>
-    <ClCompile Include="DeferredScreenTarget.cpp">
-      <Filter>Source Files\Objects</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
@@ -339,9 +339,6 @@
     <ClCompile Include="ModelStorage.cpp">
       <Filter>Source Files\Objects\Models</Filter>
     </ClCompile>
-    <ClCompile Include="TextureObject.cpp">
-      <Filter>Source Files\Objects\Textures</Filter>
-    </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files\Objects\Textures</Filter>
     </ClCompile>
@@ -369,8 +366,23 @@
     <ClCompile Include="HelperFunctions.cpp">
       <Filter>Source Files\Helper Files</Filter>
     </ClCompile>
-    <ClCompile Include="EditorRemoveState.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files\Objects\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialStorage.cpp">
+      <Filter>Source Files\Objects\Materials</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Source Files\Objects\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="SingleColorObject.cpp">
+      <Filter>Source Files\Objects\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureObject.cpp">
+      <Filter>Source Files\Objects\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="DeferredScreenTarget.cpp">
+      <Filter>Source Files\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -560,9 +572,6 @@
     <ClInclude Include="MainMenuState.hpp">
       <Filter>Header Files\States\GameStates</Filter>
     </ClInclude>
-    <ClInclude Include="Menu.hpp">
-      <Filter>Header Files\Menus</Filter>
-    </ClInclude>
     <ClInclude Include="MenuButton.hpp">
       <Filter>Header Files\Menus</Filter>
     </ClInclude>
@@ -650,8 +659,14 @@
     <ClInclude Include="Singleton.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EditorRemoveState.hpp">
-      <Filter>Header Files\States\EditorStates</Filter>
+    <ClInclude Include="Material.hpp">
+      <Filter>Header Files\Objects\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialStorage.hpp">
+      <Filter>Header Files\Objects\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonManager.hpp">
+      <Filter>Header Files\Menus</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

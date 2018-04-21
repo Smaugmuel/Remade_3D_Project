@@ -4,6 +4,10 @@
 #include "Input.hpp"
 #include <windows.h>
 
+// For loading the texture
+#include "TextureStorage.hpp"
+#include "Direct3D.hpp"
+
 // For selecting the cube
 #include "PickingRay.hpp"
 #include "Collision.hpp"
@@ -24,6 +28,11 @@ EditorSelectionState::~EditorSelectionState()
 bool EditorSelectionState::Initialize()
 {
 	if (!EditorState::InitializeIcon("Icons/SelectIcon.png"))
+	{
+		return false;
+	}
+
+	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "BrickWallRaw.jpg"))
 	{
 		return false;
 	}

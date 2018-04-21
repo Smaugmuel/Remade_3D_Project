@@ -159,7 +159,6 @@
     <ClCompile Include="DeferredTextureShaderGroup.cpp" />
     <ClCompile Include="EditorLoadState.cpp" />
     <ClCompile Include="EditorMoveState.cpp" />
-    <ClCompile Include="EditorRemoveState.cpp" />
     <ClCompile Include="EditorRotateState.cpp" />
     <ClCompile Include="EditorSaveState.cpp" />
     <ClCompile Include="EditorScaleState.cpp" />
@@ -169,6 +168,8 @@
     <ClCompile Include="GUIManager.cpp" />
     <ClCompile Include="HelperFunctions.cpp" />
     <ClCompile Include="MainMenuState.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MaterialStorage.cpp" />
     <ClCompile Include="MatrixEulerConversion.cpp" />
     <ClCompile Include="PickingRay.cpp" />
     <ClCompile Include="PlayState.cpp" />
@@ -237,8 +238,9 @@
     <ClInclude Include="AABA.hpp" />
     <ClInclude Include="AABB.hpp" />
     <ClInclude Include="EditorLoadState.hpp" />
-    <ClInclude Include="EditorRemoveState.hpp" />
     <ClInclude Include="GUIManager.hpp" />
+    <ClInclude Include="Material.hpp" />
+    <ClInclude Include="MaterialStorage.hpp" />
     <ClInclude Include="MenuButton.hpp" />
     <ClInclude Include="Character.hpp" />
     <ClInclude Include="ChunkRenderSettings.hpp" />
@@ -261,7 +263,7 @@
     <ClInclude Include="EventTypes.hpp" />
     <ClInclude Include="GameState.hpp" />
     <ClInclude Include="HUDModes.hpp" />
-    <ClInclude Include="Menu.hpp" />
+    <ClInclude Include="ButtonManager.hpp" />
     <ClInclude Include="MainMenuState.hpp" />
     <ClInclude Include="MatrixEulerConversion.hpp" />
     <ClInclude Include="ObjectAmountSettings.hpp" />

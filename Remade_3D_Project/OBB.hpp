@@ -7,6 +7,7 @@ struct OBB
 	Vector3f center;
 	Vector3f vectors[3] = { Vector3f(1, 0, 0), Vector3f(0, 1, 0), Vector3f(0, 0, 1) };
 	float halfSides[3] = { 0, 0, 0 };
+	float defaultHalfSides[3] = { 0, 0, 0 };
 };
 
 #endif

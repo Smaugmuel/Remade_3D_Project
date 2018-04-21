@@ -131,9 +131,9 @@ bool SingleColorModel::CreateOBB()
 
 	// Vectors are already defaulted
 	m_obb.center = (low + high) * 0.5f;
-	m_obb.halfSides[0] = (high.x - low.x) * 0.5f;
-	m_obb.halfSides[1] = (high.y - low.y) * 0.5f;
-	m_obb.halfSides[2] = (high.z - low.z) * 0.5f;
+	m_obb.defaultHalfSides[0] = m_obb.halfSides[0] = (high.x - low.x) * 0.5f;
+	m_obb.defaultHalfSides[1] = m_obb.halfSides[1] = (high.y - low.y) * 0.5f;
+	m_obb.defaultHalfSides[2] = m_obb.halfSides[2] = (high.z - low.z) * 0.5f;
 
 	return true;
 }

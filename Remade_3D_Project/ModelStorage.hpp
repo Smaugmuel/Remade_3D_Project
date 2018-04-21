@@ -30,8 +30,8 @@ public:
 	unsigned int GetNrOfSingleColorModels() const;
 	unsigned int GetNrOfTextureModels() const;
 
-	const std::string& GetSingleColorModelName(unsigned int i) const;
-	const std::string& GetTextureModelName(unsigned int i) const;
+	std::string GetSingleColorModelName(unsigned int i) const;
+	std::string GetTextureModelName(unsigned int i) const;
 
 private:
 	std::map<std::string, std::unique_ptr<SingleColorModel>> m_singleColorModels;

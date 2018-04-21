@@ -53,7 +53,7 @@ void Scene::LoadIntoRenderManager()
 	}
 }
 
-void Scene::AddTexturedObject(const std::string & modelName, const std::string & textureName, const Vector3f & position, const Vector3f & rotation, const Vector3f & scale)
+void Scene::AddTexturedObject(const std::string & modelName/*, const std::string & textureName*/, const Vector3f & position, const Vector3f & rotation, const Vector3f & scale)
 {
 	if (m_nrOfTexturedObjects >= MAX_NR_OF_TEXTURED_OBJECTS)
 	{
@@ -61,7 +61,7 @@ void Scene::AddTexturedObject(const std::string & modelName, const std::string &
 	}
 
 	TextureObject* object = new TextureObject;
-	if (!object->Initialize(modelName, textureName))
+	if (!object->Initialize(modelName/*, textureName*/))
 	{
 		delete object;
 		return;
@@ -227,7 +227,7 @@ bool Scene::LoadFromFile(std::string fileName)
 		issT >> temp >> tData.t;
 
 		/* -------------------------------- Create the object ------------------------------------- */
-		AddTexturedObject(tData.m, tData.t, tData.p, tData.r, tData.s);
+		AddTexturedObject(tData.m, /*tData.t,*/ tData.p, tData.r, tData.s);
 	}
 
 	/* ===================================== Read empty line ===================================== */

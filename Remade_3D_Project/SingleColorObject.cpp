@@ -67,7 +67,7 @@ void SingleColorObject::UpdateOBB()
 	m_obb.vectors[1] = DirectX::XMVector3Transform(m_obb.vectors[1].XMV(), mat);
 	m_obb.vectors[2] = DirectX::XMVector3Transform(m_obb.vectors[2].XMV(), mat);
 
-	m_obb.halfSides[0] *= GetScale().x;
-	m_obb.halfSides[1] *= GetScale().y;
-	m_obb.halfSides[2] *= GetScale().z;
+	m_obb.halfSides[0] = m_obb.defaultHalfSides[0] * GetScale().x;
+	m_obb.halfSides[1] = m_obb.defaultHalfSides[1] * GetScale().y;
+	m_obb.halfSides[2] = m_obb.defaultHalfSides[2] * GetScale().z;
 }

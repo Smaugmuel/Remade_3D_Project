@@ -5,7 +5,7 @@
 #include "EventDispatcher.hpp"
 
 // For the scene menu
-#include "Menu.hpp"
+#include "ButtonManager.hpp"
 
 // For rendering the buttons
 #include "SpriteFont.h"
@@ -18,16 +18,16 @@
 #include "Scene.hpp"
 
 
-EditorLoadState::EditorLoadState() : EditorState::EditorState(), m_sceneMenu(nullptr)
+EditorLoadState::EditorLoadState() : EditorState::EditorState(), m_sceneButtonManager(nullptr)
 {
 }
 
 EditorLoadState::~EditorLoadState()
 {
-	if (m_sceneMenu)
+	if (m_sceneButtonManager)
 	{
-		delete m_sceneMenu;
-		m_sceneMenu = nullptr;
+		delete m_sceneButtonManager;
+		m_sceneButtonManager = nullptr;
 	}
 	if (m_spriteFont)
 	{
@@ -54,7 +54,7 @@ bool EditorLoadState::Initialize()
 	m_spriteBatch = new DirectX::SpriteBatch(Direct3D::Get()->GetDeviceContext());
 
 	// Create menu and its buttons from the scenes found in the directory
-	m_sceneMenu = new Menu<EditorLoadState>;
+	m_sceneButtonManager = new ButtonManager<EditorLoadState>;
 	CreateButtonsFromScenesInFolder();
 
 	return true;
@@ -66,7 +66,7 @@ void EditorLoadState::ProcessInput()
 
 	if (input->IsKeyPressed(VK_LBUTTON))
 	{
-		m_sceneMenu->ProcessMouseClick(input->MousePosition());
+		m_sceneButtonManager->ProcessMouseClick(input->MousePosition());
 	}
 
 	if (input->IsKeyDown(VK_CONTROL))
@@ -89,7 +89,7 @@ void EditorLoadState::Render()
 void EditorLoadState::RenderHUD()
 {
 	Direct3D* d3d = Direct3D::Get();
-	std::vector<MenuButton<EditorLoadState>> buttons = m_sceneMenu->RetrieveButtons();
+	std::vector<MenuButton<EditorLoadState>> buttons = m_sceneButtonManager->RetrieveButtons();
 
 	/* ================================ Render load icon ================================= */
 	EditorState::RenderHUD();
@@ -136,7 +136,7 @@ void EditorLoadState::CreateButtonsFromScenesInFolder()
 	}
 
 	/* ============================ Create buttons from the found scene names ============================= */
-	m_sceneMenu->ClearButtons();
+	m_sceneButtonManager->ClearButtons();
 
 	inverseN = 1.0f / n;
 
@@ -144,15 +144,15 @@ void EditorLoadState::CreateButtonsFromScenesInFolder()
 	{
 		// Calculate position and dimensions
 		halfDimensions = DirectX::SimpleMath::Vector2(m_spriteFont->MeasureString(wSceneNames[i].c_str())) / 2.0f;
-		position.x = halfDimensions.x;
-		position.y = 96 + halfDimensions.y * (1 + i * 2);
+		position.x = static_cast<int>(halfDimensions.x);
+		position.y = static_cast<int>(96 + halfDimensions.y * (1 + i * 2));
 		
-		m_sceneMenu->CreateButton(
+		m_sceneButtonManager->CreateButton(
 			this,
 			&EditorLoadState::LoadScene,
 			wSceneNames[i],
 			position,
-			Vector2i(halfDimensions.x, halfDimensions.y)
+			Vector2i(static_cast<int>(halfDimensions.x), static_cast<int>(halfDimensions.y))
 		);
 	}
 }

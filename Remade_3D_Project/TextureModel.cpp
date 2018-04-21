@@ -4,6 +4,8 @@
 #include <fstream>
 #include <vector>
 
+#include "MaterialStorage.hpp"
+
 #include "Buffers.hpp"
 
 #include <d3d11.h>
@@ -47,7 +49,13 @@ bool TextureModel::LoadFromFile(const char * fileName)
 		if (type == "mtllib")
 		{
 			stringStream >> line;
-			//LoadMaterial();
+
+			if (!MaterialStorage::Get()->LoadMaterial(line))
+			{
+				return false;
+			}
+
+			m_materialName = line;
 		}
 		else if (type == "v")
 		{
@@ -146,9 +154,9 @@ bool TextureModel::CreateOBB()
 
 	// Vectors are already defaulted
 	m_obb.center = (low + high) * 0.5f;
-	m_obb.halfSides[0] = (high.x - low.x) * 0.5f;
-	m_obb.halfSides[1] = (high.y - low.y) * 0.5f;
-	m_obb.halfSides[2] = (high.z - low.z) * 0.5f;
+	m_obb.defaultHalfSides[0] = m_obb.halfSides[0] = (high.x - low.x) * 0.5f;
+	m_obb.defaultHalfSides[1] = m_obb.halfSides[1] = (high.y - low.y) * 0.5f;
+	m_obb.defaultHalfSides[2] = m_obb.halfSides[2] = (high.z - low.z) * 0.5f;
 
 	return true;
 }
@@ -160,6 +168,11 @@ void TextureModel::SetupRender(ID3D11DeviceContext * deviceContext)
 
 	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &vertexSize, &offset);
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+const std::string & TextureModel::GetMaterialName() const
+{
+	return m_materialName;
 }
 
 //Model * TextureModel::Create(ID3D11Device * device, const char * fileName)

@@ -13,7 +13,7 @@
 #include "WindowSettings.hpp"
 
 // For rendering the text of the buttons
-#include "Menu.hpp"
+#include "ButtonManager.hpp"
 #include "Direct3D.hpp"
 #include "SpriteFont.h"
 #include "SpriteBatch.h"
@@ -24,10 +24,10 @@ MainMenuState::MainMenuState(StateMachine<GameState>* stateMachine) : GameState:
 }
 MainMenuState::~MainMenuState()
 {
-	if (m_menu)
+	if (m_buttonManager)
 	{
-		delete m_menu;
-		m_menu = nullptr;
+		delete m_buttonManager;
+		m_buttonManager = nullptr;
 	}
 	if (m_spriteFont)
 	{
@@ -46,7 +46,7 @@ bool MainMenuState::Initialize()
 	DirectX::SimpleMath::Vector2 halfDimensions;
 
 	// Create the menu
-	m_menu = new Menu<MainMenuState>;
+	m_buttonManager = new ButtonManager<MainMenuState>;
 
 	// Create the resources needed for rendering the text of the buttons
 	m_spriteFont = new DirectX::SpriteFont(Direct3D::Get()->GetDevice(), L"../Fonts/courier32.spritefont");
@@ -55,15 +55,15 @@ bool MainMenuState::Initialize()
 
 	// Calculate the size of the PLAY button, then create it
 	halfDimensions = DirectX::SimpleMath::Vector2(m_spriteFont->MeasureString(L"PLAY")) / 2.0f;
-	m_menu->CreateButton(this, &MainMenuState::PressedPlay, L"PLAY", Vector2i(400, 100), Vector2i(halfDimensions.x, halfDimensions.y));
+	m_buttonManager->CreateButton(this, &MainMenuState::PressedPlay, L"PLAY", Vector2i(400, 100), Vector2i(static_cast<int>(halfDimensions.x), static_cast<int>(halfDimensions.y)));
 
 	// Calculate the size of the EDITOR button, then create it
 	halfDimensions = DirectX::SimpleMath::Vector2(m_spriteFont->MeasureString(L"EDITOR")) / 2.0f;
-	m_menu->CreateButton(this, &MainMenuState::PressedEdit, L"EDITOR", Vector2i(400, 300), Vector2i(halfDimensions.x, halfDimensions.y));
+	m_buttonManager->CreateButton(this, &MainMenuState::PressedEdit, L"EDITOR", Vector2i(400, 300), Vector2i(static_cast<int>(halfDimensions.x), static_cast<int>(halfDimensions.y)));
 
 	// Calculate the size of the EXIT button, then create it
 	halfDimensions = DirectX::SimpleMath::Vector2(m_spriteFont->MeasureString(L"EXIT")) / 2.0f;
-	m_menu->CreateButton(this, &MainMenuState::PressedExit, L"EXIT", Vector2i(400, 500), Vector2i(halfDimensions.x, halfDimensions.y));
+	m_buttonManager->CreateButton(this, &MainMenuState::PressedExit, L"EXIT", Vector2i(400, 500), Vector2i(static_cast<int>(halfDimensions.x), static_cast<int>(halfDimensions.y)));
 
 	return true;
 }
@@ -79,7 +79,7 @@ void MainMenuState::ProcessInput()
 
 	if (input->IsKeyPressed(VK_LBUTTON))
 	{
-		m_menu->ProcessMouseClick(input->MousePosition());
+		m_buttonManager->ProcessMouseClick(input->MousePosition());
 	}
 }
 
@@ -97,7 +97,7 @@ void MainMenuState::Update(float dt)
 		angle -= 3.1415927f * 2.0f;
 	}
 
-	std::vector<MenuButton<MainMenuState>>& buttons = m_menu->RetrieveButtons();
+	std::vector<MenuButton<MainMenuState>>& buttons = m_buttonManager->RetrieveButtons();
 	unsigned int n = buttons.size();
 
 	if (n > 0)
@@ -109,8 +109,8 @@ void MainMenuState::Update(float dt)
 
 			buttons[i].SetPosition(
 				Vector2i(
-					(WNDW >> 1) + std::cosf(_angle) * (WNDW >> 2),
-					(WNDH >> 1) + std::sinf(_angle) * (WNDH >> 2)
+					(WNDW >> 1) + static_cast<int>(std::cosf(_angle) * (WNDW >> 2)),
+					(WNDH >> 1) + static_cast<int>(std::sinf(_angle) * (WNDH >> 2))
 				)
 			);
 		}
@@ -119,7 +119,7 @@ void MainMenuState::Update(float dt)
 
 void MainMenuState::Render()
 {
-	const std::vector<MenuButton<MainMenuState>>& buttons = m_menu->RetrieveButtons();
+	const std::vector<MenuButton<MainMenuState>>& buttons = m_buttonManager->RetrieveButtons();
 	Direct3D* d3d = Direct3D::Get();
 
 	// Prepare for rendering

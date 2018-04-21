@@ -14,6 +14,7 @@ class HUDObject;
 class PointLight;
 class FPSCounter;
 class Character;
+
 //class QuadTree;
 
 class Scene;
@@ -33,6 +34,8 @@ private:
 	void MapProjectionMatrix();
 
 	void CubeIntersection();
+
+	//void CollisionWithScene();
 
 	void RenderNormal();
 	void RenderDeferredFirstPass();

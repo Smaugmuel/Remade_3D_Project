@@ -36,7 +36,7 @@ public:
 
 	void LoadIntoRenderManager();
 
-	void AddTexturedObject(const std::string& modelName, const std::string& textureName, const Vector3f& position, const Vector3f& rotation, const Vector3f& scale);
+	void AddTexturedObject(const std::string& modelName, /*const std::string& textureName,*/ const Vector3f& position, const Vector3f& rotation, const Vector3f& scale);
 	void AddSingleColoredObject(const std::string& modelName, const Vector3f& color, const Vector3f& position, const Vector3f& rotation, const Vector3f& scale);
 
 	bool RemoveTexturedObject(TextureObject* object);

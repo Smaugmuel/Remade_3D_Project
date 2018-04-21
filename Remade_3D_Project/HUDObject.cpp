@@ -1,7 +1,9 @@
 #include "HUDObject.hpp"
 #include <d3d11.h>
-#include "Texture.hpp"
 #include "WindowSettings.hpp"
+
+#include "TextureStorage.hpp"
+#include "Texture.hpp"
 
 HUDObject::HUDObject()
 {
@@ -21,7 +23,7 @@ HUDObject::~HUDObject()
 	}
 }
 
-bool HUDObject::Initialize(ID3D11Device * device, const char * textureName, Vector2i position, Vector2i dimensions)
+bool HUDObject::Initialize(ID3D11Device * device, const std::string& textureName, Vector2i position, Vector2i dimensions)
 {
 	m_dimensions = dimensions;
 	m_position = Vector2i(-1, -1);
@@ -45,12 +47,21 @@ bool HUDObject::Initialize(ID3D11Device * device, const char * textureName, Vect
 		return false;
 	}
 
-	m_texture = std::make_unique<Texture>();
+	/*m_texture = std::make_unique<Texture>();
 	if (!m_texture->Initialize(device, textureName))
 	{
 		return false;
+	}*/
+
+	if (!TextureStorage::Get()->LoadTexture(device, textureName))
+	{
+		return false;
 	}
-	m_shaderResourceView = m_texture->GetShaderResourceView();
+
+	m_textureName = textureName;
+	
+	m_shaderResourceView = TextureStorage::Get()->GetTexture(textureName);
+	//m_shaderResourceView = m_texture->GetShaderResourceView();
 
 	m_vertices_changed_flag = true;
 
@@ -181,5 +192,5 @@ void HUDObject::Render(ID3D11DeviceContext * deviceContext)
 
 ID3D11ShaderResourceView * HUDObject::GetShaderResourceView()
 {
-	return m_texture->GetShaderResourceView();
+	return TextureStorage::Get()->GetTexture(m_textureName);// m_texture->GetShaderResourceView();
 }

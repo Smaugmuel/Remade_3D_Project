@@ -10,6 +10,10 @@
 #include "Scene.hpp"
 #include "RenderManager.hpp"
 
+// For changing the texture of preview object
+#include "Material.hpp"
+#include "MaterialStorage.hpp"
+
 // For rendering the preview object
 #include "Direct3D.hpp"
 #include "ModelStorage.hpp"
@@ -30,7 +34,9 @@ EditorPlacementState::~EditorPlacementState()
 bool EditorPlacementState::Initialize()
 {
 	m_previewObject = new TextureObject;
-	if (!m_previewObject->Initialize("turret.obj", "turret_tex_v3.png"))
+
+	// Default the preview object to the cube
+	if (!m_previewObject->Initialize("cube_uv.obj"/*, "turret_tex_v3.png"*/))
 		return false;
 
 	if (!EditorState::InitializeIcon("Icons/PlaceIcon.png"))
@@ -52,7 +58,16 @@ void EditorPlacementState::ProcessInput()
 		static int modelIndex = 0;
 		modelIndex = (modelIndex + 1) % nrOfTextureModels;
 
-		ModelStorage::Get()->GetTextureModelName(modelIndex);
+		const std::string& modelName = ModelStorage::Get()->GetTextureModelName(modelIndex);
+
+		m_previewObject->SetModelName(modelName);
+		m_previewObject->SetTextureName(
+			MaterialStorage::Get()->GetMaterial(
+				ModelStorage::Get()->GetTextureModel(
+					modelName
+				)->GetMaterialName()
+			)->GetTextureName()
+		);
 	}
 
 	// Create a new object at preview object
@@ -60,7 +75,7 @@ void EditorPlacementState::ProcessInput()
 	{
 		m_scene->AddTexturedObject(
 			m_previewObject->GetModelName(),
-			m_previewObject->GetTextureName(),
+			/*m_previewObject->GetTextureName(),*/
 			m_previewObject->GetPosition(),
 			m_previewObject->GetRotation(),
 			m_previewObject->GetScale()

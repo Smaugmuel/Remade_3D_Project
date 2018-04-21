@@ -3,7 +3,7 @@
 #include "EditorState.hpp"
 #include <string>
 
-template<typename CallbackClassType, typename ... ParamTypes> class Menu;
+template<typename CallbackClassType, typename ... ParamTypes> class ButtonManager;
 
 namespace DirectX
 {
@@ -27,7 +27,7 @@ private:
 	void CreateButtonsFromScenesInFolder();
 	void LoadScene(const std::wstring& sceneName);
 
-	Menu<EditorLoadState>* m_sceneMenu;
+	ButtonManager<EditorLoadState>* m_sceneButtonManager;
 
 	DirectX::SpriteFont* m_spriteFont;
 	DirectX::SpriteBatch* m_spriteBatch;

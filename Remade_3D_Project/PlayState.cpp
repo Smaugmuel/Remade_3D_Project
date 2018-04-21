@@ -43,6 +43,8 @@
 #include "Scene.hpp"
 #include "RenderManager.hpp"
 
+//#include "QuadTree.hpp"
+
 PlayState::PlayState(StateMachine<GameState>* stateMachine) : GameState::GameState(stateMachine)
 {
 }
@@ -370,6 +372,10 @@ void PlayState::Update(float dt)
 
 	m_scene->Update(dt);
 
+
+	//CollisionWithScene();
+
+
 	/*TextureObject** texturedObjects = m_scene->GetTexturedObjects();
 	n = m_scene->GetNrOfTexturedObjects();
 
@@ -393,6 +399,12 @@ void PlayState::Update(float dt)
 	//m_coloredFloor.get()->Update();
 
 	m_fpsCounter.get()->Update(dt);
+
+	/*AABA aaba;
+	aaba.center = Vector2f(0, 0);
+	aaba.halfSides = Vector2f(1, 1);
+	std::list<QuadTreeObject*> objs;
+	m_quadTree->RetrieveObjects(aaba, objs);*/
 
 	//CubeIntersection();
 
@@ -483,6 +495,30 @@ void PlayState::CubeIntersection()
 
 	m_HUDObject.get()->SetPosition(mousePos);
 }
+
+//void PlayState::CollisionWithScene()
+//{
+//	OBB playerOBB;
+//	playerOBB.center = m_player->GetPosition() - Vector3f(0, 1, 0);
+//	playerOBB.halfSides[0] = playerOBB.halfSides[2] = 0.5f;
+//	playerOBB.halfSides[1] = 1.0f;
+//
+//	unsigned int nrOfObjects = m_scene->GetNrOfTexturedObjects();
+//	TextureObject** objects = m_scene->GetTexturedObjects();
+//
+//	Collision* collision = Collision::Get();
+//
+//	for (unsigned int i = 0; i < nrOfObjects; i++)
+//	{
+//		// Move player away from object
+//		while (collision->OBBVSOBB(playerOBB, objects[i]->GetOBB()))
+//		{
+//			Vector3f toPlayer = m_player->GetPosition() - objects[i]->GetPosition();
+//			m_player->Move(toPlayer.normalized() * 0.01f);
+//			playerOBB.center = m_player->GetPosition();
+//		}
+//	}
+//}
 
 void PlayState::Render()
 {

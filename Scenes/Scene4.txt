@@ -605,7 +605,7 @@ t Torgue.png
 
 
 p 0 0 0
-r 0 0 0
+r -0 0 0
 s 1000 0.02 1000
 m cube.obj
 c 1 0 0

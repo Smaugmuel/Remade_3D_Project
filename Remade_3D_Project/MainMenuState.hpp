@@ -9,7 +9,7 @@ namespace DirectX
 	class SpriteBatch;
 }
 
-template<typename CallbackClassType, typename ... ParamTypes> class Menu;
+template<typename CallbackClassType, typename ... ParamTypes> class ButtonManager;
 
 class MainMenuState : public GameState
 {
@@ -28,7 +28,7 @@ private:
 	void PressedExit(const std::wstring& text);
 
 
-	Menu<MainMenuState> * m_menu;
+	ButtonManager<MainMenuState> * m_buttonManager;
 
 	DirectX::SpriteFont* m_spriteFont;
 	DirectX::SpriteBatch* m_spriteBatch;

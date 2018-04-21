@@ -1,8 +1,12 @@
 #include "TextureObject.hpp"
 
-// Only for updating obb. Other solution would be preferred
+// For updating obb and retrieving default texture. Other solution would be preferred
 #include "ModelStorage.hpp"
 #include "TextureModel.hpp"
+
+// For retrieving default texture
+#include "MaterialStorage.hpp"
+#include "Material.hpp"
 
 TextureObject::TextureObject()
 {
@@ -27,14 +31,20 @@ bool TextureObject::Initialize()
 	return true;
 }
 
-bool TextureObject::Initialize(const std::string & modelName, const std::string & textureName)
+bool TextureObject::Initialize(const std::string & modelName/*, const std::string & textureName*/)
 {
 	if (!TextureObject::Initialize())
 		return false;
 
+	// Doing it this way requires models to be already loaded
+	TextureModel* model = ModelStorage::Get()->GetTextureModel(modelName);
+	Material* material = MaterialStorage::Get()->GetMaterial(model->GetMaterialName());
+	
+
 	m_modelName = modelName;
-	m_defaultTextureName = textureName;
-	m_textureName = textureName;
+	m_defaultTextureName = material->GetTextureName();
+	//m_defaultTextureName = textureName;
+	m_textureName = m_defaultTextureName;
 
 	return true;
 }
@@ -89,7 +99,7 @@ void TextureObject::UpdateOBB()
 	m_obb.vectors[1] = DirectX::XMVector3Transform(m_obb.vectors[1].XMV(), mat);
 	m_obb.vectors[2] = DirectX::XMVector3Transform(m_obb.vectors[2].XMV(), mat);
 
-	m_obb.halfSides[0] *= GetScale().x;
-	m_obb.halfSides[1] *= GetScale().y;
-	m_obb.halfSides[2] *= GetScale().z;
+	m_obb.halfSides[0] = m_obb.defaultHalfSides[0] * GetScale().x;
+	m_obb.halfSides[1] = m_obb.defaultHalfSides[1] * GetScale().y;
+	m_obb.halfSides[2] = m_obb.defaultHalfSides[2] * GetScale().z;
 }

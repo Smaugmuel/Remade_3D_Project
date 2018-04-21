@@ -6,7 +6,7 @@
 //#include <DirectXMath.h>
 #include "Vector3.hpp"
 #include "Vector2.hpp"
-//#include <string>
+#include <string>
 
 #include <memory>
 
@@ -41,10 +41,11 @@ public:
 	bool CreateOBB() override;
 	void SetupRender(ID3D11DeviceContext* deviceContext) override;
 
-	//static Model* Create(ID3D11Device* device, const char* fileName);
+	const std::string& GetMaterialName() const;
 
 private:
 	TextureVertex* m_vertices;
+	std::string m_materialName;
 };
 
 #endif

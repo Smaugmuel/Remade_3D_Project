@@ -4,13 +4,14 @@
 #include <memory>
 #include "Vector2.hpp"
 #include "Vector3.hpp"
+#include <string>
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct ID3D11Buffer;
 struct ID3D11ShaderResourceView;
 
-class Texture;
+//class Texture;
 
 class HUDObject
 {
@@ -24,7 +25,7 @@ public:
 	HUDObject();
 	~HUDObject();
 
-	bool Initialize(ID3D11Device* device, const char* textureName, Vector2i position, Vector2i dimensions);
+	bool Initialize(ID3D11Device* device, const std::string& textureName, Vector2i position, Vector2i dimensions);
 	bool InitializeVertexBuffer(ID3D11Device* device);
 	
 	void SetPosition(Vector2i position);
@@ -45,7 +46,8 @@ private:
 	Vertex* m_vertices;
 	unsigned int m_nrOfVertices;
 
-	std::unique_ptr<Texture> m_texture;
+	//std::unique_ptr<Texture> m_texture;
+	std::string m_textureName;
 	ID3D11ShaderResourceView* m_shaderResourceView;
 
 	Vector2i m_dimensions;

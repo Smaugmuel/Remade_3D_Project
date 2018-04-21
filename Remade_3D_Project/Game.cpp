@@ -10,6 +10,7 @@
 #include "WindowSettings.hpp"
 
 #include "ModelStorage.hpp"
+#include "MaterialStorage.hpp"
 #include "TextureStorage.hpp"
 #include "ShaderStorage.hpp"
 #include "SamplerStorage.hpp"
@@ -34,10 +35,10 @@
 //#include "QuadTree.hpp"
 
 // Binary, octagonal, decimal, hexadecimal notations
-// 0b1111000;
-// 0170;
-// 120;
-// 0x78;
+//int x = 0b1111000;
+//int x = 0170;
+//int x = 120;
+//int x = 0x78;
 
 
 Game* Singleton<Game>::s_instance = nullptr;
@@ -61,6 +62,7 @@ Game::~Game()
 	RenderManager::Delete();
 	
 	ModelStorage::Delete();
+	MaterialStorage::Delete();
 	TextureStorage::Delete();
 	ShaderStorage::Delete();
 	SamplerStorage::Delete();
@@ -92,15 +94,17 @@ bool Game::Initialize()
 	if (!ConstantBufferStorage::Get()->Initialize(Direct3D::Get()->GetDevice()))
 		return false;
 
-	/* ============================================= Storages ============================================= */
+	/* =========================================== Load models =========================================== */
 	if (!ModelStorage::Get()->LoadTextureModel(Direct3D::Get()->GetDevice(), "cube_uv.obj"))
 		return false;
 	if (!ModelStorage::Get()->LoadTextureModel(Direct3D::Get()->GetDevice(), "turret.obj"))
 		return false;
+	if (!ModelStorage::Get()->LoadTextureModel(Direct3D::Get()->GetDevice(), "generator.obj"))
+		return false;
 	if (!ModelStorage::Get()->LoadSingleColorModel(Direct3D::Get()->GetDevice(), "cube.obj"))
 		return false;
 
-	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "Torgue.png"))
+	/*if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "Torgue.png"))
 		return false;
 	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "BrickWallRaw.jpg"))
 		return false;
@@ -114,8 +118,10 @@ bool Game::Initialize()
 		return false;
 	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "Icons/SaveIcon.png"))
 		return false;
+	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "generator_tex.png"))
+		return false;
 	
-	/*if (!SceneStorage::Get()->LoadScene("Scene1"))
+	if (!SceneStorage::Get()->LoadScene("Scene1"))
 		return false;
 	if (!SceneStorage::Get()->LoadScene("Scene3"))
 		return false;
