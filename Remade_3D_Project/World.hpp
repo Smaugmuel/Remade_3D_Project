@@ -1,9 +1,9 @@
 #ifndef WORLD_HPP
 #define WORLD_HPP
 #include <memory>
-#include "Singleton.hpp"
+#include "../Engine/Misc/Singleton.hpp"
 
-class FPSCounter;
+//class FPSCounter;
 class Scene;
 class Character;
 
@@ -22,13 +22,13 @@ public:
 
 	Scene* GetScene();
 	Character* GetPlayer();
-	FPSCounter* GetFPSCounter();
+	//FPSCounter* GetFPSCounter();
 
 private:
 
 	Scene * m_scene;
 	std::unique_ptr<Character> m_player;
-	std::unique_ptr<FPSCounter> m_fpsCounter;
+	//std::unique_ptr<FPSCounter> m_fpsCounter;
 };
 
 #endif

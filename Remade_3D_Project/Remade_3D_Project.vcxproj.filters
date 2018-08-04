@@ -154,79 +154,19 @@
     <Filter Include="Source Files\Objects\Objects">
       <UniqueIdentifier>{000fc4f5-821b-47af-92cc-bf6627b7e0e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\EntityComponentSystem">
+      <UniqueIdentifier>{378d586f-0d16-432e-8c1c-302627aae24d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\EntityComponentSystem\Systems">
+      <UniqueIdentifier>{bfa9133b-55a1-4bc1-8e83-27e34b9c0ea3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\EntityComponentSystem\Components">
+      <UniqueIdentifier>{a4ad04e7-8c42-4eaf-97bc-37cf91f97978}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source Files\Objects\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="SingleColorModel.cpp">
-      <Filter>Source Files\Objects\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureModel.cpp">
-      <Filter>Source Files\Objects\Models</Filter>
-    </ClCompile>
     <ClCompile Include="ModelFactory.cpp">
       <Filter>Source Files\Not In use</Filter>
-    </ClCompile>
-    <ClCompile Include="Input.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureShaderGroup.cpp">
-      <Filter>Source Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClCompile>
-    <ClCompile Include="DeferredShadowShaderGroup.cpp">
-      <Filter>Source Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClCompile>
-    <ClCompile Include="DeferredSingleColorShaderGroup.cpp">
-      <Filter>Source Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClCompile>
-    <ClCompile Include="DeferredTextureShaderGroup.cpp">
-      <Filter>Source Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClCompile>
-    <ClCompile Include="HUDShaderGroup.cpp">
-      <Filter>Source Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClCompile>
-    <ClCompile Include="SingleColorShaderGroup.cpp">
-      <Filter>Source Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderManager.cpp">
-      <Filter>Source Files\Rendering\Shaders</Filter>
-    </ClCompile>
-    <ClCompile Include="DepthShaderGroup.cpp">
-      <Filter>Source Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClCompile>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DeferredLightSplitScreenShaderGroup.cpp">
-      <Filter>Source Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClCompile>
-    <ClCompile Include="DeferredLightMultipleLightsShaderGroup.cpp">
-      <Filter>Source Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClCompile>
-    <ClCompile Include="DeferredLightMultipleShadowLightsShaderGroup.cpp">
-      <Filter>Source Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClCompile>
-    <ClCompile Include="DeferredLightShadowShaderGroup.cpp">
-      <Filter>Source Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClCompile>
-    <ClCompile Include="EventDispatcher.cpp">
-      <Filter>Source Files\Events</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderGroup.cpp">
-      <Filter>Source Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClCompile>
-    <ClCompile Include="AABB.cpp">
-      <Filter>Source Files\Helper Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="AABA.cpp">
-      <Filter>Source Files\Helper Files\Math</Filter>
     </ClCompile>
     <ClCompile Include="QuadTreeObject.cpp">
       <Filter>Source Files\Not In use\QuadTree</Filter>
@@ -236,30 +176,6 @@
     </ClCompile>
     <ClCompile Include="QuadTreeNode.cpp">
       <Filter>Source Files\Not In use\QuadTree</Filter>
-    </ClCompile>
-    <ClCompile Include="PointLightManager.cpp">
-      <Filter>Source Files\Lights</Filter>
-    </ClCompile>
-    <ClCompile Include="PointLight.cpp">
-      <Filter>Source Files\Lights</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerCameraManager.cpp">
-      <Filter>Source Files\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="DeferredTextureChunkShaderGroup.cpp">
-      <Filter>Source Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClCompile>
-    <ClCompile Include="Frustum.cpp">
-      <Filter>Source Files\Helper Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Plane.cpp">
-      <Filter>Source Files\Helper Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Collision.cpp">
-      <Filter>Source Files\Helper Files\Math</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files\Scenes</Filter>
@@ -276,9 +192,6 @@
     <ClCompile Include="SceneEditorState.cpp">
       <Filter>Source Files\States\GameStates</Filter>
     </ClCompile>
-    <ClCompile Include="Sphere.cpp">
-      <Filter>Source Files\Helper Files\Math</Filter>
-    </ClCompile>
     <ClCompile Include="EditorState.cpp">
       <Filter>Source Files\States\EditorStates</Filter>
     </ClCompile>
@@ -287,9 +200,6 @@
     </ClCompile>
     <ClCompile Include="EditorSelectionState.cpp">
       <Filter>Source Files\States\EditorStates</Filter>
-    </ClCompile>
-    <ClCompile Include="PickingRay.cpp">
-      <Filter>Source Files\Helper Files\Math</Filter>
     </ClCompile>
     <ClCompile Include="Character.cpp">
       <Filter>Source Files\Characters</Filter>
@@ -306,217 +216,49 @@
     <ClCompile Include="EditorScaleState.cpp">
       <Filter>Source Files\States\EditorStates</Filter>
     </ClCompile>
-    <ClCompile Include="MatrixEulerConversion.cpp">
-      <Filter>Source Files\Helper Files\Math</Filter>
-    </ClCompile>
     <ClCompile Include="MainMenuState.cpp">
       <Filter>Source Files\States\GameStates</Filter>
-    </ClCompile>
-    <ClCompile Include="FPS_Counter.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="HUDObject.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="HUDText.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="GUIManager.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="ConstantBufferStorage.cpp">
-      <Filter>Source Files\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="SamplerStorage.cpp">
-      <Filter>Source Files\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderStorage.cpp">
-      <Filter>Source Files\Rendering\Shaders</Filter>
     </ClCompile>
     <ClCompile Include="SceneStorage.cpp">
       <Filter>Source Files\Scenes</Filter>
     </ClCompile>
-    <ClCompile Include="ModelStorage.cpp">
-      <Filter>Source Files\Objects\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files\Objects\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureStorage.cpp">
-      <Filter>Source Files\Objects\Textures</Filter>
-    </ClCompile>
-    <ClCompile Include="Buffers.cpp">
-      <Filter>Source Files\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderManager.cpp">
-      <Filter>Source Files\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="Direct3D.cpp">
-      <Filter>Source Files\Rendering</Filter>
-    </ClCompile>
     <ClCompile Include="EditorLoadState.cpp">
       <Filter>Source Files\States\EditorStates</Filter>
-    </ClCompile>
-    <ClCompile Include="StringConverter.cpp">
-      <Filter>Source Files\Helper Files</Filter>
     </ClCompile>
     <ClCompile Include="World.cpp">
       <Filter>Source Files\Not In use</Filter>
     </ClCompile>
-    <ClCompile Include="HelperFunctions.cpp">
-      <Filter>Source Files\Helper Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Source Files\Objects\Materials</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialStorage.cpp">
-      <Filter>Source Files\Objects\Materials</Filter>
-    </ClCompile>
-    <ClCompile Include="Object.cpp">
-      <Filter>Source Files\Objects\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="SingleColorObject.cpp">
-      <Filter>Source Files\Objects\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureObject.cpp">
-      <Filter>Source Files\Objects\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="DeferredScreenTarget.cpp">
-      <Filter>Source Files\Rendering</Filter>
-    </ClCompile>
-    <ClCompile Include="LineModel.cpp">
-      <Filter>Source Files\Objects\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="LineShaderGroup.cpp">
-      <Filter>Source Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClCompile>
-    <ClCompile Include="LineObject.cpp">
-      <Filter>Source Files\Objects\Objects</Filter>
-    </ClCompile>
     <ClCompile Include="Lightning.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Objects\Objects</Filter>
     </ClCompile>
     <ClCompile Include="LineBeam.cpp">
+      <Filter>Source Files\Objects\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityComponentManager.cpp">
+      <Filter>Header Files\EntityComponentSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityManager.cpp">
+      <Filter>Header Files\EntityComponentSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityStorage.cpp">
+      <Filter>Header Files\EntityComponentSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractSystem.cpp">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicSystem.cpp">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.hpp">
-      <Filter>Header Files\Objects\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="SingleColorModel.hpp">
-      <Filter>Header Files\Objects\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureModel.hpp">
-      <Filter>Header Files\Objects\Models</Filter>
-    </ClInclude>
     <ClInclude Include="ModelFactory.hpp">
       <Filter>Header Files\Not In Use</Filter>
-    </ClInclude>
-    <ClInclude Include="DeferredShadowShaderGroup.hpp">
-      <Filter>Header Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClInclude>
-    <ClInclude Include="DeferredSingleColorShaderGroup.hpp">
-      <Filter>Header Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClInclude>
-    <ClInclude Include="DeferredTextureShaderGroup.hpp">
-      <Filter>Header Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClInclude>
-    <ClInclude Include="DepthShaderGroup.hpp">
-      <Filter>Header Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClInclude>
-    <ClInclude Include="HUDShaderGroup.hpp">
-      <Filter>Header Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClInclude>
-    <ClInclude Include="SingleColorShaderGroup.hpp">
-      <Filter>Header Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureShaderGroup.hpp">
-      <Filter>Header Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderManager.hpp">
-      <Filter>Header Files\Rendering\Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="Input.hpp">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.hpp">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="DeferredLightSplitScreenShaderGroup.hpp">
-      <Filter>Header Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClInclude>
-    <ClInclude Include="DeferredLightMultipleLightsShaderGroup.hpp">
-      <Filter>Header Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClInclude>
-    <ClInclude Include="DeferredLightMultipleShadowLightsShaderGroup.hpp">
-      <Filter>Header Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClInclude>
-    <ClInclude Include="DeferredLightShadowShaderGroup.hpp">
-      <Filter>Header Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClInclude>
-    <ClInclude Include="StateMachine.hpp">
-      <Filter>Header Files\States</Filter>
-    </ClInclude>
-    <ClInclude Include="Event.hpp">
-      <Filter>Header Files\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="EventDispatcher.hpp">
-      <Filter>Header Files\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="EventReceiver.hpp">
-      <Filter>Header Files\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture.hpp">
-      <Filter>Header Files\Objects\Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderGroup.hpp">
-      <Filter>Header Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClInclude>
-    <ClInclude Include="PointLight.hpp">
-      <Filter>Header Files\Lights</Filter>
-    </ClInclude>
-    <ClInclude Include="PointLightManager.hpp">
-      <Filter>Header Files\Lights</Filter>
-    </ClInclude>
-    <ClInclude Include="DeferredTextureChunkShaderGroup.hpp">
-      <Filter>Header Files\Rendering\Shaders\ShaderGroups</Filter>
-    </ClInclude>
-    <ClInclude Include="LightSettings.hpp">
-      <Filter>Header Files\Settings</Filter>
-    </ClInclude>
-    <ClInclude Include="ChunkRenderSettings.hpp">
-      <Filter>Header Files\Settings</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowSettings.hpp">
-      <Filter>Header Files\Settings</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerCameraManager.hpp">
-      <Filter>Header Files\Cameras</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.hpp">
-      <Filter>Header Files\Cameras</Filter>
-    </ClInclude>
-    <ClInclude Include="HUDObject.hpp">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="HUDText.hpp">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="FPS_Counter.hpp">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Object.hpp">
-      <Filter>Header Files\Objects\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="SingleColorObject.hpp">
-      <Filter>Header Files\Objects\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureObject.hpp">
-      <Filter>Header Files\Objects\Objects</Filter>
     </ClInclude>
     <ClInclude Include="QuadTree.hpp">
       <Filter>Header Files\Not In Use\QuadTree</Filter>
@@ -526,9 +268,6 @@
     </ClInclude>
     <ClInclude Include="QuadTreeObject.hpp">
       <Filter>Header Files\Not In Use\QuadTree</Filter>
-    </ClInclude>
-    <ClInclude Include="HelperFunctions.hpp">
-      <Filter>Header Files\Helper Files</Filter>
     </ClInclude>
     <ClInclude Include="Scene.hpp">
       <Filter>Header Files\Scenes</Filter>
@@ -581,116 +320,17 @@
     <ClInclude Include="EditorScaleState.hpp">
       <Filter>Header Files\States\EditorStates</Filter>
     </ClInclude>
-    <ClInclude Include="EventTypes.hpp">
-      <Filter>Header Files\Events</Filter>
-    </ClInclude>
     <ClInclude Include="MainMenuState.hpp">
       <Filter>Header Files\States\GameStates</Filter>
-    </ClInclude>
-    <ClInclude Include="MenuButton.hpp">
-      <Filter>Header Files\Menus</Filter>
-    </ClInclude>
-    <ClInclude Include="GUIManager.hpp">
-      <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="EditorLoadState.hpp">
       <Filter>Header Files\States\EditorStates</Filter>
     </ClInclude>
-    <ClInclude Include="TextureStorage.hpp">
-      <Filter>Header Files\Objects\Textures</Filter>
-    </ClInclude>
     <ClInclude Include="SceneStorage.hpp">
       <Filter>Header Files\Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="ModelStorage.hpp">
-      <Filter>Header Files\Objects\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderStorage.hpp">
-      <Filter>Header Files\Rendering\Shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="SamplerStorage.hpp">
-      <Filter>Header Files\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="ConstantBufferTypes.hpp">
-      <Filter>Header Files\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="ConstantBufferStorage.hpp">
-      <Filter>Header Files\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderManager.hpp">
-      <Filter>Header Files\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="DeferredScreenTarget.hpp">
-      <Filter>Header Files\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Buffers.hpp">
-      <Filter>Header Files\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="Direct3D.hpp">
-      <Filter>Header Files\Rendering</Filter>
-    </ClInclude>
-    <ClInclude Include="AABA.hpp">
-      <Filter>Header Files\Helper Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="AABB.hpp">
-      <Filter>Header Files\Helper Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Collision.hpp">
-      <Filter>Header Files\Helper Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="MatrixEulerConversion.hpp">
-      <Filter>Header Files\Helper Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="OBB.hpp">
-      <Filter>Header Files\Helper Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="PickingRay.hpp">
-      <Filter>Header Files\Helper Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Plane.hpp">
-      <Filter>Header Files\Helper Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Ray.hpp">
-      <Filter>Header Files\Helper Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Sphere.hpp">
-      <Filter>Header Files\Helper Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector2.hpp">
-      <Filter>Header Files\Helper Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector3.hpp">
-      <Filter>Header Files\Helper Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Frustum.hpp">
-      <Filter>Header Files\Helper Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="StringConverter.hpp">
-      <Filter>Header Files\Helper Files</Filter>
-    </ClInclude>
     <ClInclude Include="World.hpp">
       <Filter>Header Files\Not In Use</Filter>
-    </ClInclude>
-    <ClInclude Include="Singleton.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.hpp">
-      <Filter>Header Files\Objects\Materials</Filter>
-    </ClInclude>
-    <ClInclude Include="MaterialStorage.hpp">
-      <Filter>Header Files\Objects\Materials</Filter>
-    </ClInclude>
-    <ClInclude Include="ButtonManager.hpp">
-      <Filter>Header Files\Menus</Filter>
-    </ClInclude>
-    <ClInclude Include="LineModel.hpp">
-      <Filter>Header Files\Objects\Models</Filter>
-    </ClInclude>
-    <ClInclude Include="LineObject.hpp">
-      <Filter>Header Files\Objects\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="LineShaderGroup.hpp">
-      <Filter>Header Files\Rendering\Shaders\ShaderGroups</Filter>
     </ClInclude>
     <ClInclude Include="Lightning.hpp">
       <Filter>Header Files\Objects\Objects</Filter>
@@ -698,65 +338,57 @@
     <ClInclude Include="LineBeam.hpp">
       <Filter>Header Files\Objects\Objects</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="PS_SingleColor.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_D_SingleColor.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_D_Light.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Depth.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Depth.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_Texture.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Texture.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_D_Texture.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_D_Texture.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_HUD.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_D_LightSplitScreen.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_D_LightMultipleLights.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_D_LightMultipleShadowLights.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_PosUV.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_PosNormColor.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_D_TextureChunk.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="GS_D_TextureChunk.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="VS_PosColor.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="PS_Line.hlsl">
-      <Filter>Source Files\Rendering\Shaders\HLSL_Shaders</Filter>
-    </FxCompile>
+    <ClInclude Include="ComponentEventData.hpp">
+      <Filter>Header Files\EntityComponentSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentTable.hpp">
+      <Filter>Header Files\EntityComponentSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentWrapper.hpp">
+      <Filter>Header Files\EntityComponentSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityManager.hpp">
+      <Filter>Header Files\EntityComponentSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="EntityStorage.hpp">
+      <Filter>Header Files\EntityComponentSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemManager.hpp">
+      <Filter>Header Files\EntityComponentSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractSystem.hpp">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicSystem.hpp">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="System.hpp">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseSystem.hpp">
+      <Filter>Header Files\EntityComponentSystem\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseComponent.hpp">
+      <Filter>Header Files\EntityComponentSystem\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.hpp">
+      <Filter>Header Files\EntityComponentSystem\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Components.hpp">
+      <Filter>Header Files\EntityComponentSystem\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentStorage.hpp">
+      <Filter>Header Files\EntityComponentSystem\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentType.hpp">
+      <Filter>Header Files\EntityComponentSystem\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextButtonManager.hpp">
+      <Filter>Header Files\Menus</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

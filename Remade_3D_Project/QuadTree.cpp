@@ -2,7 +2,7 @@
 #include "QuadTreeNode.hpp"
 #include "QuadTreeObject.hpp"
 
-#include "HelperFunctions.hpp"
+#include "../Engine/Misc/HelperFunctions.hpp"
 
 QuadTree::QuadTree()
 {

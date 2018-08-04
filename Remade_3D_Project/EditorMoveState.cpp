@@ -1,22 +1,15 @@
 #include "EditorMoveState.hpp"
 
-// For input
-#include "Input.hpp"
+#include "../Engine/Input/Input.hpp"
+#include "../Engine/Render/RenderManager.hpp"
+#include "../Engine/Camera/PlayerCameraManager.hpp"
+#include "../Engine/Camera/Camera.hpp"
+#include "../Engine/Objects/Objects/TextureObject.hpp"
+#include "../Engine/Math/Frustum.hpp"
+#include "../Engine/Math/Collision.hpp"
+
 #include <Windows.h>
-
-// For moving the object
-//#include "PickingRay.hpp"
-#include "PlayerCameraManager.hpp"
-#include "Camera.hpp"
-#include "TextureObject.hpp"
-#include "Frustum.hpp"
-
-// For collision
-#include "Collision.hpp"
 #include "Scene.hpp"
-
-// For displaying collision
-#include "RenderManager.hpp"
 
 EditorMoveState::EditorMoveState() : EditorState::EditorState(), m_distanceMultiplier(0.0f)
 {
@@ -28,10 +21,10 @@ EditorMoveState::~EditorMoveState()
 
 bool EditorMoveState::Initialize()
 {
-	if (!EditorState::InitializeIcon("Icons/MoveIcon.png"))
+	/*if (!EditorState::InitializeIcon("Icons/MoveIcon.png"))
 	{
 		return false;
-	}
+	}*/
 
 	return true;
 }
@@ -110,10 +103,10 @@ void EditorMoveState::Render()
 {
 }
 
-void EditorMoveState::RenderHUD()
-{
-	EditorState::RenderHUD();
-}
+//void EditorMoveState::RenderHUD()
+//{
+//	EditorState::RenderHUD();
+//}
 
 void EditorMoveState::CheckCollisionsOfSelectedCube()
 {

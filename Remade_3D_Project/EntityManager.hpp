@@ -6,7 +6,7 @@
 
 typedef unsigned int EntityID;
 
-class EntityManager : public Singleton<EntityManager>
+class EntityManager final : public Singleton<EntityManager>
 {
 public:
 

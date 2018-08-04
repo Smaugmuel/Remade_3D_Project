@@ -1,9 +1,8 @@
 #include "Scene.hpp"
 
-#include "TextureObject.hpp"
-#include "SingleColorObject.hpp"
-
-#include "RenderManager.hpp"
+#include "../Engine/Objects/Objects/TextureObject.hpp"
+#include "../Engine/Objects/Objects/SingleColorObject.hpp"
+#include "../Engine/Render/RenderManager.hpp"
 
 #include <fstream>
 #include <sstream>

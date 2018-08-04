@@ -1,23 +1,17 @@
 #include "World.hpp"
 
-#include "Window.hpp"
-#include "Direct3D.hpp"
-#include "ConstantBufferStorage.hpp"
-
-#include "FPS_Counter.hpp"
+#include "../Engine/FrameWork/Window.hpp"
+#include "../Engine/FrameWork/Direct3D.hpp"
+#include "../Engine/Buffers/ConstantBufferStorage.hpp"
+#include "../Engine/Camera/Camera.hpp"
+#include "../Engine/Camera/PlayerCameraManager.hpp"
+#include "../Engine/Events/EventDispatcher.hpp"
+//#include "../Engine/Misc/FPS_Counter.hpp"
+#include "../Engine/Lights/PointLightManager.hpp"
 
 #include "Scene.hpp"
 #include "SceneStorage.hpp"
-
-#include "EventDispatcher.hpp"
-
-#include "PointLightManager.hpp"
-
-// For cameras and movements
-#include "Camera.hpp"
-#include "PlayerCameraManager.hpp"
 #include "Character.hpp"
-
 
 World* Singleton<World>::s_instance = nullptr;
 
@@ -53,8 +47,7 @@ World::World()
 	m_player.get()->SetLookDirection(PlayerCameraManager::Get()->GetCurrentCamera()->GetTargetDirection());
 
 	/* ============================================ FPS counter ==================================================== */
-	m_fpsCounter = std::make_unique<FPSCounter>();
-	m_fpsCounter.get()->Initialize(Direct3D::Get()->GetDevice(), Direct3D::Get()->GetDeviceContext());
+	//m_fpsCounter = std::make_unique<FPSCounter>();
 }
 
 World::~World()
@@ -88,7 +81,7 @@ void World::Update(float dt)
 
 	m_scene->Update(dt);
 
-	m_fpsCounter.get()->Update(dt);
+	//m_fpsCounter.get()->Update(dt);
 
 	ConstantBufferStorage::Get()->SetVSViewMatrix(Direct3D::Get()->GetDeviceContext(), cam->GetViewMatrix());
 }
@@ -106,7 +99,7 @@ Character * World::GetPlayer()
 {
 	return m_player.get();
 }
-FPSCounter * World::GetFPSCounter()
-{
-	return m_fpsCounter.get();
-}
+//FPSCounter * World::GetFPSCounter()
+//{
+//	return m_fpsCounter.get();
+//}

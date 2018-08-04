@@ -2,17 +2,17 @@
 #define EDITOR_SCALE_STATE_HPP
 #include "EditorState.hpp"
 
-class EditorScaleState : public EditorState
+class EditorScaleState final : public EditorState
 {
 public:
 	EditorScaleState();
 	~EditorScaleState();
 
-	bool Initialize() override;
-	void ProcessInput() override;
-	void Update(float dt) override;
-	void Render() override;
-	void RenderHUD() override;
+	bool Initialize() final override;
+	void ProcessInput() final override;
+	void Update(float dt) final override;
+	void Render() final override;
+	//void RenderHUD() final override;
 };
 
 #endif

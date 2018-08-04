@@ -1,14 +1,11 @@
 #ifndef GAME_STATE_HPP
 #define GAME_STATE_HPP
+#include "../Engine/Misc/StateMachines/StateMachineV2.hpp"
 
-//#include "StateMachine.hpp"
-
-template<typename StateCategory> class StateMachine;
-
-class GameState
+class GameState : public StateV2
 {
 public:
-	GameState(StateMachine<GameState>* stateMachine);
+	GameState(StateMachineV2<GameState>* stateMachine);
 	virtual ~GameState();
 
 	virtual bool Initialize() = 0;
@@ -17,7 +14,7 @@ public:
 	virtual void Render() = 0;
 
 protected:
-	StateMachine<GameState>* m_stateMachine;
+	StateMachineV2<GameState>* m_stateMachine;
 };
 
 #endif

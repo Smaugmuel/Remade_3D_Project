@@ -1,20 +1,10 @@
 #ifndef GAME_HPP
 #define GAME_HPP
-#include "Singleton.hpp"
-#include "EventReceiver.hpp"
+#include "../Engine/Misc/Singleton.hpp"
+#include "../Engine/Misc/StateMachines/StateMachineV2.hpp"
+#include "../Engine/Events/EventReceiver.hpp"
 
-#include <chrono>
-
-#include "StateMachine.hpp"
 #include "GameState.hpp"
-
-//class TextureObject;
-//class SingleColorObject;
-//class HUDObject;
-//class PointLight;
-//class FPSCounter;
-//class Character;
-////class QuadTree;
 
 //enum RenderMode
 //{
@@ -44,9 +34,6 @@
 
 class Game final : public Singleton<Game>, public EventReceiver
 {
-	typedef std::chrono::high_resolution_clock Clock;
-	typedef std::chrono::time_point<std::chrono::steady_clock> Time;
-
 	friend class Singleton<Game>;
 
 	Game();
@@ -56,18 +43,10 @@ public:
 	bool Initialize();
 	void Run();
 
-	/*bool ProcessInput();
-	void Update(float dt);
-	void Render();*/
-
 private:
-	void ReceiveEvent(const Event& e) override;
+	void ReceiveEvent(const Event& e) final override;
 
-	/*void MapProjectionMatrix();
-
-	void CubeIntersection();
-
-	void RenderNormal();
+	/*void RenderNormal();
 	void RenderDeferredFirstPass();
 	void RenderDeferredFirstPassChunks();
 	void RenderDepth();
@@ -81,27 +60,14 @@ private:
 	void RenderHUD();
 	void RenderHUDText();*/
 
-
-	StateMachine<GameState> m_gameStateMachine;
+	StateMachineV2<GameState> m_gameStateMachine;
 	bool m_pop_game_state_flag;
 	bool m_shutdown_flag;
 
-
-	/*unsigned int m_nrOfCubes;
-	TextureObject* m_texturedCubes;
-
-	std::unique_ptr<SingleColorObject> m_coloredFloor;
-	std::unique_ptr<HUDObject> m_HUDObject;
-
-	std::unique_ptr<FPSCounter> m_fpsCounter;
-
-	RenderMode m_renderMode;
+	
+	/*RenderMode m_renderMode;
 	HUDMode m_HUDMode;
-	OrthogonalMode m_orthogonal;
-
-	//std::unique_ptr<QuadTree> m_quadTree;
-
-	std::unique_ptr<Character> m_player;*/
+	OrthogonalMode m_orthogonal;*/
 };
 
 #endif

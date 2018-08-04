@@ -1,14 +1,12 @@
 #include "EditorRotateState.hpp"
 
-// For input
-#include "Input.hpp"
-#include <Windows.h>
+#include "../Engine/Input/Input.hpp"
+#include "../Engine/Camera/PlayerCameraManager.hpp"
+#include "../Engine/Camera/Camera.hpp"
+#include "../Engine/Math/Frustum.hpp"
+#include "../Engine/Objects/Objects/TextureObject.hpp"
 
-// For rotating the object
-#include "PlayerCameraManager.hpp"
-#include "Camera.hpp"
-#include "Frustum.hpp"
-#include "TextureObject.hpp"
+#include <Windows.h>
 
 
 EditorRotateState::EditorRotateState() : EditorState::EditorState()
@@ -21,10 +19,10 @@ EditorRotateState::~EditorRotateState()
 
 bool EditorRotateState::Initialize()
 {
-	if (!EditorState::InitializeIcon("Icons/RotateIcon.png"))
+	/*if (!EditorState::InitializeIcon("Icons/RotateIcon.png"))
 	{
 		return false;
-	}
+	}*/
 
 	return true;
 }
@@ -92,7 +90,7 @@ void EditorRotateState::Render()
 {
 }
 
-void EditorRotateState::RenderHUD()
-{
-	EditorState::RenderHUD();
-}
+//void EditorRotateState::RenderHUD()
+//{
+//	EditorState::RenderHUD();
+//}

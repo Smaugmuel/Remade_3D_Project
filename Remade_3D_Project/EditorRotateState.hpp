@@ -1,25 +1,25 @@
 #ifndef EDITOR_ROTATE_STATE_HPP
 #define EDITOR_ROTATE_STATE_HPP
 #include "EditorState.hpp"
-#include "Vector3.hpp"
+#include "../Engine/Math/Vector3.hpp"
 
-class EditorRotateState : public EditorState
+class EditorRotateState final : public EditorState
 {
 public:
 	EditorRotateState();
 	~EditorRotateState();
 
-	bool Initialize() override;
-	void ProcessInput() override;
-	void Update(float dt) override;
-	void Render() override;
-	void RenderHUD() override;
+	bool Initialize() final override;
+	void ProcessInput() final override;
+	void Update(float dt) final override;
+	void Render() final override;
+	//void RenderHUD() final override;
 
 private:
 	Vector3f m_screenDirectionX;
 	Vector3f m_screenDirectionY;
 
-	//HUDObject* m_rotateIcon;
+	//HUDTexture* m_rotateIcon;
 };
 
 #endif

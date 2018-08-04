@@ -1,8 +1,8 @@
 #ifndef QUAD_TREE_NODE_HPP
 #define QUAD_TREE_NODE_HPP
 #include <list>
-#include "AABA.hpp"
-#include "Vector2.hpp"
+#include "../Engine/Math/AABA.hpp"
+#include "../Engine/Math/Vector2.hpp"
 
 class QuadTreeObject;
 

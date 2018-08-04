@@ -4,7 +4,7 @@
 #include "System.hpp"
 #include <map>
 
-class SystemManager : public Singleton<SystemManager>
+class SystemManager final : public Singleton<SystemManager>
 {
 public:
 

@@ -1,7 +1,7 @@
 #ifndef LINE_BEAM_HPP
 #define LINE_BEAM_HPP
 #include <vector>
-#include "Vector3.hpp"
+#include "../Engine/Math/Vector3.hpp"
 
 class LineObject;
 

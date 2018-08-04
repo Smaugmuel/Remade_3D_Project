@@ -1,8 +1,8 @@
 #ifndef EDITOR_STATE_HPP
 #define EDITOR_STATE_HPP
-#include "EventReceiver.hpp"
+#include "../Engine/Events/EventReceiver.hpp"
 
-class HUDObject;
+//class HUDTexture;
 class TextureObject;
 class Scene;
 
@@ -18,13 +18,14 @@ public:
 	virtual void ProcessInput() = 0;
 	virtual void Update(float dt) = 0;
 	virtual void Render() = 0;
-	virtual void RenderHUD();
+	//virtual void RenderHUD();
 
 protected:
-	bool InitializeIcon(const char* fileName);
-	void ReceiveEvent(const Event& e) override;
+	//bool InitializeIcon(const char* fileName);
+	void ReceiveEvent(const Event& e) final override;
 
-	HUDObject* m_icon;
+	int m_iconID;
+	//HUDTexture* m_icon;
 	TextureObject* m_selectedObject;
 	Scene* m_scene;
 };

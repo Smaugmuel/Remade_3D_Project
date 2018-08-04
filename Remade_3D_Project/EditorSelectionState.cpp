@@ -1,21 +1,16 @@
 #include "EditorSelectionState.hpp"
 
-// For input
-#include "Input.hpp"
-#include <windows.h>
+#include "../Engine/Input/Input.hpp"
+#include "../Engine/Objects/Textures/TextureStorageV2.hpp"
+#include "../Engine/Objects/Objects/TextureObject.hpp"
+#include "../Engine/FrameWork/Direct3D.hpp"
+#include "../Engine/Render/RenderManager.hpp"
+#include "../Engine/Math/PickingRay.hpp"
+#include "../Engine/Math/Collision.hpp"
+#include "../Engine/Events/EventDispatcher.hpp"
 
-// For loading the texture
-#include "TextureStorage.hpp"
-#include "Direct3D.hpp"
-
-// For selecting the cube
-#include "PickingRay.hpp"
-#include "Collision.hpp"
-#include "TextureObject.hpp"
 #include "Scene.hpp"
-#include "RenderManager.hpp"
-
-#include "EventDispatcher.hpp"
+#include <windows.h>
 
 EditorSelectionState::EditorSelectionState() : EditorState::EditorState()
 {
@@ -27,12 +22,12 @@ EditorSelectionState::~EditorSelectionState()
 
 bool EditorSelectionState::Initialize()
 {
-	if (!EditorState::InitializeIcon("Icons/SelectIcon.png"))
+	/*if (!EditorState::InitializeIcon("Icons/SelectIcon.png"))
 	{
 		return false;
-	}
+	}*/
 
-	if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), "BrickWallRaw.jpg"))
+	if (TextureStorageV2::Get()->LoadTexture("BrickWallRaw.jpg") != -1)
 	{
 		return false;
 	}
@@ -73,10 +68,10 @@ void EditorSelectionState::Render()
 {
 }
 
-void EditorSelectionState::RenderHUD()
-{
-	EditorState::RenderHUD();
-}
+//void EditorSelectionState::RenderHUD()
+//{
+//	EditorState::RenderHUD();
+//}
 
 void EditorSelectionState::SelectCube(const Ray& ray)
 {

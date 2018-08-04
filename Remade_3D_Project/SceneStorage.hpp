@@ -1,6 +1,6 @@
 #ifndef SCENE_STORAGE_HPP
 #define SCENE_STORAGE_HPP
-#include "Singleton.hpp"
+#include "../Engine/Misc/Singleton.hpp"
 
 #include <map>
 #include <memory>

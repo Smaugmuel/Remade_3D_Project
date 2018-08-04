@@ -1,11 +1,11 @@
 #include "EditorScaleState.hpp"
 
 // For input
-#include "Input.hpp"
+#include "../Engine/Input/Input.hpp"
 #include <Windows.h>
 
 // For changing the object
-#include "TextureObject.hpp"
+#include "../Engine/Objects/Objects/TextureObject.hpp"
 
 EditorScaleState::EditorScaleState() : EditorState::EditorState()
 {
@@ -17,10 +17,10 @@ EditorScaleState::~EditorScaleState()
 
 bool EditorScaleState::Initialize()
 {
-	if (!EditorState::InitializeIcon("Icons/ScaleIcon.png"))
+	/*if (!EditorState::InitializeIcon("Icons/ScaleIcon.png"))
 	{
 		return false;
-	}
+	}*/
 
 	return true;
 }
@@ -77,7 +77,7 @@ void EditorScaleState::Render()
 {
 }
 
-void EditorScaleState::RenderHUD()
-{
-	EditorState::RenderHUD();
-}
+//void EditorScaleState::RenderHUD()
+//{
+//	EditorState::RenderHUD();
+//}

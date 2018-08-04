@@ -1,26 +1,27 @@
 #include "EditorPlacementState.hpp"
 
-// For input
-#include "Input.hpp"
-#include <windows.h>
+#include "../Engine/Input/Input.hpp"
 
-// For placing the preview object
-#include "TextureObject.hpp"
-#include "PickingRay.hpp"
+#include "../Engine/Objects/Materials/Material.hpp"
+//#include "../Engine/Objects/Materials/MaterialStorage.hpp"
+#include "../Engine/Objects/Materials/MaterialStorageV2.hpp"
+#include "../Engine/Objects/Objects/TextureObject.hpp"
+#include "../Engine/Objects/Models/TextureModel.hpp"
+//#include "../Engine/Objects/Models/ModelStorage.hpp"
+#include "../Engine/Objects/Models/ModelStorageV2.hpp"
+//#include "../Engine/Objects/Textures/TextureStorage.hpp"
+#include "../Engine/Objects/Textures/TextureStorageV2.hpp"
+
+#include "../Engine/Render/RenderManager.hpp"
+#include "../Engine/FrameWork/Direct3D.hpp"
+#include "../Engine/Render/Shaders/ShaderManager.hpp"
+
+#include "../Engine/Math/PickingRay.hpp"
+
+#include "../Engine/Buffers/ConstantBufferStorage.hpp"
+
 #include "Scene.hpp"
-#include "RenderManager.hpp"
-
-// For changing the texture of preview object
-#include "Material.hpp"
-#include "MaterialStorage.hpp"
-
-// For rendering the preview object
-#include "Direct3D.hpp"
-#include "ModelStorage.hpp"
-#include "TextureModel.hpp"
-#include "ConstantBufferStorage.hpp"
-#include "TextureStorage.hpp"
-#include "ShaderManager.hpp"
+#include <windows.h>
 
 EditorPlacementState::EditorPlacementState() : EditorState::EditorState()
 {
@@ -39,10 +40,10 @@ bool EditorPlacementState::Initialize()
 	if (!m_previewObject->Initialize("cube_uv.obj"/*, "turret_tex_v3.png"*/))
 		return false;
 
-	if (!EditorState::InitializeIcon("Icons/PlaceIcon.png"))
+	/*if (!EditorState::InitializeIcon("Icons/PlaceIcon.png"))
 	{
 		return false;
-	}
+	}*/
 
 	return true;
 }
@@ -53,21 +54,17 @@ void EditorPlacementState::ProcessInput()
 
 	if (input->IsKeyPressed(VK_RBUTTON))
 	{
-		unsigned int nrOfTextureModels = ModelStorage::Get()->GetNrOfTextureModels();
+		ModelStorageV2* models = ModelStorageV2::Get();
+		MaterialStorageV2* materials = MaterialStorageV2::Get();
+		TextureStorageV2* textures = TextureStorageV2::Get();
+
+		unsigned int nrOfTextureModels = models->GetNrOfTextureModels();
 		
 		static int modelIndex = 0;
 		modelIndex = (modelIndex + 1) % nrOfTextureModels;
 
-		const std::string& modelName = ModelStorage::Get()->GetTextureModelName(modelIndex);
-
-		m_previewObject->SetModelName(modelName);
-		m_previewObject->SetTextureName(
-			MaterialStorage::Get()->GetMaterial(
-				ModelStorage::Get()->GetTextureModel(
-					modelName
-				)->GetMaterialName()
-			)->GetTextureName()
-		);
+		m_previewObject->SetModel(modelIndex);
+		m_previewObject->SetTexture(materials->GetMaterial(models->GetTextureModel(modelIndex)->GetMaterialIndex())->GetTextureIndex());
 	}
 
 	// Create a new object at preview object
@@ -103,18 +100,18 @@ void EditorPlacementState::Render()
 	// Render the preview object
 
 	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
-	ID3D11ShaderResourceView* texture = TextureStorage::Get()->GetTexture(m_previewObject->GetTextureName());
-	TextureModel* model = ModelStorage::Get()->GetTextureModel(m_previewObject->GetModelName());
+	ID3D11ShaderResourceView* texture = TextureStorageV2::Get()->GetTexture(m_previewObject->GetTextureIndex());
+	TextureModel* model = ModelStorageV2::Get()->GetTextureModel(m_previewObject->GetModelIndex());
 
 	ShaderManager::Get()->SetShaderType(deviceContext, ShaderType::TEXTURE);
 	deviceContext->PSSetShaderResources(0, 1, &texture);
-	model->SetupRender(deviceContext);
+	model->SetupRender();
 	ConstantBufferStorage::Get()->SetVSWorldMatrix(deviceContext, m_previewObject->GetWorldMatrix());
 
-	model->Render(deviceContext);
+	model->Render();
 }
 
-void EditorPlacementState::RenderHUD()
-{
-	EditorState::RenderHUD();
-}
+//void EditorPlacementState::RenderHUD()
+//{
+//	EditorState::RenderHUD();
+//}

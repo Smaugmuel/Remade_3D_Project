@@ -4,17 +4,17 @@
 
 class TextureObject;
 
-class EditorPlacementState : public EditorState
+class EditorPlacementState final : public EditorState
 {
 public:
 	EditorPlacementState();
 	~EditorPlacementState();
 
-	bool Initialize() override;
-	void ProcessInput() override;
-	void Update(float dt) override;
-	void Render() override;
-	void RenderHUD() override;
+	bool Initialize() final override;
+	void ProcessInput() final override;
+	void Update(float dt) final override;
+	void Render() final override;
+	//void RenderHUD() final override;
 
 private:
 	TextureObject * m_previewObject;

@@ -1,7 +1,7 @@
 #ifndef QUAD_TREE_HPP
 #define QUAD_TREE_HPP
-#include "AABA.hpp"
-#include "AABB.hpp"
+#include "../Engine/Math/AABA.hpp"
+#include "../Engine/Math/AABB.hpp"
 #include <list>
 
 #define NR_OF_LEVELS 8

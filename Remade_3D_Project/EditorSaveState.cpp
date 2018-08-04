@@ -1,7 +1,7 @@
 #include "EditorSaveState.hpp"
 
 // For input
-#include "Input.hpp"
+#include "../Engine/Input/Input.hpp"
 #include <Windows.h>
 
 // For the scene
@@ -18,10 +18,10 @@ EditorSaveState::~EditorSaveState()
 
 bool EditorSaveState::Initialize()
 {
-	if (!EditorState::InitializeIcon("Icons/SaveIcon.png"))
+	/*if (!EditorState::InitializeIcon("Icons/SaveIcon.png"))
 	{
 		return false;
-	}
+	}*/
 
 	return true;
 }
@@ -48,7 +48,7 @@ void EditorSaveState::Render()
 {
 }
 
-void EditorSaveState::RenderHUD()
-{
-	EditorState::RenderHUD();
-}
+//void EditorSaveState::RenderHUD()
+//{
+//	EditorState::RenderHUD();
+//}

@@ -1,6 +1,6 @@
 #ifndef SCENE_EDITOR_HPP
 #define SCENE_EDITOR_HPP
-#include "Singleton.hpp"
+#include "../Engine/Misc/Singleton.hpp"
 #include <vector>
 
 class TextureObject;

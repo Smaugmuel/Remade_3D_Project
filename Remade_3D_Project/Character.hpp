@@ -1,7 +1,7 @@
 #ifndef CHARACTER_HPP
 #define CHARACTER_HPP
 
-#include "Vector3.hpp"
+#include "../Engine/Math/Vector3.hpp"
 
 class Character
 {

@@ -11,7 +11,7 @@
 
 typedef unsigned int EntityID;
 
-class ComponentStorage : public Singleton<ComponentStorage>
+class ComponentStorage final : public Singleton<ComponentStorage>
 {
 	friend class Singleton<ComponentStorage>;
 	ComponentStorage()

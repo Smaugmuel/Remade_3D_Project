@@ -1,13 +1,13 @@
 #ifndef SCENE_EDITOR_STATE_HPP
 #define SCENE_EDITOR_STATE_HPP
 #include "GameState.hpp"
-#include "EventReceiver.hpp"
+#include "../Engine/Events/EventReceiver.hpp"
 #include <memory>
 
 class Scene;
 class EditorState;
 class Character;
-class FPSCounter;
+//class FPSCounter;
 
 class LineBeam;
 
@@ -23,24 +23,27 @@ enum class EditorModes
 	NR_OF_EDITOR_MODES
 };
 
-class SceneEditorState : public GameState, public EventReceiver
+class SceneEditorState final : public GameState, public EventReceiver
 {
 public:
-	SceneEditorState(StateMachine<GameState>* stateMachine);
+	SceneEditorState(StateMachineV2<GameState>* stateMachine);
 	virtual ~SceneEditorState();
 
-	bool Initialize() override;
-	void ProcessInput() override;
-	void Update(float dt) override;
-	void Render() override;
+	void OnEntry() final override;
+	void OnExit() final override;
+
+	bool Initialize() final override;
+	void ProcessInput() final override;
+	void Update(float dt) final override;
+	void Render() final override;
 
 private:
 	void MapProjectionMatrix();
 
 	void RenderNormal();
-	void RenderHUD();
+	//void RenderHUD();
 
-	void ReceiveEvent(const Event& e) override;
+	void ReceiveEvent(const Event& e) final override;
 
 
 	EditorModes m_editorMode;
@@ -48,7 +51,7 @@ private:
 
 	Scene* m_scene;
 	std::unique_ptr<Character> m_player;
-	std::unique_ptr<FPSCounter> m_fpsCounter;
+	//std::unique_ptr<FPSCounter> m_fpsCounter;
 
 	LineBeam* m_beam;
 };

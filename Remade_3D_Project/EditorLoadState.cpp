@@ -1,19 +1,14 @@
 #include "EditorLoadState.hpp"
 
-#include "Input.hpp"
-#include "StringConverter.hpp"
-#include "EventDispatcher.hpp"
+#include "../Engine/Input/Input.hpp"
+#include "../Engine/Misc/StringConverter.hpp"
+#include "../Engine/Events/EventDispatcher.hpp"
 
-// For the scene menu
-#include "ButtonManager.hpp"
+#include "TextButtonManager.hpp"
 
-// For rendering the buttons
-#include "SpriteFont.h"
-#include "SpriteBatch.h"
-#include "SimpleMath.h"
-#include "Direct3D.hpp"
+#include "../Engine/GUI/GUIManager.hpp"
+#include "../Engine/Misc/StringConverter.hpp"
 
-// For switching and loading scenes
 #include "SceneStorage.hpp"
 #include "Scene.hpp"
 
@@ -29,33 +24,27 @@ EditorLoadState::~EditorLoadState()
 		delete m_sceneButtonManager;
 		m_sceneButtonManager = nullptr;
 	}
-	if (m_spriteFont)
-	{
-		delete m_spriteFont;
-		m_spriteFont = nullptr;
-	}
-	if (m_spriteBatch)
-	{
-		delete m_spriteBatch;
-		m_spriteBatch = nullptr;
-	}
 }
 
 bool EditorLoadState::Initialize()
 {
 	/* ============================================= Create the load icon ========================================== */
-	if (!EditorState::InitializeIcon("Icons/LoadIcon.png"))
-	{
-		return false;
-	}
-
-	// Create the resources needed for rendering the text of the buttons
-	m_spriteFont = new DirectX::SpriteFont(Direct3D::Get()->GetDevice(), L"../Fonts/courier32.spritefont");
-	m_spriteBatch = new DirectX::SpriteBatch(Direct3D::Get()->GetDeviceContext());
+	m_iconID = GUIManager::Get()->CreateImage("Icons/LoadIcon.png", Vector2i(0, 32));
 
 	// Create menu and its buttons from the scenes found in the directory
-	m_sceneButtonManager = new ButtonManager<EditorLoadState>;
+	m_sceneButtonManager = new TextButtonManager<EditorLoadState>;
 	CreateButtonsFromScenesInFolder();
+
+	std::vector<TextMenuButton<EditorLoadState>> buttons;
+	buttons = m_sceneButtonManager->RetrieveButtons();
+
+	for (unsigned int i = 0; i < buttons.size(); i++)
+	{
+		GUIManager::Get()->CreateText(
+			StringConverter::ToString(buttons[i].GetText()).value(),
+			buttons[i].GetAABA().center - buttons[i].GetAABA().halfSides
+		);
+	}
 
 	return true;
 }
@@ -86,43 +75,14 @@ void EditorLoadState::Render()
 {
 }
 
-void EditorLoadState::RenderHUD()
-{
-	Direct3D* d3d = Direct3D::Get();
-	std::vector<MenuButton<EditorLoadState>> buttons = m_sceneButtonManager->RetrieveButtons();
-
-	/* ================================ Render load icon ================================= */
-	EditorState::RenderHUD();
-	
-	/* ================================ Render scene buttons ================================= */
-	d3d->DisableZBuffer();
-	m_spriteBatch->Begin();
-
-	// Render text of buttons
-	unsigned int n = buttons.size();
-	for (unsigned int i = 0; i < n; i++)
-	{
-		// Convert position and size to SimpleMath vector
-		const MenuButton<EditorLoadState>* button = &buttons[i];
-		const AABA& aaba = button->GetAABA();
-		DirectX::SimpleMath::Vector2 position(aaba.center.x, aaba.center.y);
-		DirectX::SimpleMath::Vector2 origin(aaba.halfSides.x, aaba.halfSides.y);
-
-		m_spriteFont->DrawString(m_spriteBatch, button->GetText().c_str(), position, DirectX::Colors::White, 0.0f, origin);
-	}
-
-	// Reset states and present scene
-	m_spriteBatch->End();
-	d3d->EnableZBuffer();
-	d3d->SetDefaultBlendState();
-}
+//void EditorLoadState::RenderHUD()
+//{
+//}
 
 void EditorLoadState::CreateButtonsFromScenesInFolder()
 {
+	GUIManager* gui_mngr = GUIManager::Get();
 	unsigned int n = 0;
-	float inverseN = 0;
-	Vector2i position;
-	DirectX::SimpleMath::Vector2 halfDimensions;
 
 	/* ============================ Retrieve the names of all scenes in the directory ============================= */
 	SceneStorage::Get()->UpdateExistingSceneNamesFromFolder();
@@ -138,21 +98,18 @@ void EditorLoadState::CreateButtonsFromScenesInFolder()
 	/* ============================ Create buttons from the found scene names ============================= */
 	m_sceneButtonManager->ClearButtons();
 
-	inverseN = 1.0f / n;
-
 	for (unsigned int i = 0; i < n; i++)
 	{
 		// Calculate position and dimensions
-		halfDimensions = DirectX::SimpleMath::Vector2(m_spriteFont->MeasureString(wSceneNames[i].c_str())) / 2.0f;
-		position.x = static_cast<int>(halfDimensions.x);
-		position.y = static_cast<int>(96 + halfDimensions.y * (1 + i * 2));
+		Vector2i halfDimensions = gui_mngr->GetDimensionsOfText(wSceneNames[i]) * 0.5;
+		Vector2i position(halfDimensions.x, 96 + halfDimensions.y * (1 + i * 2));
 		
 		m_sceneButtonManager->CreateButton(
 			this,
 			&EditorLoadState::LoadScene,
 			wSceneNames[i],
 			position,
-			Vector2i(static_cast<int>(halfDimensions.x), static_cast<int>(halfDimensions.y))
+			halfDimensions
 		);
 	}
 }
@@ -162,16 +119,23 @@ void EditorLoadState::LoadScene(const std::wstring & sceneName)
 	SceneStorage* sceneStorage = SceneStorage::Get();
 	EventDispatcher* eventDispatcher = EventDispatcher::Get();
 
-	std::string str = StringConverter::ToString(sceneName);
-
-	// Leave editor if scene failed to load
-	if (!sceneStorage->LoadScene(str))
+	std::optional<std::string> str = StringConverter::ToString(sceneName);
+	
+	// Leave editor if string couldn't be converted
+	if (!str)
 	{
 		eventDispatcher->Emit(Event(EventType::POP_GAMESTATE));
 		return;
 	}
 
-	Scene* scene = sceneStorage->GetScene(str);
+	// Leave editor if scene failed to load
+	if (!sceneStorage->LoadScene(str.value()))
+	{
+		eventDispatcher->Emit(Event(EventType::POP_GAMESTATE));
+		return;
+	}
+
+	Scene* scene = sceneStorage->GetScene(str.value());
 
 	// Do nothing if the chosen scene is the current one
 	if (scene == m_scene)

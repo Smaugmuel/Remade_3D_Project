@@ -2,7 +2,7 @@
 #define SCENE_HPP
 #include <vector>
 #include <string>
-#include "Vector3.hpp"
+#include "../Engine/Math/Vector3.hpp"
 #include "ObjectAmountSettings.hpp"
 
 class TextureObject;
@@ -18,12 +18,12 @@ class Scene
 		std::string m;
 	};
 
-	struct TexturedObjectData : public ObjectData
+	struct TexturedObjectData final : public ObjectData
 	{
 		std::string t;
 	};
 
-	struct SingleColoredObjectData : public ObjectData
+	struct SingleColoredObjectData final : public ObjectData
 	{
 		Vector3f c;
 	};

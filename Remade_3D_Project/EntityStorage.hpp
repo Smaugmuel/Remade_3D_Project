@@ -8,7 +8,7 @@
 typedef unsigned int EntityID;
 typedef unsigned int ComponentsOfEntity;
 
-class EntityStorage : public Singleton<EntityStorage>
+class EntityStorage final : public Singleton<EntityStorage>
 {
 	friend class Singleton<EntityStorage>;
 	EntityStorage();

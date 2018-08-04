@@ -1,9 +1,26 @@
 #include "SceneEditorState.hpp"
 
-// For this game state
-#include "StateMachine.hpp"
+#include "../Engine/FrameWork/Window.hpp"
+#include "../Engine/FrameWork/WindowSettings.hpp"
+#include "../Engine/FrameWork/Direct3D.hpp"
+#include "../Engine/Render/Shaders/ShaderManager.hpp"
+#include "../Engine/Render/Shaders/ShaderStorage.hpp"
+#include "../Engine/Render/RenderManager.hpp"
 
-// For each editor state
+#include "../Engine/Buffers/ConstantBufferStorage.hpp"
+
+#include "../Engine/Input/Input.hpp"
+
+#include "../Engine/Camera/Camera.hpp"
+#include "../Engine/Camera/PlayerCameraManager.hpp"
+
+#include "../Engine/Objects/Models/ModelStorage.hpp"
+#include "../Engine/Objects/Textures/TextureStorage.hpp"
+
+#include "../Engine/Events/EventDispatcher.hpp"
+
+#include "../Engine/Lights/PointLightManager.hpp"
+
 #include "EditorSelectionState.hpp"
 #include "EditorMoveState.hpp"
 #include "EditorRotateState.hpp"
@@ -12,40 +29,16 @@
 #include "EditorSaveState.hpp"
 #include "EditorLoadState.hpp"
 
-#include "Window.hpp"
-#include "Direct3D.hpp"
-#include "Input.hpp"
-
-#include "WindowSettings.hpp"
-
-#include "ShaderManager.hpp"
-#include "ShaderStorage.hpp"
-#include "ConstantBufferStorage.hpp"
-#include "ModelStorage.hpp"
-#include "TextureStorage.hpp"
 #include "SceneStorage.hpp"
-
-#include "EventDispatcher.hpp"
-
-#include "FPS_Counter.hpp"
-
 #include "Scene.hpp"
-
-#include "PointLightManager.hpp"
-
-// For cameras and movements
-#include "Camera.hpp"
-#include "PlayerCameraManager.hpp"
 #include "Character.hpp"
-
-#include "RenderManager.hpp"
-
+#include "LineBeam.hpp"
 //#include "World.hpp"
 
 
-#include "LineBeam.hpp"
+#include "../Engine/GUI/GUIManager.hpp"
 
-SceneEditorState::SceneEditorState(StateMachine<GameState>* stateMachine) : GameState::GameState(stateMachine), m_editorMode(EditorModes::SELECT)
+SceneEditorState::SceneEditorState(StateMachineV2<GameState>* stateMachine) : GameState::GameState(stateMachine), m_editorMode(EditorModes::SELECT)
 {
 	for (unsigned int i = 0; i < static_cast<unsigned int>(EditorModes::NR_OF_EDITOR_MODES); i++)
 	{
@@ -67,6 +60,14 @@ SceneEditorState::~SceneEditorState()
 	delete m_beam;
 
 	EventDispatcher::Get()->Unsubscribe(EventType::SWITCHED_SCENE, this);
+}
+
+void SceneEditorState::OnEntry()
+{
+}
+
+void SceneEditorState::OnExit()
+{
 }
 
 bool SceneEditorState::Initialize()
@@ -122,8 +123,7 @@ bool SceneEditorState::Initialize()
 	m_player.get()->SetLookDirection(PlayerCameraManager::Get()->GetCurrentCamera()->GetTargetDirection());
 	
 	/* ============================================ FPS counter ==================================================== */
-	m_fpsCounter = std::make_unique<FPSCounter>();
-	m_fpsCounter.get()->Initialize(Direct3D::Get()->GetDevice(), Direct3D::Get()->GetDeviceContext());
+	//m_fpsCounter = std::make_unique<FPSCounter>();
 
 	// Laser beam
 	m_beam = new LineBeam;
@@ -142,11 +142,11 @@ void SceneEditorState::ProcessInput()
 	Input* input = Input::Get();
 	PlayerCameraManager* manager = PlayerCameraManager::Get();
 	Character* player = /*World::Get()->GetPlayer();*/m_player.get();
-	Vector2f mouseMovement;
+	//Vector2f mouseMovement;
 
 	//input->Update();
 
-	mouseMovement = input->MouseMovement();
+	//mouseMovement = input->MouseMovement();
 
 	if (input->IsKeyPressed(VK_ESCAPE))
 	{
@@ -213,6 +213,7 @@ void SceneEditorState::ProcessInput()
 	// Rotate camera if mouse wheel is down
 	if (input->IsKeyDown(VK_MBUTTON))
 	{
+		Vector2f mouseMovement = input->MouseMovement();
 		if (mouseMovement != Vector2f(0, 0))
 		{
 			mouseMovement *= 0.015f;
@@ -263,7 +264,7 @@ void SceneEditorState::Update(float dt)
 	m_editorStates[static_cast<unsigned int>(m_editorMode)]->Update(dt);
 
 	//World::Get()->GetFPSCounter()->Update(dt);
-	m_fpsCounter.get()->Update(dt);
+	//m_fpsCounter.get()->Update(dt);
 
 	ConstantBufferStorage::Get()->SetVSViewMatrix(Direct3D::Get()->GetDeviceContext(), cam->GetViewMatrix());
 }
@@ -279,15 +280,9 @@ void SceneEditorState::MapProjectionMatrix()
 
 void SceneEditorState::Render()
 {
-	Direct3D* d3d = Direct3D::Get();
-
-	d3d->ClearDefaultTarget();
-
 	RenderNormal();
 
-	RenderHUD();
-
-	d3d->Present();
+	//RenderHUD();
 }
 
 void SceneEditorState::RenderNormal()
@@ -311,21 +306,21 @@ void SceneEditorState::RenderNormal()
 	m_beam->Render();
 }
 
-void SceneEditorState::RenderHUD()
-{
-	Direct3D* d3d = Direct3D::Get();
-
-	d3d->DisableZBuffer();
-
-	m_editorStates[static_cast<unsigned int>(m_editorMode)]->RenderHUD();
-
-
-	//World::Get()->GetFPSCounter()->Render();
-	m_fpsCounter.get()->Render();
-
-	d3d->EnableZBuffer();
-	d3d->SetDefaultBlendState();
-}
+//void SceneEditorState::RenderHUD()
+//{
+//	Direct3D* d3d = Direct3D::Get();
+//
+//	d3d->DisableZBuffer();
+//
+//	m_editorStates[static_cast<unsigned int>(m_editorMode)]->RenderHUD();
+//
+//
+//	//World::Get()->GetFPSCounter()->Render();
+//	m_fpsCounter.get()->Render();
+//
+//	d3d->EnableZBuffer();
+//	d3d->SetDefaultBlendState();
+//}
 
 void SceneEditorState::ReceiveEvent(const Event & e)
 {

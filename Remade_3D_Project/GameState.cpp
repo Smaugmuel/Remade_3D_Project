@@ -1,6 +1,6 @@
 #include "GameState.hpp"
 
-GameState::GameState(StateMachine<GameState>* stateMachine) :
+GameState::GameState(StateMachineV2<GameState>* stateMachine) :
 	m_stateMachine(stateMachine)
 {
 }

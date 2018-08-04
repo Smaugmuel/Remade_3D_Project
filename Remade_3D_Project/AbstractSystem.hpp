@@ -25,7 +25,7 @@ private:
 
 	virtual bool HasCorrectComponents(EntityID entity) const = 0;
 
-	void ReceiveEvent(const Event& e) override;
+	void ReceiveEvent(const Event& e) final override;
 };
 
 #endif

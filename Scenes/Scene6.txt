@@ -1,0 +1,24 @@
+Scene Scene6
+
+nT 2
+nC 1
+
+p 0 10 0
+r 0 0 0
+s 3 1 1
+m cube_uv.obj
+t Torgue.png
+
+p 50 4 0
+r 0 0 0
+s 1 2 4
+m cube_uv.obj
+t Torgue.png
+
+
+p 0 0 0
+r 0 0 0
+s 1000 0.02 1000
+m cube.obj
+c 1 0 0
+

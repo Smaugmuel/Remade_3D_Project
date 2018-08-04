@@ -1,6 +1,6 @@
 #ifndef QUAD_TREE_OBJECT_HPP
 #define QUAD_TREE_OBJECT_HPP
-#include "AABA.hpp"
+#include "../Engine/Math/AABA.hpp"
 
 class QuadTreeNode;
 

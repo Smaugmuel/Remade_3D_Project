@@ -1,19 +1,19 @@
 #ifndef EDITOR_MOVE_STATE_HPP
 #define EDITOR_MOVE_STATE_HPP
 #include "EditorState.hpp"
-#include "Vector3.hpp"
+#include "../Engine/Math/Vector3.hpp"
 
-class EditorMoveState : public EditorState
+class EditorMoveState final : public EditorState
 {
 public:
 	EditorMoveState();
 	~EditorMoveState();
 
-	bool Initialize() override;
-	void ProcessInput() override;
-	void Update(float dt) override;
-	void Render() override;
-	void RenderHUD() override;
+	bool Initialize() final override;
+	void ProcessInput() final override;
+	void Update(float dt) final override;
+	void Render() final override;
+	//void RenderHUD() final override;
 
 private:
 	void CheckCollisionsOfSelectedCube();

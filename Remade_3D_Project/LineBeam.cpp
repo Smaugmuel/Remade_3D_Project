@@ -1,12 +1,11 @@
 #include "LineBeam.hpp"
 
-// For rendering the lines
-#include "ShaderManager.hpp"
-#include "LineModel.hpp"
-#include "ModelStorage.hpp"
-#include "ConstantBufferStorage.hpp"
-#include "Direct3D.hpp"
-#include "LineObject.hpp"
+#include "../Engine/Render/Shaders/ShaderManager.hpp"
+#include "../Engine/FrameWork/Direct3D.hpp"
+#include "../Engine/Objects/Models/LineModel.hpp"
+#include "../Engine/Objects/Models/ModelStorage.hpp"
+#include "../Engine/Objects/Objects/LineObject.hpp"
+#include "../Engine/Buffers/ConstantBufferStorage.hpp"
 
 LineBeam::LineBeam()
 {
@@ -35,6 +34,8 @@ bool LineBeam::Initialize(const Vector3f & position)
 
 bool LineBeam::AddLayer(unsigned int nrOfLinesOnLayer)
 {
+	unsigned int currentLayer = m_lines.size();
+
 	m_lines.push_back(std::vector<LineObject>());
 
 	std::vector<LineObject>* lines = &m_lines.back();
@@ -43,11 +44,20 @@ bool LineBeam::AddLayer(unsigned int nrOfLinesOnLayer)
 	{
 		lines->push_back(LineObject());
 
-		if (!(*lines)[i].Initialize())
+		LineObject* line = &lines->back();
+
+		if (!line->Initialize())
 			return false;
 
-		(*lines)[i].SetScale(10, 0, 0);
+		line->SetScale(10, 1, 1);
+		
+		if (currentLayer < 2)
+		{
+			line->SetColor(Vector3f(1, 1, 1));
+		}
 	}
+
+	return true;
 }
 
 void LineBeam::Update(float dt)
@@ -64,17 +74,18 @@ void LineBeam::Update(float dt)
 	{
 		std::vector<LineObject>* lines = &m_lines[layer];
 
-		float angleOfLayer = powf(-1, layer) * angle;
+		float angleOfLayer = powf(-1.0f, static_cast<float>(layer)) * angle;
 		float angleOffset = 2 * 3.14159265f / lines->size();
 		float distanceFromCenter = layer * 0.02f;
 
 		for (unsigned int lineOnLayer = 0; lineOnLayer < lines->size(); lineOnLayer++)
 		{
 			float angleOfLine = angleOfLayer + angleOffset * lineOnLayer;
-			Vector3f positionOffset = Vector3f(0, cosf(angleOfLine), sinf(angleOfLine)) * (distanceFromCenter * (sinf(angle) + 1.0f) * 0.5f);
+			Vector3f positionOffset = Vector3f(0, cosf(angleOfLine), sinf(angleOfLine)) * (distanceFromCenter/* * (sinf(angle) + 1.0f) * 0.5f*/);
 			
 			LineObject* line = &(*lines)[lineOnLayer];
 			line->SetPosition(m_position + positionOffset);
+			line->Rotate(Vector3f(dt * 0.1f, 0, 0));
 			line->Update();
 		}
 	}
@@ -88,14 +99,18 @@ void LineBeam::Render()
 	ShaderManager::Get()->SetShaderType(deviceContext, ShaderType::LINE);
 
 	LineModel* lineModel = ModelStorage::Get()->GetLineModel();
-	lineModel->SetupRender(deviceContext);
+	lineModel->SetupRender();
 
 	for (unsigned int layer = 0; layer < m_lines.size(); layer++)
 	{
-		for (unsigned int lineOnLayer = 0; lineOnLayer < m_lines[layer].size(); lineOnLayer++)
+		std::vector<LineObject>* lines = &m_lines[layer];
+		for (unsigned int lineOnLayer = 0; lineOnLayer < lines->size(); lineOnLayer++)
 		{
-			bufferStorage->SetVSWorldMatrix(deviceContext, m_lines[layer][lineOnLayer].GetWorldMatrix());
-			lineModel->Render(deviceContext);
+			LineObject* line = &(*lines)[lineOnLayer];
+
+			bufferStorage->SetVSWorldMatrix(deviceContext, line->GetWorldMatrix());
+			bufferStorage->SetVSColor(deviceContext, line->GetColor());
+			lineModel->Render();
 		}
 	}
 }

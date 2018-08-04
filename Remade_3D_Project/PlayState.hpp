@@ -10,25 +10,29 @@
 
 class TextureObject;
 class SingleColorObject;
-class HUDObject;
+//class HUDTexture;
 class PointLight;
-class FPSCounter;
+//class FPSCounter;
 class Character;
 
 //class QuadTree;
 
 class Scene;
 
-class PlayState : public GameState
+class PlayState final : public GameState
 {
 public:
-	PlayState(StateMachine<GameState>* stateMachine);
+	PlayState(StateMachineV2<GameState>* stateMachine);
 	virtual ~PlayState();
 	
-	bool Initialize() override;
-	void ProcessInput() override;
-	void Update(float dt) override;
-	void Render() override;
+	// Added with StateV2
+	void OnEntry() final override;
+	void OnExit() final override;
+
+	bool Initialize() final override;
+	void ProcessInput() final override;
+	void Update(float dt) final override;
+	void Render() final override;
 
 private:
 	void MapProjectionMatrix();
@@ -48,7 +52,7 @@ private:
 	void RenderDeferredLightSplitPass();
 	void RenderDeferredLightMultiplePass();
 	void RenderDeferredLightMultipleShadowsPass();
-	void RenderHUD();
+	/*void RenderHUD();*/
 	void RenderHUDText();
 
 
@@ -60,9 +64,9 @@ private:
 	TextureObject* m_texturedCubes;
 
 	std::unique_ptr<SingleColorObject> m_coloredFloor;*/
-	std::unique_ptr<HUDObject> m_HUDObject;
+	//std::unique_ptr<HUDTexture> m_HUDTexture;
 
-	std::unique_ptr<FPSCounter> m_fpsCounter;
+	//std::unique_ptr<FPSCounter> m_fpsCounter;
 
 	RenderMode m_renderMode;
 	HUDMode m_HUDMode;

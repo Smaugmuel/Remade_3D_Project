@@ -2,16 +2,16 @@
 #define PHYSIC_SYSTEM_HPP
 #include "AbstractSystem.hpp"
 
-class PhysicSystem : public AbstractSystem
+class PhysicSystem final : public AbstractSystem
 {
 public:
 	PhysicSystem();
 	~PhysicSystem();
 
-	void Update(float dt) override;
+	void Update(float dt) final override;
 
 private:
-	bool HasCorrectComponents(EntityID entity) const override;
+	bool HasCorrectComponents(EntityID entity) const final override;
 };
 
 #endif

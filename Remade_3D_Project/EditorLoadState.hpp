@@ -3,34 +3,25 @@
 #include "EditorState.hpp"
 #include <string>
 
-template<typename CallbackClassType, typename ... ParamTypes> class ButtonManager;
+template<typename CallbackClassType, typename ... ParamTypes> class TextButtonManager;
 
-namespace DirectX
-{
-	class SpriteFont;
-	class SpriteBatch;
-}
-
-class EditorLoadState : public EditorState
+class EditorLoadState final : public EditorState
 {
 public:
 	EditorLoadState();
 	~EditorLoadState();
 
-	bool Initialize() override;
-	void ProcessInput() override;
-	void Update(float dt) override;
-	void Render() override;
-	void RenderHUD() override;
+	bool Initialize() final override;
+	void ProcessInput() final override;
+	void Update(float dt) final override;
+	void Render() final override;
+	//void RenderHUD() final override;
 
 private:
 	void CreateButtonsFromScenesInFolder();
 	void LoadScene(const std::wstring& sceneName);
 
-	ButtonManager<EditorLoadState>* m_sceneButtonManager;
-
-	DirectX::SpriteFont* m_spriteFont;
-	DirectX::SpriteBatch* m_spriteBatch;
+	TextButtonManager<EditorLoadState>* m_sceneButtonManager;
 };
 
 #endif

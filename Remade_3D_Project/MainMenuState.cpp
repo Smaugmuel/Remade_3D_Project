@@ -1,26 +1,36 @@
 #include "MainMenuState.hpp"
 
-#include "StateMachine.hpp"
+#include "../Engine/FrameWork/WindowSettings.hpp"
+
+#include "../Engine/Events/EventDispatcher.hpp"
+#include "../Engine/Input/Input.hpp"
+
+#include "../Engine/GUI/GUIManager.hpp"
+#include "../Engine/Misc/StringConverter.hpp"
+
+#include "../Engine/Core/Engine.hpp"
+
 #include "PlayState.hpp"
 #include "SceneEditorState.hpp"
-
-#include "EventDispatcher.hpp"
-
-#include "Input.hpp"
+#include "TextButtonManager.hpp"
 #include <Windows.h>
 
-// For moving the buttons
-#include "WindowSettings.hpp"
-
-// For rendering the text of the buttons
-#include "ButtonManager.hpp"
-#include "Direct3D.hpp"
-#include "SpriteFont.h"
-#include "SpriteBatch.h"
-#include "SimpleMath.h"
-
-MainMenuState::MainMenuState(StateMachine<GameState>* stateMachine) : GameState::GameState(stateMachine)
+MainMenuState::MainMenuState(StateMachineV2<GameState>* stateMachine) : GameState::GameState(stateMachine)
 {
+	// Create the menu
+	m_buttonManager = new TextButtonManager<MainMenuState>;
+
+	// Calculate the size of the PLAY button, then create it
+	Vector2i halfDimensions = GUIManager::Get()->GetDimensionsOfText(L"PLAY") * 0.5;
+	m_buttonManager->CreateButton(this, &MainMenuState::PressedPlay, L"PLAY", Vector2i(400, 100), halfDimensions);
+
+	// Calculate the size of the EDITOR button, then create it
+	halfDimensions = GUIManager::Get()->GetDimensionsOfText(L"EDITOR") * 0.5;
+	m_buttonManager->CreateButton(this, &MainMenuState::PressedEdit, L"EDITOR", Vector2i(400, 300), halfDimensions);
+
+	// Calculate the size of the EXIT button, then create it
+	halfDimensions = GUIManager::Get()->GetDimensionsOfText(L"EXIT") * 0.5;
+	m_buttonManager->CreateButton(this, &MainMenuState::PressedExit, L"EXIT", Vector2i(400, 500), halfDimensions);
 }
 MainMenuState::~MainMenuState()
 {
@@ -29,41 +39,36 @@ MainMenuState::~MainMenuState()
 		delete m_buttonManager;
 		m_buttonManager = nullptr;
 	}
-	if (m_spriteFont)
-	{
-		delete m_spriteFont;
-		m_spriteFont = nullptr;
-	}
-	if (m_spriteBatch)
-	{
-		delete m_spriteBatch;
-		m_spriteBatch = nullptr;
-	}
+}
+
+void MainMenuState::OnEntry()
+{
+	m_buttonManager->EnableRendering();
+	Engine::Get()->HideFPSCounter();
+}
+
+void MainMenuState::OnExit()
+{
+	m_buttonManager->DisableRendering();
+	Engine::Get()->ShowFPSCounter();
 }
 
 bool MainMenuState::Initialize()
 {
-	DirectX::SimpleMath::Vector2 halfDimensions;
+	//// Create the menu
+	//m_buttonManager = new TextButtonManager<MainMenuState>;
 
-	// Create the menu
-	m_buttonManager = new ButtonManager<MainMenuState>;
+	//// Calculate the size of the PLAY button, then create it
+	//Vector2i halfDimensions = GUIManager::Get()->GetDimensionsOfText(L"PLAY") * 0.5;
+	//m_buttonManager->CreateButton(this, &MainMenuState::PressedPlay, L"PLAY", Vector2i(400, 100), halfDimensions);
 
-	// Create the resources needed for rendering the text of the buttons
-	m_spriteFont = new DirectX::SpriteFont(Direct3D::Get()->GetDevice(), L"../Fonts/courier32.spritefont");
-	m_spriteBatch = new DirectX::SpriteBatch(Direct3D::Get()->GetDeviceContext());
+	//// Calculate the size of the EDITOR button, then create it
+	//halfDimensions = GUIManager::Get()->GetDimensionsOfText(L"EDITOR") * 0.5;
+	//m_buttonManager->CreateButton(this, &MainMenuState::PressedEdit, L"EDITOR", Vector2i(400, 300), halfDimensions);
 
-
-	// Calculate the size of the PLAY button, then create it
-	halfDimensions = DirectX::SimpleMath::Vector2(m_spriteFont->MeasureString(L"PLAY")) / 2.0f;
-	m_buttonManager->CreateButton(this, &MainMenuState::PressedPlay, L"PLAY", Vector2i(400, 100), Vector2i(static_cast<int>(halfDimensions.x), static_cast<int>(halfDimensions.y)));
-
-	// Calculate the size of the EDITOR button, then create it
-	halfDimensions = DirectX::SimpleMath::Vector2(m_spriteFont->MeasureString(L"EDITOR")) / 2.0f;
-	m_buttonManager->CreateButton(this, &MainMenuState::PressedEdit, L"EDITOR", Vector2i(400, 300), Vector2i(static_cast<int>(halfDimensions.x), static_cast<int>(halfDimensions.y)));
-
-	// Calculate the size of the EXIT button, then create it
-	halfDimensions = DirectX::SimpleMath::Vector2(m_spriteFont->MeasureString(L"EXIT")) / 2.0f;
-	m_buttonManager->CreateButton(this, &MainMenuState::PressedExit, L"EXIT", Vector2i(400, 500), Vector2i(static_cast<int>(halfDimensions.x), static_cast<int>(halfDimensions.y)));
+	//// Calculate the size of the EXIT button, then create it
+	//halfDimensions = GUIManager::Get()->GetDimensionsOfText(L"EXIT") * 0.5;
+	//m_buttonManager->CreateButton(this, &MainMenuState::PressedExit, L"EXIT", Vector2i(400, 500), halfDimensions);
 
 	return true;
 }
@@ -97,7 +102,7 @@ void MainMenuState::Update(float dt)
 		angle -= 3.1415927f * 2.0f;
 	}
 
-	std::vector<MenuButton<MainMenuState>>& buttons = m_buttonManager->RetrieveButtons();
+	std::vector<TextMenuButton<MainMenuState>>& buttons = m_buttonManager->RetrieveButtons();
 	unsigned int n = buttons.size();
 
 	if (n > 0)
@@ -107,44 +112,18 @@ void MainMenuState::Update(float dt)
 		{
 			float _angle = angle + 3.1415927f * 2.0f * inverseN * i;
 
-			buttons[i].SetPosition(
-				Vector2i(
-					(WNDW >> 1) + static_cast<int>(std::cosf(_angle) * (WNDW >> 2)),
-					(WNDH >> 1) + static_cast<int>(std::sinf(_angle) * (WNDH >> 2))
-				)
+			Vector2i pos(
+				(WNDW >> 1) + static_cast<int>(std::cosf(_angle) * (WNDW >> 2)),
+				(WNDH >> 1) + static_cast<int>(std::sinf(_angle) * (WNDH >> 2))
 			);
+
+			buttons[i].SetPosition(pos);
 		}
 	}
 }
 
 void MainMenuState::Render()
 {
-	const std::vector<MenuButton<MainMenuState>>& buttons = m_buttonManager->RetrieveButtons();
-	Direct3D* d3d = Direct3D::Get();
-
-	// Prepare for rendering
-	d3d->ClearDefaultTarget();
-	d3d->DisableZBuffer();
-	m_spriteBatch->Begin();
-
-	// Render text of buttons
-	unsigned int n = buttons.size();
-	for (unsigned int i = 0; i < n; i++)
-	{
-		// Convert position and size to SimpleMath vector
-		const MenuButton<MainMenuState>* button = &buttons[i];
-		const AABA& aaba = button->GetAABA();
-		DirectX::SimpleMath::Vector2 position(aaba.center.x, aaba.center.y);
-		DirectX::SimpleMath::Vector2 origin(aaba.halfSides.x, aaba.halfSides.y);
-
-		m_spriteFont->DrawString(m_spriteBatch, button->GetText().c_str(), position, DirectX::Colors::White, 0.0f, origin);
-	}
-
-	// Reset states and present scene
-	m_spriteBatch->End();
-	d3d->EnableZBuffer();
-	d3d->SetDefaultBlendState();
-	d3d->Present();
 }
 
 void MainMenuState::PressedPlay(const std::wstring& text)
