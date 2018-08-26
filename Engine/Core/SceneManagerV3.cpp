@@ -18,6 +18,8 @@ bool SceneManagerV3::Initialize(ModelManager * modelManager, MaterialManager * m
 	m_materialManager = materialManager;
 	m_frameWorkManager = frameWorkManager;
 
+	m_nrOfObjects = 0;
+
 	m_viewProjBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(ViewProjectionMatrices));
 	m_worldBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(Matrix));
 
@@ -49,25 +51,29 @@ void SceneManagerV3::Render()
 	*/
 	m_frameWorkManager->GetConstantBufferManager()->SetConstantBufferToVertexShader(m_viewProjBufferIndex, 0);
 
+
+	//unsigned int nObj = m_objects.size();
+	//if (nObj == 0)
+	if (m_nrOfObjects == 0)
+	{
+		return;
+	}
+
+	TexturedModel* model = m_modelManager->GetModel(m_objects[0].modelIndex);
+	Material* material = m_materialManager->GetMaterial(model->materialIndex);
+	
 	/*
+	Set model-specific data
+	*/
+	m_frameWorkManager->GetVertexBufferManager()->SetBufferToInputAssembler(model->vertexBufferIndex, 0);
+	m_frameWorkManager->GetTextureManager()->SetTextureToPixelShader(material->textureIndex, 0);
+
+	/*
+	Set object-specific data
 	Render first deferred pass
 	*/
-	unsigned int nObj = m_objects.size();
-	for (unsigned int i = 0; i < nObj; i++)
+	for (unsigned int i = 0; i < m_nrOfObjects; i++)
 	{
-		TexturedModel* model = m_modelManager->GetModel(m_objects[i].modelIndex);
-		Material* material = m_materialManager->GetMaterial(model->materialIndex);
-
-		/*
-		Set vertex buffer
-		*/
-		m_frameWorkManager->GetVertexBufferManager()->SetBufferToInputAssembler(model->vertexBufferIndex, 0);
-		
-		/*
-		Set texture
-		*/
-		m_frameWorkManager->GetTextureManager()->SetTextureToPixelShader(material->textureIndex, 0);
-
 		/*
 		Set world matrix
 		*/
@@ -96,11 +102,21 @@ void SceneManagerV3::SetViewAndProjectionMatrices(const Matrix & view, const Mat
 
 int SceneManagerV3::CreateObject()
 {
-	m_objects.push_back(ObjectV3());
-	return m_objects.size() - 1;
+	/*
+	Simple "solution" for now
+	*/
+	if (m_nrOfObjects == MAX_NR_OF_OBJECTS)
+	{
+		return -1;
+	}
+
+	return m_nrOfObjects++;
+
+	/*m_objects.push_back(ObjectV3());
+	return m_objects.size() - 1;*/
 }
 
 ObjectV3 * SceneManagerV3::GetObjectV3(int index)
 {
-	return index >= 0 && index < static_cast<int>(m_objects.size()) ? &m_objects[index] : nullptr;
+	return index >= 0 && index < static_cast<int>(m_nrOfObjects/*m_objects.size()*/) ? &m_objects[index] : nullptr;
 }

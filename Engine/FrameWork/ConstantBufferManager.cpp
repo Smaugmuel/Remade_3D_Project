@@ -7,9 +7,12 @@ ConstantBufferManager::ConstantBufferManager() : m_device(nullptr), m_deviceCont
 }
 ConstantBufferManager::~ConstantBufferManager()
 {
-	for (unsigned int i = 0; i < m_buffers.size(); i++)
+	for (unsigned int i = 0; i < MAX_NR_OF_BUFFERS/*m_buffers.size()*/; i++)
 	{
-		m_buffers[i].buffer->Release();
+		if (m_buffers[i].buffer)
+		{
+			m_buffers[i].buffer->Release();
+		}
 	}
 }
 
@@ -17,11 +20,20 @@ bool ConstantBufferManager::Initialize(ID3D11Device* device, ID3D11DeviceContext
 {
 	m_device = device;
 	m_deviceContext = deviceContext;
+	m_nrOfBuffers = 0;
 	return true;
 }
 
 int ConstantBufferManager::CreateConstantBuffer(unsigned int bufferSize, void* initialData)
 {
+	/*
+	Simple "solution" for now
+	*/
+	if (m_nrOfBuffers == MAX_NR_OF_BUFFERS)
+	{
+		return -1;
+	}
+
 	D3D11_BUFFER_DESC desc;
 	D3D11_SUBRESOURCE_DATA data;
 	Buffer buffer;
@@ -42,13 +54,15 @@ int ConstantBufferManager::CreateConstantBuffer(unsigned int bufferSize, void* i
 	if (FAILED(result))
 		return -1;
 	
-	m_buffers.push_back(buffer);
-	return m_buffers.size() - 1;
+	m_buffers[m_nrOfBuffers] = buffer;
+	return m_nrOfBuffers++;
+	/*m_buffers.push_back(buffer);
+	return m_buffers.size() - 1;*/
 }
 
 bool ConstantBufferManager::MapDataToBuffer(int index, void * bufferData)
 {
-	if (index < 0 || index >= static_cast<int>(m_buffers.size()))
+	if (index < 0 || index >= static_cast<int>(m_nrOfBuffers/*m_buffers.size()*/))
 		return false;
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -65,7 +79,7 @@ bool ConstantBufferManager::MapDataToBuffer(int index, void * bufferData)
 
 bool ConstantBufferManager::SetConstantBufferToVertexShader(int index, int slotInShader)
 {
-	if (index < 0 || index >= static_cast<int>(m_buffers.size()))
+	if (index < 0 || index >= static_cast<int>(m_nrOfBuffers/*m_nbuffers.size()*/))
 		return false;
 
 	m_deviceContext->VSSetConstantBuffers(slotInShader, 1, &m_buffers[index].buffer);
@@ -73,7 +87,7 @@ bool ConstantBufferManager::SetConstantBufferToVertexShader(int index, int slotI
 }
 bool ConstantBufferManager::SetConstantBufferToGeometryShader(int index, int slotInShader)
 {
-	if (index < 0 || index >= static_cast<int>(m_buffers.size()))
+	if (index < 0 || index >= static_cast<int>(m_nrOfBuffers/*m_nbuffers.size()*/))
 		return false;
 
 	m_deviceContext->GSSetConstantBuffers(slotInShader, 1, &m_buffers[index].buffer);
@@ -81,7 +95,7 @@ bool ConstantBufferManager::SetConstantBufferToGeometryShader(int index, int slo
 }
 bool ConstantBufferManager::SetConstantBufferToPixelShader(int index, int slotInShader)
 {
-	if (index < 0 || index >= static_cast<int>(m_buffers.size()))
+	if (index < 0 || index >= static_cast<int>(m_nrOfBuffers/*m_nbuffers.size()*/))
 		return false;
 
 	m_deviceContext->PSSetConstantBuffers(slotInShader, 1, &m_buffers[index].buffer);

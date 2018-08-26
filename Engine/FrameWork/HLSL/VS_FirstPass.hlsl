@@ -9,13 +9,13 @@ cbuffer PerObjectBuffer : register(b1)
 	float4x4 worldMatrix;
 };
 
-struct INPUT_DATA
+struct VS_INPUT_DATA
 {
 	float3 position : POSITION;
 	float3 normal : NORMAL;
 	float2 uv : TEXCOORD;
 };
-struct OUTPUT_DATA
+struct VS_OUTPUT_DATA
 {
 	float4 position : SV_POSITION;
 	float3 worldPosition : POSITION;
@@ -23,9 +23,9 @@ struct OUTPUT_DATA
 	float2 uv : TEXCOORD;
 };
 
-OUTPUT_DATA main(INPUT_DATA input)
+VS_OUTPUT_DATA main(VS_INPUT_DATA input)
 {
-	OUTPUT_DATA output = (OUTPUT_DATA)0;
+	VS_OUTPUT_DATA output = (VS_OUTPUT_DATA)0;
 
 	output.position = mul(float4(input.position, 1.0f), worldMatrix);
 	output.worldPosition = output.position.xyz;

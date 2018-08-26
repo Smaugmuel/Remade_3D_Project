@@ -1,4 +1,6 @@
 #include "Matrix.hpp"
+#include <algorithm>	// Fow swap()
+#include <cstring>		// For memcpy()
 
 Matrix::Matrix()
 {
@@ -171,24 +173,28 @@ Matrix & Matrix::SetRotationAroundAxis(const Vector3f & axis, float angle)
 }
 Matrix & Matrix::SetTranspose()
 {
-	SetFromXMMATRIX(DirectX::XMMatrixTranspose(ToXMMATRIX()));
+	std::swap(rows[0][1], rows[1][0]);
+	std::swap(rows[0][2], rows[2][0]);
+	std::swap(rows[0][3], rows[3][0]);
+	std::swap(rows[1][2], rows[2][1]);
+	std::swap(rows[1][3], rows[3][1]);
+	std::swap(rows[2][3], rows[3][2]);
 	return *this;
 }
 
 Matrix Matrix::GetTranspose() const
 {
-	return Matrix(*this).SetTranspose();
+	return Matrix(
+		rows[0][0], rows[1][0], rows[2][0], rows[3][0],
+		rows[0][1], rows[1][1], rows[2][1], rows[3][1],
+		rows[0][2], rows[1][2], rows[2][2], rows[3][2],
+		rows[0][3], rows[1][3], rows[2][3], rows[3][3]
+	);
 }
 
 Matrix & Matrix::SetFromXMMATRIX(const DirectX::XMMATRIX & m)
 {
-	for (unsigned int i = 0; i < 4; i++)
-	{
-		for (unsigned int j = 0; j < 4; j++)
-		{
-			rows[i][j] = m.r[i].m128_f32[j];
-		}
-	}
+	std::memcpy(rows, m.r, 64U);
 	return *this;
 }
 Matrix Matrix::FromXMMATRIX(const DirectX::XMMATRIX & m) const

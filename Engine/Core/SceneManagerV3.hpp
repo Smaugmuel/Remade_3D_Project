@@ -47,8 +47,11 @@ private:
 	int m_viewProjBufferIndex;
 	int m_worldBufferIndex;
 
+	static const unsigned int MAX_NR_OF_OBJECTS = 20000;
+	ObjectV3 m_objects[MAX_NR_OF_OBJECTS];
+	unsigned int m_nrOfObjects;
+	//std::vector<ObjectV3> m_objects;
 
-	std::vector<ObjectV3> m_objects;
 	ModelManager* m_modelManager;
 	MaterialManager* m_materialManager;
 	FrameWorkManager* m_frameWorkManager;

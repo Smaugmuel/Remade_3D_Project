@@ -10,7 +10,6 @@
 #include "SceneManagerV3.hpp"
 #include "CameraManagerV2.hpp"
 #include "../GUI/FPS_CounterV2.hpp"
-//#include "../Camera/CameraV2.hpp"
 
 class Engine final : public Singleton<Engine>
 {
@@ -60,7 +59,6 @@ private:
 	MaterialManager m_materialManager;
 	SceneManagerV3 m_sceneManager;
 	CameraManagerV2 m_cameraManager;
-	//ReusableStorage<CameraV2> m_cameras;
 };
 
 #endif

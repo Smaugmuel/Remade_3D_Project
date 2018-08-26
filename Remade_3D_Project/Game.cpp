@@ -113,9 +113,13 @@ bool Game::Initialize()
 	scale.SetScale(obj->scale);
 	obj->worldMatrix = trans; //* rot * scale;*/
 
-	for (int i = 0; i < 10; i++)
+	/* Testing matrices, can be removed without consequences
+	Matrix m(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+	Matrix m2 = m.GetTranspose();*/
+
+	for (int i = 0; i < 100; i++)
 	{
-		for (int j = 0; j < 10; j++)
+		for (int j = 0; j < 200; j++)
 		{
 			int index = Engine::Get()->GetSceneManager()->CreateObject();
 			if (index == -1)
@@ -126,7 +130,7 @@ bool Game::Initialize()
 			if (obj->modelIndex == -1)
 				return false;
 
-			obj->position = Vector3f(static_cast<float>(-10 + 2 * i), 0.0f, static_cast<float>(j * 2));
+			obj->position = Vector3f(static_cast<float>(-100 + 2 * i), 0.0f, static_cast<float>(j * 2));
 			obj->worldMatrix.SetTranslation(obj->position);
 
 			//int obj1 = SceneManager::Get()->AddObject("SimpleCharacter.obj", Vector3f(-100 + 2 * i, -10, j * 2));

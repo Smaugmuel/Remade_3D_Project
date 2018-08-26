@@ -72,19 +72,10 @@
     <ClCompile Include="Misc\StringConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\Materials\Material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Objects\Materials\MaterialStorage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Objects\Models\LineModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Objects\Models\Model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Objects\Models\ModelStorage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Objects\Models\SingleColorModel.cpp">
@@ -103,12 +94,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Objects\Objects\TextureObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Objects\Textures\Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Objects\Textures\TextureStorage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Render\Shaders\ShaderGroups\DeferredLightMultipleLightsShaderGroup.cpp">
@@ -174,15 +159,6 @@
     <ClCompile Include="GUI\FPS_CounterV2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\Textures\TextureStorageV2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Objects\Models\ModelStorageV2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Objects\Materials\MaterialStorageV2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FrameWork\Direct3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -198,13 +174,7 @@
     <ClCompile Include="FrameWork\ShaderCreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Camera\CameraManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FrameWork\GUIManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameWork\SceneManagerV2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FrameWork\ShaderManagerV2.cpp">
@@ -332,19 +302,10 @@
     <ClInclude Include="Misc\StringConverter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\Materials\Material.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\Materials\MaterialStorage.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Objects\Models\LineModel.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Objects\Models\Model.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\Models\ModelStorage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Objects\Models\SingleColorModel.hpp">
@@ -363,12 +324,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Objects\Objects\TextureObject.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\Textures\Texture.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\Textures\TextureStorage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Render\Shaders\ShaderGroups\DeferredLightMultipleLightsShaderGroup.hpp">
@@ -443,15 +398,6 @@
     <ClInclude Include="GUI\FPS_CounterV2.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\Textures\TextureStorageV2.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\Models\ModelStorageV2.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Objects\Materials\MaterialStorageV2.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FrameWork\Direct3D.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -473,19 +419,7 @@
     <ClInclude Include="FrameWork\ReusableStorage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Camera\CameraV2.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera\CameraManager.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameWork\ObjectV2.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FrameWork\GUIManager.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameWork\SceneManagerV2.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FrameWork\FrameWorkManager.hpp">
