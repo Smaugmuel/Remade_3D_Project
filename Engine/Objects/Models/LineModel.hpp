@@ -11,7 +11,7 @@ struct LineVertex
 class LineModel final : public Model
 {
 public:
-	LineModel();
+	LineModel(FrameWork* frameWork);
 	~LineModel();
 
 	bool LoadFromFile(const char* fileName) final override;

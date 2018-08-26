@@ -1,6 +1,6 @@
 #ifndef MODEL_STORAGE_V2_HPP
 #define MODEL_STORAGE_V2_HPP
-#include "../../Misc/Singleton.hpp"
+//#include "../../Misc/Singleton.hpp"
 
 #include <vector>
 #include <string>
@@ -10,17 +10,24 @@ class SingleColorModel;
 class TextureModel;
 class LineModel;
 
-class ModelStorageV2 final : public Singleton<ModelStorageV2>
+class FrameWork;
+
+class ModelStorageV2 final //: public Singleton<ModelStorageV2>
 {
 public:
+	ModelStorageV2();
+	~ModelStorageV2();
+
+	bool Initialize(FrameWork* frameWork);
+
 	int LoadSingleColorModel(const std::string& name);
 	int LoadTextureModel(const std::string& name);
 	bool CreateLineModel();
 
 	int GetSingleColorModelIndexFromName(const std::string& name);
 	int GetTextureModelIndexFromName(const std::string& name);
-	const std::string& GetSingleColorModelNameFromIndex(int index);
-	const std::string& GetTextureModelNameFromIndex(int index);
+	std::string GetSingleColorModelNameFromIndex(int index);
+	std::string GetTextureModelNameFromIndex(int index);
 
 	SingleColorModel* GetSingleColorModel(int index);
 	//SingleColorModel* GetSingleColorModelByName(const std::string& name);
@@ -34,7 +41,7 @@ public:
 	unsigned int GetNrOfTextureModels() const;
 
 private:
-	friend class Singleton<ModelStorageV2>;
+	//friend class Singleton<ModelStorageV2>;
 
 	struct S_C_Model
 	{
@@ -47,8 +54,8 @@ private:
 		std::unique_ptr<TextureModel> model = nullptr;
 	};
 
-	ModelStorageV2();
-	~ModelStorageV2();
+
+	FrameWork* m_frameWork;
 
 	std::vector<S_C_Model> m_singleColorModels;
 	std::vector<T_Model> m_textureModels;

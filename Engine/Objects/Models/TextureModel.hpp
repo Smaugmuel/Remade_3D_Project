@@ -11,7 +11,7 @@
 class TextureModel final : public Model
 {
 public:
-	TextureModel();
+	TextureModel(FrameWork* frameWork);
 	~TextureModel();
 
 	bool LoadFromFile(const char* fileName) final override;

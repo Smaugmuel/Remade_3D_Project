@@ -162,16 +162,7 @@
     <ClCompile Include="Render\Shaders\ShaderStorage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Render\DeferredScreenTarget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Render\RenderManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\SamplerStorage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GUI\GUIManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Render\SceneManager.cpp">
@@ -180,13 +171,7 @@
     <ClCompile Include="Core\Engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\FPS_Counter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\FPS_CounterV2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Input\Input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Objects\Textures\TextureStorageV2.cpp">
@@ -201,13 +186,61 @@
     <ClCompile Include="FrameWork\Direct3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FrameWork\FrameWork.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FrameWork\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FrameWork\BufferStorage.cpp">
+    <ClCompile Include="FrameWork\TextureManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameWork\DeferredScreenTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameWork\ShaderCreator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera\CameraManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameWork\GUIManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameWork\SceneManagerV2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameWork\ShaderManagerV2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameWork\FrameWorkManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameWork\ConstantBufferManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameWork\VertexBufferManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameWork\Input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\MaterialManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\ModelManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\SceneManagerV3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\CameraManagerV2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameWork\SamplerManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\CameraV3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -392,16 +425,7 @@
     <ClInclude Include="Render\ChunkRenderSettings.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Render\DeferredScreenTarget.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Render\RenderManager.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\SamplerStorage.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI\GUIManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Misc\StateMachines\StateMachine.hpp">
@@ -419,12 +443,6 @@
     <ClInclude Include="GUI\FPS_CounterV2.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GUI\FPS_Counter.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Input\Input.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Objects\Textures\TextureStorageV2.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -437,16 +455,73 @@
     <ClInclude Include="FrameWork\Direct3D.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FrameWork\FrameWork.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FrameWork\Window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FrameWork\WindowSettings.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FrameWork\BufferStorage.hpp">
+    <ClInclude Include="FrameWork\TextureManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\DeferredScreenTarget.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\ShaderCreator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\ReusableStorage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera\CameraV2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera\CameraManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\ObjectV2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\GUIManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\SceneManagerV2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\FrameWorkManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\ShaderManagerV2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\ConstantBufferManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\VertexBufferManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\Input.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\MaterialManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ModelManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Matrix.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\SceneManagerV3.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CameraManagerV2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\CameraV3.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\SamplerManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -456,5 +531,10 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Render\Shaders\HLSL\VS_Generic.hlsl" />
+    <FxCompile Include="Render\Shaders\HLSL\VS_GenericV2.hlsl" />
+    <FxCompile Include="FrameWork\HLSL\VS_FirstPass.hlsl" />
+    <FxCompile Include="FrameWork\HLSL\VS_LightPass.hlsl" />
+    <FxCompile Include="FrameWork\HLSL\PS_FirstPass.hlsl" />
+    <FxCompile Include="FrameWork\HLSL\PS_LightPass.hlsl" />
   </ItemGroup>
 </Project>

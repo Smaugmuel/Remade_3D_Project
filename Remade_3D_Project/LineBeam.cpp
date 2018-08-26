@@ -93,7 +93,7 @@ void LineBeam::Update(float dt)
 
 void LineBeam::Render()
 {
-	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
+	/*ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
 	ConstantBufferStorage* bufferStorage = ConstantBufferStorage::Get();
 
 	ShaderManager::Get()->SetShaderType(deviceContext, ShaderType::LINE);
@@ -112,5 +112,5 @@ void LineBeam::Render()
 			bufferStorage->SetVSColor(deviceContext, line->GetColor());
 			lineModel->Render();
 		}
-	}
+	}*/
 }

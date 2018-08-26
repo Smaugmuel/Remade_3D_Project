@@ -8,10 +8,12 @@
 #include "../Materials/MaterialStorageV2.hpp"
 
 #include "../../Buffers/Buffers.hpp"
-#include "../../FrameWork/Direct3D.hpp"
+//#include "../../FrameWork/Direct3D.hpp"
+//#include "../../Core/Engine.hpp"
+#include "../../FrameWork/FrameWork.hpp"
 
-TextureModel::TextureModel() :
-	Model(),
+TextureModel::TextureModel(FrameWork* frameWork) :
+	Model(frameWork),
 	m_vertices(nullptr)
 {
 }
@@ -124,7 +126,9 @@ bool TextureModel::LoadFromFile(const char * fileName)
 
 bool TextureModel::CreateVertexBuffer()
 {
-	m_vertexBuffer = Buffers::CreateVertexBuffer(Direct3D::Get()->GetDevice(), m_nrOfVerts * sizeof(TextureVertex), m_vertices);
+	m_vertexBuffer = Buffers::CreateVertexBuffer(m_frameWork->GetDirect3D()->GetDevice(), m_nrOfVerts * sizeof(TextureVertex), m_vertices);
+	//m_vertexBuffer = Buffers::CreateVertexBuffer(Direct3D::Get()->GetDevice(), m_nrOfVerts * sizeof(TextureVertex), m_vertices);
+	
 	//m_vertexBuffer = Buffers::CreateDynamicVertexBuffer(device, m_nrOfVerts * sizeof(TextureVertex), m_vertices);
 
 	if (!m_vertexBuffer)
@@ -163,7 +167,8 @@ bool TextureModel::CreateOBB()
 
 void TextureModel::SetupRender()
 {
-	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
+	ID3D11DeviceContext* deviceContext = m_frameWork->GetDirect3D()->GetDeviceContext();
+	//ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
 	unsigned int vertexSize = sizeof(TextureVertex);
 	unsigned int offset = 0;
 

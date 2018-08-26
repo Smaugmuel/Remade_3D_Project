@@ -1,28 +1,24 @@
 #include "PickingRay.hpp"
 
 // For getting mouse position
-#include "../Input/Input.hpp"
 #include "../FrameWork/WindowSettings.hpp"
 
 // For getting the corners of the camera's frustum
-#include "../Camera/PlayerCameraManager.hpp"
+//#include "../Camera/PlayerCameraManager.hpp"
 #include "../Camera/Camera.hpp"
 #include "Frustum.hpp"
 
-Ray HF::CreatePickingRay()
+Ray HF::CreatePickingRay(Camera* camera, Vector2i mousePosition)
 {
-	Camera* cam = PlayerCameraManager::Get()->GetCurrentCamera();
+	//Camera* cam = PlayerCameraManager::Get()->GetCurrentCamera();
 	Vector3f corners[8];
 	Ray ray;
 
 	// The 8 corners of frustum in world coordinates
-	FrustumCorners(cam->GetViewMatrix(), cam->GetProjectionMatrix(), corners);
-
-	// Mouse coordinates on screen, in range [(0, 0), (WNDW, WNDH)]
-	Vector2i mousePos = Input::Get()->MousePosition();
+	//FrustumCorners(camera->GetViewMatrix(), camera->GetProjectionMatrix(), corners);
 
 	// Mouse coordinates in percent, in range [(0, 0), (1, 1)]
-	Vector2f mousePercentage = mousePos;
+	Vector2f mousePercentage = mousePosition;
 	mousePercentage.x /= WNDW;
 	mousePercentage.y /= WNDH;
 	mousePercentage.y = 1 - mousePercentage.y;

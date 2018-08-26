@@ -1,7 +1,7 @@
 #include "PlayerCameraManager.hpp"
 #include "Camera.hpp"
 
-PlayerCameraManager* Singleton<PlayerCameraManager>::s_instance = nullptr;
+//PlayerCameraManager* Singleton<PlayerCameraManager>::s_instance = nullptr;
 
 PlayerCameraManager::PlayerCameraManager() :
 	m_currentCamera(-1)

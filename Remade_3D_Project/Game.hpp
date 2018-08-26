@@ -1,6 +1,6 @@
 #ifndef GAME_HPP
 #define GAME_HPP
-#include "../Engine/Misc/Singleton.hpp"
+//#include "../Engine/Misc/Singleton.hpp"
 #include "../Engine/Misc/StateMachines/StateMachineV2.hpp"
 #include "../Engine/Events/EventReceiver.hpp"
 
@@ -32,14 +32,14 @@
 //	ORTHOGONAL_ON
 //};
 
-class Game final : public Singleton<Game>, public EventReceiver
+class Game final :/* public Singleton<Game>,*/ public EventReceiver
 {
-	friend class Singleton<Game>;
+	//friend class Singleton<Game>;
 
+public:
 	Game();
 	~Game();
 
-public:
 	bool Initialize();
 	void Run();
 
@@ -60,10 +60,11 @@ private:
 	void RenderHUD();
 	void RenderHUDText();*/
 
-	StateMachineV2<GameState> m_gameStateMachine;
+	/*StateMachineV2<GameState> m_gameStateMachine;
 	bool m_pop_game_state_flag;
-	bool m_shutdown_flag;
+	bool m_shutdown_flag;*/
 
+	int m_cameraIndex;
 	
 	/*RenderMode m_renderMode;
 	HUDMode m_HUDMode;

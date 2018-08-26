@@ -3,7 +3,7 @@
 #include "TextureModel.hpp"
 #include "LineModel.hpp"
 
-ModelStorageV2* Singleton<ModelStorageV2>::s_instance = nullptr;
+//ModelStorageV2* Singleton<ModelStorageV2>::s_instance = nullptr;
 
 ModelStorageV2::ModelStorageV2()
 {
@@ -11,6 +11,12 @@ ModelStorageV2::ModelStorageV2()
 }
 ModelStorageV2::~ModelStorageV2()
 {
+}
+
+bool ModelStorageV2::Initialize(FrameWork * frameWork)
+{
+	m_frameWork = frameWork;
+	return true;
 }
 
 int ModelStorageV2::LoadSingleColorModel(const std::string & name)
@@ -24,7 +30,7 @@ int ModelStorageV2::LoadSingleColorModel(const std::string & name)
 	// Add a model
 	m_singleColorModels.push_back(S_C_Model());
 	S_C_Model* model = &m_singleColorModels.back();
-	model->model = std::make_unique<SingleColorModel>();
+	model->model = std::make_unique<SingleColorModel>(m_frameWork);
 
 	// Abort if the model fails to load
 	if (!model->model->LoadFromFile(std::string("../Models/" + name).c_str()))
@@ -59,7 +65,7 @@ int ModelStorageV2::LoadTextureModel(const std::string & name)
 	// Add a model
 	m_textureModels.push_back(T_Model());
 	T_Model* model = &m_textureModels.back();
-	model->model = std::make_unique<TextureModel>();
+	model->model = std::make_unique<TextureModel>(m_frameWork);
 
 	// Abort if the model fails to load
 	if (!model->model->LoadFromFile(std::string("../Models/" + name).c_str()))
@@ -91,7 +97,7 @@ bool ModelStorageV2::CreateLineModel()
 	if (m_lineModel != nullptr)
 		return true;
 	
-	m_lineModel = std::make_unique<LineModel>();
+	m_lineModel = std::make_unique<LineModel>(m_frameWork);
 
 	if (!m_lineModel->CreateVertexBuffer())
 	{
@@ -128,11 +134,11 @@ int ModelStorageV2::GetTextureModelIndexFromName(const std::string & name)
 
 	return -1;
 }
-const std::string & ModelStorageV2::GetSingleColorModelNameFromIndex(int index)
+std::string ModelStorageV2::GetSingleColorModelNameFromIndex(int index)
 {
 	return index >= 0 && static_cast<unsigned int>(index) < m_singleColorModels.size() ? m_singleColorModels[index].name : "";
 }
-const std::string & ModelStorageV2::GetTextureModelNameFromIndex(int index)
+std::string ModelStorageV2::GetTextureModelNameFromIndex(int index)
 {
 	return index >= 0 && static_cast<unsigned int>(index) < m_textureModels.size() ? m_textureModels[index].name : "";
 }

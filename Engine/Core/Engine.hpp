@@ -2,29 +2,38 @@
 #define ENGINE_HPP
 #include "../Misc/Singleton.hpp"
 #include "../Math/Vector2.hpp"
-#include <memory>
 #include <chrono>
 
-#include "../FrameWork/FrameWork.hpp"
-
-class FPSCounterV2;
+#include "../FrameWork/FrameWorkManager.hpp"
+#include "MaterialManager.hpp"
+#include "ModelManager.hpp"
+#include "SceneManagerV3.hpp"
+#include "CameraManagerV2.hpp"
+#include "../GUI/FPS_CounterV2.hpp"
+//#include "../Camera/CameraV2.hpp"
 
 class Engine final : public Singleton<Engine>
 {
 public:
-	bool Initialize(int windowSizeX = 800, int windowSizeY = 600);
 	bool Initialize(Vector2i windowSize = Vector2i(800, 600));
 
 	bool Update();
 
 	void Clear(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
+	void Render();
 	void Present();
 
 	void ShowFPSCounter();
 	void HideFPSCounter();
 
-	void EnableDepthTests();
-	void DisableDepthTests();
+	/*void EnableDepthTests();
+	void DisableDepthTests();*/
+
+	GUIManager* GetGUIManager();
+	SceneManagerV3* GetSceneManager();
+	CameraManagerV2* GetCameraManager();
+	ModelManager* GetModelManager();
+	MaterialManager* GetMaterialManager();
 
 	Vector2i GetWindowSize() const;
 
@@ -41,15 +50,17 @@ private:
 
 	Vector2i m_windowSize;
 
-	std::unique_ptr<FPSCounterV2> m_fps;
-	int m_fpsID;
+	FPSCounterV2 m_fps;
 
 	Time m_t1;
 	Time m_t2;
 
-
-
-	FrameWork m_frameWork;
+	FrameWorkManager m_frameWorkManager;
+	ModelManager m_modelManager;
+	MaterialManager m_materialManager;
+	SceneManagerV3 m_sceneManager;
+	CameraManagerV2 m_cameraManager;
+	//ReusableStorage<CameraV2> m_cameras;
 };
 
 #endif

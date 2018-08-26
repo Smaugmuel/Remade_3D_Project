@@ -1,12 +1,12 @@
 #include "EditorLoadState.hpp"
 
-#include "../Engine/Input/Input.hpp"
+#include "../Engine/Core/Engine.hpp"
 #include "../Engine/Misc/StringConverter.hpp"
 #include "../Engine/Events/EventDispatcher.hpp"
 
 #include "TextButtonManager.hpp"
 
-#include "../Engine/GUI/GUIManager.hpp"
+//#include "../Engine/GUI/GUIManager.hpp"
 #include "../Engine/Misc/StringConverter.hpp"
 
 #include "SceneStorage.hpp"
@@ -29,7 +29,7 @@ EditorLoadState::~EditorLoadState()
 bool EditorLoadState::Initialize()
 {
 	/* ============================================= Create the load icon ========================================== */
-	m_iconID = GUIManager::Get()->CreateImage("Icons/LoadIcon.png", Vector2i(0, 32));
+	//m_iconID = GUIManager::Get()->CreateImage("Icons/LoadIcon.png", Vector2i(0, 32));
 
 	// Create menu and its buttons from the scenes found in the directory
 	m_sceneButtonManager = new TextButtonManager<EditorLoadState>;
@@ -40,10 +40,10 @@ bool EditorLoadState::Initialize()
 
 	for (unsigned int i = 0; i < buttons.size(); i++)
 	{
-		GUIManager::Get()->CreateText(
+		/*GUIManager::Get()->CreateText(
 			StringConverter::ToString(buttons[i].GetText()).value(),
 			buttons[i].GetAABA().center - buttons[i].GetAABA().halfSides
-		);
+		);*/
 	}
 
 	return true;
@@ -51,9 +51,9 @@ bool EditorLoadState::Initialize()
 
 void EditorLoadState::ProcessInput()
 {
-	Input* input = Input::Get();
+	//Input* input = Input::Get();
 
-	if (input->IsKeyPressed(VK_LBUTTON))
+	/*if (input->IsKeyPressed(VK_LBUTTON))
 	{
 		m_sceneButtonManager->ProcessMouseClick(input->MousePosition());
 	}
@@ -64,7 +64,7 @@ void EditorLoadState::ProcessInput()
 		{
 			CreateButtonsFromScenesInFolder();
 		}
-	}
+	}*/
 }
 
 void EditorLoadState::Update(float dt)
@@ -81,7 +81,7 @@ void EditorLoadState::Render()
 
 void EditorLoadState::CreateButtonsFromScenesInFolder()
 {
-	GUIManager* gui_mngr = GUIManager::Get();
+	//GUIManager* gui_mngr = GUIManager::Get();
 	unsigned int n = 0;
 
 	/* ============================ Retrieve the names of all scenes in the directory ============================= */
@@ -101,7 +101,7 @@ void EditorLoadState::CreateButtonsFromScenesInFolder()
 	for (unsigned int i = 0; i < n; i++)
 	{
 		// Calculate position and dimensions
-		Vector2i halfDimensions = gui_mngr->GetDimensionsOfText(wSceneNames[i]) * 0.5;
+		/*Vector2i halfDimensions = gui_mngr->GetDimensionsOfText(wSceneNames[i]) * 0.5;
 		Vector2i position(halfDimensions.x, 96 + halfDimensions.y * (1 + i * 2));
 		
 		m_sceneButtonManager->CreateButton(
@@ -110,7 +110,7 @@ void EditorLoadState::CreateButtonsFromScenesInFolder()
 			wSceneNames[i],
 			position,
 			halfDimensions
-		);
+		);*/
 	}
 }
 

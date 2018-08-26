@@ -23,7 +23,7 @@ struct SingleColorVertex
 class SingleColorModel final : public Model
 {
 public:
-	SingleColorModel();
+	SingleColorModel(FrameWork* frameWork);
 	~SingleColorModel();
 
 	bool LoadFromFile(const char* fileName) final override;

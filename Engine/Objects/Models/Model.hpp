@@ -3,11 +3,13 @@
 #include "../../Math/OBB.hpp"
 
 struct ID3D11Buffer;
+struct ID3D11DeviceContext;
+class FrameWork;
 
 class Model
 {
 protected:
-	Model();
+	Model(FrameWork* frameWork);
 public:
 	virtual ~Model();
 
@@ -24,6 +26,8 @@ protected:
 	unsigned int m_nrOfVerts;
 
 	OBB m_obb;
+
+	FrameWork* m_frameWork;
 };
 
 #endif

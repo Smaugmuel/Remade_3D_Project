@@ -2,7 +2,7 @@
 
 #include "../Engine/Events/EventDispatcher.hpp"
 
-#include "../Engine/Input/Input.hpp"
+//#include "../Engine/Input/Input.hpp"
 
 #include "../Engine/Core/Engine.hpp"
 //#include "../Engine/Render/Shaders/ShaderManager.hpp"
@@ -23,7 +23,8 @@
 
 
 #include "../Engine/Camera/Camera.hpp"
-#include "../Engine/Camera/PlayerCameraManager.hpp"
+//#include "../Engine/Camera/PlayerCameraManager.hpp"
+//#include "../Engine/FrameWork/FrameWork.hpp"
 
 #include "../Engine/Objects/Objects/SingleColorObject.hpp"
 #include "../Engine/Objects/Objects/TextureObject.hpp"
@@ -201,8 +202,8 @@ bool PlayState::Initialize()
 
 void PlayState::ProcessInput()
 {
-	Input* input = Input::Get();
-	PlayerCameraManager* manager = PlayerCameraManager::Get();
+	/*Input* input = Input::Get();
+	PlayerCameraManager* manager = FrameWork::Get()->GetPlayerCameraManager();
 	Character* player = m_player.get();
 
 	//input->Update();
@@ -324,7 +325,7 @@ void PlayState::ProcessInput()
 	if (input->IsKeyPressed(VK_UP))
 	{
 		/*if (PointLightManager::Get()->AddPointLight())
-			PointLightManager::Get()->GetPointLight(PointLightManager::Get()->GetNrOfPointLights() - 1)->Initialize(Direct3D::Get()->GetDevice(), Window::Get()->GetDimensions() * 4);*/
+			PointLightManager::Get()->GetPointLight(PointLightManager::Get()->GetNrOfPointLights() - 1)->Initialize(Direct3D::Get()->GetDevice(), Window::Get()->GetDimensions() * 4);
 	}
 	if (input->IsKeyPressed(VK_DOWN))
 	{
@@ -356,7 +357,7 @@ void PlayState::ProcessInput()
 		manager->GetCurrentCamera()->RotateUp(mouseMovement.y);
 		manager->GetCurrentCamera()->RotateRight(mouseMovement.x);
 		player->SetLookDirection(manager->GetCurrentCamera()->GetTargetDirection());
-	}
+	}*/
 }
 
 void PlayState::Update(float dt)
@@ -440,7 +441,7 @@ void PlayState::MapProjectionMatrix()
 
 void PlayState::CubeIntersection()
 {
-	Camera* cam = PlayerCameraManager::Get()->GetCurrentCamera();
+	/*Camera* cam = FrameWork::Get()->GetPlayerCameraManager()->GetCurrentCamera();
 	Vector3f corners[8];
 
 	// The 8 corners of frustum in world coordinates
@@ -476,7 +477,7 @@ void PlayState::CubeIntersection()
 	obb.vectors[2] = Vector3f(0, 0, 1);
 
 	Sphere sphere;
-	sphere.radius2 = obb.halfSides[0] * obb.halfSides[0], obb.halfSides[1] * obb.halfSides[1], obb.halfSides[2] * obb.halfSides[2];
+	sphere.radius2 = obb.halfSides[0] * obb.halfSides[0], obb.halfSides[1] * obb.halfSides[1], obb.halfSides[2] * obb.halfSides[2];*/
 
 
 	/*TextureObject** objects = m_scene->GetTexturedObjects();

@@ -134,7 +134,9 @@ void Camera::Rotate(const Vector3f& axis, float angle)
 				axisVector,
 				angle));
 
-	m_target = To_XMFLOAT3(DirectX::XMVectorAdd(m_position.XMV(), newTargetDirection));
+	DirectX::XMFLOAT3 temp;
+	DirectX::XMStoreFloat3(&temp, DirectX::XMVectorAdd(m_position.XMV(), newTargetDirection));
+	m_target = temp;
 
 	m_update_flag_view = true;
 }
@@ -265,6 +267,21 @@ const Vector3f Camera::GetRight() const
 	return GetTargetDirection().crossLH(Vector3f(0, 1, 0)).normalized();
 }
 
+int Camera::GetViewMatrixID() const
+{
+	return m_viewMatrixID;
+}
+
+int Camera::GetProjectionMatrixID() const
+{
+	return m_projectionMatrixID;
+}
+
+int Camera::GetOrthographicMatrixID() const
+{
+	return m_orthographicMatrixID;
+}
+
 const DirectX::XMMATRIX Camera::GetViewMatrix() const
 {
 	return DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&m_view));
@@ -289,13 +306,13 @@ const DirectX::XMMATRIX Camera::GetOrthogonalMatrix() const
 //	return m_frustum;
 //}
 
-DirectX::XMVECTOR To_XMVECTOR(DirectX::XMFLOAT3 v)
-{
-	return DirectX::XMLoadFloat3(&v);
-}
-DirectX::XMFLOAT3 To_XMFLOAT3(DirectX::XMVECTOR v)
-{
-	DirectX::XMFLOAT3 temp;
-	DirectX::XMStoreFloat3(&temp, v);
-	return temp;
-}
+//DirectX::XMVECTOR To_XMVECTOR(DirectX::XMFLOAT3 v)
+//{
+//	return DirectX::XMLoadFloat3(&v);
+//}
+//DirectX::XMFLOAT3 To_XMFLOAT3(DirectX::XMVECTOR v)
+//{
+//	DirectX::XMFLOAT3 temp;
+//	DirectX::XMStoreFloat3(&temp, v);
+//	return temp;
+//}

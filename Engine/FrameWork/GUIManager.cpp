@@ -1,29 +1,13 @@
 #include "GUIManager.hpp"
-#include "../FrameWork/Direct3D.hpp"
+#include "Direct3D.hpp"
+#include "TextureManager.hpp"
 #include "../Misc/StringConverter.hpp"
-//#include "../Objects/Textures/TextureStorage.hpp"
-#include "../Objects/Textures/TextureStorageV2.hpp"
 
 #include "../../packages/directxtk_desktop_2015.2018.7.3.1/include/SpriteFont.h"
 #include "../../packages/directxtk_desktop_2015.2018.7.3.1/include/SpriteBatch.h"
 
-GUIManager* Singleton<GUIManager>::s_instance = nullptr;
-
-GUIManager::GUIManager() : m_spriteBatch(nullptr)
+GUIManager::GUIManager() : m_d3d(nullptr), m_textureManager(nullptr)
 {
-	Direct3D* d3d = Direct3D::Get();
-
-	for (unsigned int i = 0; i < NR_OF_FONTS; i++)
-	{
-		m_spriteFonts[i] = nullptr;
-	}
-
-	m_spriteFonts[static_cast<unsigned int>(Fonts::COURIER_32)] =
-		std::make_unique<DirectX::SpriteFont>(d3d->GetDevice(), L"../Fonts/courier32.spritefont");
-	m_spriteFonts[static_cast<unsigned int>(Fonts::COMIC_SANS_MS_16)] =
-		std::make_unique<DirectX::SpriteFont>(d3d->GetDevice(), L"../Fonts/comicSansMS16.spritefont");
-
-	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(d3d->GetDeviceContext());
 }
 GUIManager::~GUIManager()
 {
@@ -34,18 +18,40 @@ GUIManager::~GUIManager()
 	m_spriteBatch.reset();
 }
 
+bool GUIManager::Initialize(Direct3D* d3d, TextureManager* textureManager)
+{
+	m_d3d = d3d;
+	m_textureManager = textureManager;
+
+	for (unsigned int i = 0; i < NR_OF_FONTS; i++)
+	{
+		m_spriteFonts[i] = nullptr;
+	}
+
+	m_spriteFonts[static_cast<unsigned int>(Fonts::COURIER_32)] =
+		std::make_unique<DirectX::SpriteFont>(m_d3d->GetDevice(), L"../Fonts/courier32.spritefont");
+	m_spriteFonts[static_cast<unsigned int>(Fonts::COMIC_SANS_MS_16)] =
+		std::make_unique<DirectX::SpriteFont>(m_d3d->GetDevice(), L"../Fonts/comicSansMS16.spritefont");
+
+	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(m_d3d->GetDeviceContext());
+
+	return true;
+}
+
 void GUIManager::Render()
 {
-	Direct3D* d3d = Direct3D::Get();
-	TextureStorageV2* textureStorage = TextureStorageV2::Get();
 	unsigned int nTexts = m_texts.size();
 	unsigned int nImages = m_images.size();
 
-	// Prepare rendering
-	d3d->DisableZBuffer();
+	/*
+	Prepare rendering
+	*/
+	m_d3d->DisableZBuffer();
 	m_spriteBatch->Begin();
 
-	// Render images
+	/*
+	Render images
+	*/
 	for (unsigned int i = 0; i < nImages; i++)
 	{
 		GUI_Image* image = &m_images[i];
@@ -55,13 +61,15 @@ void GUIManager::Render()
 			continue;
 		}
 		m_spriteBatch->Draw(
-			textureStorage->GetTexture(image->index),
+			m_textureManager->GetTexture(image->index),
 			DirectX::XMFLOAT2(static_cast<float>(image->position.x), static_cast<float>(image->position.y)),
 			DirectX::Colors::White
 		);
 	}
 
-	// Render texts
+	/*
+	Render texts
+	*/
 	for (unsigned int i = 0; i < nTexts; i++)
 	{
 		GUI_Text* text = &m_texts[i];
@@ -80,10 +88,12 @@ void GUIManager::Render()
 		);
 	}
 
-	// Finish rendering
+	/*
+	Finish rendering
+	*/
 	m_spriteBatch->End();
-	d3d->EnableZBuffer();
-	d3d->SetDefaultBlendState();
+	m_d3d->EnableZBuffer();
+	m_d3d->SetDefaultBlendState();
 }
 
 int GUIManager::CreateText(const std::string & text, Vector2i position, Fonts font, Vector2i origin)
@@ -112,11 +122,13 @@ int GUIManager::CreateImage(const std::string & imageFileName, Vector2i position
 	gui_image.id = id;
 	gui_image.position = position;
 	gui_image.origin = origin;
-	gui_image.index = TextureStorageV2::Get()->GetIndexByName(imageFileName);
 	gui_image.flags[static_cast<unsigned int>(GUI_Flags::IS_RENDERED)] = true;
 
-	m_images.push_back(gui_image);
+	gui_image.index = m_textureManager->LoadTexture(imageFileName);
+	if (gui_image.index == -1)
+		return -1;
 
+	m_images.push_back(gui_image);
 	return id;
 }
 
@@ -228,7 +240,7 @@ void GUIManager::SetImageName(int id, const std::string & name)
 	case -1:
 		break;
 	default:
-		m_images[index].index = TextureStorageV2::Get()->GetIndexByName(name);
+		m_images[index].index = m_textureManager->GetTextureIndex(name);
 		break;
 	}
 }

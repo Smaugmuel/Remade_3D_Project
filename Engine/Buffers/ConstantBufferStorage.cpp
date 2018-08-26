@@ -227,7 +227,7 @@ bool ConstantBufferStorage::MapWorldMatrix(ID3D11DeviceContext * deviceContext, 
 
 	data = static_cast<Matrix*>(mappedResource.pData);
 	
-	// memcpy here instead of regular assignment bumped frames from 129 to 135
+	// memcpy here instead of regular assignment bumped frames from 129 to 135 (with 10000 objects ?)
 
 	//data->matrix = matrix;
 	memcpy(&data->matrix, &matrix, sizeof(matrix));

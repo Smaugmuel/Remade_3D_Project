@@ -1,16 +1,17 @@
 #ifndef FPS_COUNTER_V2_HPP
 #define FPS_COUNTER_V2_HPP
 
+class GUIManager;
+
 class FPSCounterV2 final
 {
 public:
 	FPSCounterV2();
 	~FPSCounterV2();
 
-	void Update(float dt);
+	bool Initialize(GUIManager* guiManager);
 
-	int CreateGUIText();
-	void RemoveGUIText();
+	void Update(float dt);
 
 	void Show();
 	void Hide();
@@ -22,6 +23,8 @@ private:
 
 	float m_timeElapsed;
 	unsigned int m_nrOfUpdates;
+
+	GUIManager* m_guiManager;
 };
 
 #endif

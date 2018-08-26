@@ -1,7 +1,7 @@
 #ifndef TEXT_BUTTON_MANAGER_HPP
 #define TEXT_BUTTON_MANAGER_HPP
 #include "../Engine/Math/AABA.hpp"
-#include "../Engine/GUI/GUIManager.hpp"
+#include "../Engine/Core/Engine.hpp"
 #include <functional>
 #include <string>
 #include <vector>
@@ -53,7 +53,8 @@ public:
 
 	void Initialize(CallbackClassType* callbackClass, CallbackFunction function, const std::wstring& text, const Vector2i& center, const Vector2i& halfDimensions)
 	{
-		m_id = GUIManager::Get()->CreateText(StringConverter::ToString(text).value(), center, Fonts::COURIER_32, halfDimensions);
+		m_guiManager = Engine::Get()->GetGUIManager();
+		m_id = m_guiManager->CreateText(StringConverter::ToString(text).value(), center, Fonts::COURIER_32, halfDimensions);
 
 		m_callbackClass = callbackClass;
 		m_callbackFunction = function;
@@ -63,16 +64,16 @@ public:
 	}
 	void RemoveText()
 	{
-		GUIManager::Get()->RemoveText(m_id);
+		m_guiManager->RemoveText(m_id);
 	}
 
 	void EnableRendering()
 	{
-		GUIManager::Get()->SetTextFlag(m_id, GUI_Flags::IS_RENDERED, true);
+		m_guiManager->SetTextFlag(m_id, GUI_Flags::IS_RENDERED, true);
 	}
 	void DisableRendering()
 	{
-		GUIManager::Get()->SetTextFlag(m_id, GUI_Flags::IS_RENDERED, false);
+		m_guiManager->SetTextFlag(m_id, GUI_Flags::IS_RENDERED, false);
 	}
 
 	void ProcessMouseClick(Vector2i mousePos, const ParamTypes& ... args)
@@ -86,7 +87,7 @@ public:
 	void SetPosition(const Vector2i& position)
 	{
 		m_aaba.center = position;
-		GUIManager::Get()->SetTextPosition(m_id, position);
+		m_guiManager->SetTextPosition(m_id, position);
 	}
 	const std::wstring& GetText() const
 	{
@@ -103,6 +104,7 @@ private:
 	std::wstring m_text;
 	int m_id;
 	AABA m_aaba;
+	GUIManager* m_guiManager;
 };
 
 

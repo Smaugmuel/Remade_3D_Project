@@ -1,12 +1,13 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 #include <DirectXMath.h>
+
 //#include "Frustum.hpp"
 #include "../Math/Vector3.hpp"
 #include "../Math/Vector2.hpp"
 
-DirectX::XMVECTOR To_XMVECTOR(DirectX::XMFLOAT3 v);
-DirectX::XMFLOAT3 To_XMFLOAT3(DirectX::XMVECTOR v);
+//DirectX::XMVECTOR To_XMVECTOR(DirectX::XMFLOAT3 v);
+//DirectX::XMFLOAT3 To_XMFLOAT3(DirectX::XMVECTOR v);
 
 class Camera
 {
@@ -48,6 +49,10 @@ public:
 	const Vector3f GetForward() const;
 	const Vector3f GetRight() const;
 	
+	int GetViewMatrixID() const;
+	int GetProjectionMatrixID() const;
+	int GetOrthographicMatrixID() const;
+
 	const DirectX::XMMATRIX GetViewMatrix() const;
 	const DirectX::XMMATRIX GetProjectionMatrix() const;
 	const DirectX::XMMATRIX GetOrthogonalMatrix() const;
@@ -78,6 +83,9 @@ private:
 	float m_nearPlane;
 	float m_farPlane;
 
+	int m_viewMatrixID;
+	int m_projectionMatrixID;
+	int m_orthographicMatrixID;
 	DirectX::XMFLOAT4X4 m_view;
 	DirectX::XMFLOAT4X4 m_projection;
 	DirectX::XMFLOAT4X4 m_orthographic;

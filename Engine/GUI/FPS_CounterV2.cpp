@@ -1,34 +1,34 @@
 #include "FPS_CounterV2.hpp"
-#include "../GUI/GUIManager.hpp"
+#include "../FrameWork/GUIManager.hpp"
 #include <string>
 
-FPSCounterV2::FPSCounterV2() : m_id(-1), m_timeElapsed(0.0f), m_nrOfUpdates(0)
+FPSCounterV2::FPSCounterV2() : m_id(-1), m_timeElapsed(0.0f), m_nrOfUpdates(0), m_guiManager(nullptr)
 {
 }
 
 FPSCounterV2::~FPSCounterV2()
 {
+	m_guiManager->RemoveText(m_id);
 }
 
-int FPSCounterV2::CreateGUIText()
+bool FPSCounterV2::Initialize(GUIManager * guiManager)
 {
-	m_id = GUIManager::Get()->CreateText("FPS: 0", Vector2i(4, 4));
-	return m_id;
-}
+	m_guiManager = guiManager;
+	m_id = m_guiManager->CreateText("FPS: 0", Vector2i(4, 4));
+	if (m_id == -1)
+		return false;
 
-void FPSCounterV2::RemoveGUIText()
-{
-	GUIManager::Get()->RemoveText(m_id);
+	return true;
 }
 
 void FPSCounterV2::Show()
 {
-	GUIManager::Get()->SetTextFlag(m_id, GUI_Flags::IS_RENDERED, true);
+	m_guiManager->SetTextFlag(m_id, GUI_Flags::IS_RENDERED, true);
 }
 
 void FPSCounterV2::Hide()
 {
-	GUIManager::Get()->SetTextFlag(m_id, GUI_Flags::IS_RENDERED, false);
+	m_guiManager->SetTextFlag(m_id, GUI_Flags::IS_RENDERED, false);
 }
 
 void FPSCounterV2::Update(float dt)
@@ -38,7 +38,7 @@ void FPSCounterV2::Update(float dt)
 
 	if (m_timeElapsed >= 1.0f)
 	{
-		GUIManager::Get()->SetText(m_id, "FPS: " + std::to_string(m_nrOfUpdates));
+		m_guiManager->SetText(m_id, "FPS: " + std::to_string(m_nrOfUpdates));
 
 		m_timeElapsed = 0.0f;
 		m_nrOfUpdates = 0;

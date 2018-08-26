@@ -5,12 +5,12 @@ int main()
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-	if (Game::Get()->Initialize())
-	{
-		Game::Get()->Run();
-	}
+	Game game;
 
-	Game::Delete();
+	if (game.Initialize())
+	{
+		game.Run();
+	}
 
 	return 0;
 }

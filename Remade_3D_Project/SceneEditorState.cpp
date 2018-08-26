@@ -1,15 +1,17 @@
 #include "SceneEditorState.hpp"
 
-#include "../Engine/FrameWork/Window.hpp"
+//#include "../Engine/FrameWork/Window.hpp"
 #include "../Engine/FrameWork/WindowSettings.hpp"
-#include "../Engine/FrameWork/Direct3D.hpp"
+//#include "../Engine/Core/Engine.hpp"
+//#include "../Engine/FrameWork/Direct3D.hpp"
+//#include "../Engine/FrameWork/FrameWork.hpp"
 #include "../Engine/Render/Shaders/ShaderManager.hpp"
 #include "../Engine/Render/Shaders/ShaderStorage.hpp"
 #include "../Engine/Render/RenderManager.hpp"
 
 #include "../Engine/Buffers/ConstantBufferStorage.hpp"
 
-#include "../Engine/Input/Input.hpp"
+//#include "../Engine/Input/Input.hpp"
 
 #include "../Engine/Camera/Camera.hpp"
 #include "../Engine/Camera/PlayerCameraManager.hpp"
@@ -36,7 +38,7 @@
 //#include "World.hpp"
 
 
-#include "../Engine/GUI/GUIManager.hpp"
+//#include "../Engine/GUI/GUIManager.hpp"
 
 SceneEditorState::SceneEditorState(StateMachineV2<GameState>* stateMachine) : GameState::GameState(stateMachine), m_editorMode(EditorModes::SELECT)
 {
@@ -109,18 +111,19 @@ bool SceneEditorState::Initialize()
 	
 	Vector3f startPos = Vector3f((nrOfObjectsPerSide - 1) * -0.5f, 1.0f, (nrOfObjectsPerSide - 1) * -0.5f) * 4;
 
-	PlayerCameraManager::Delete();
-	Camera* cam = PlayerCameraManager::Get()->CreateCamera();
-	cam->SetDimensions(Window::Get()->GetDimensions());
-	cam->SetPosition(startPos + Vector3f(0, 5, -5));
-	cam->SetTarget(startPos);
-	cam->Update();
+	//PlayerCameraManager::Delete();
+	//Camera* cam = FrameWork::Get()->GetPlayerCameraManager()->CreateCamera();
+	////cam->SetDimensions(Window::Get()->GetDimensions());
+	//cam->SetDimensions(FrameWork::Get()->GetWindow()->GetDimensions());
+	//cam->SetPosition(startPos + Vector3f(0, 5, -5));
+	//cam->SetTarget(startPos);
+	//cam->Update();
 	
 	/* ============================================= Player character ============================================== */
 	m_player = std::make_unique<Character>();
 	m_player.get()->SetMovementSpeed(5.0f);
-	m_player.get()->SetPosition(PlayerCameraManager::Get()->GetCurrentCamera()->GetPosition());
-	m_player.get()->SetLookDirection(PlayerCameraManager::Get()->GetCurrentCamera()->GetTargetDirection());
+	/*m_player.get()->SetPosition(FrameWork::Get()->GetPlayerCameraManager()->GetCurrentCamera()->GetPosition());
+	m_player.get()->SetLookDirection(FrameWork::Get()->GetPlayerCameraManager()->GetCurrentCamera()->GetTargetDirection());*/
 	
 	/* ============================================ FPS counter ==================================================== */
 	//m_fpsCounter = std::make_unique<FPSCounter>();
@@ -139,8 +142,8 @@ bool SceneEditorState::Initialize()
 
 void SceneEditorState::ProcessInput()
 {
-	Input* input = Input::Get();
-	PlayerCameraManager* manager = PlayerCameraManager::Get();
+	/*Input* input = Input::Get();
+	PlayerCameraManager* manager = FrameWork::Get()->GetPlayerCameraManager();*/
 	Character* player = /*World::Get()->GetPlayer();*/m_player.get();
 	//Vector2f mouseMovement;
 
@@ -148,7 +151,7 @@ void SceneEditorState::ProcessInput()
 
 	//mouseMovement = input->MouseMovement();
 
-	if (input->IsKeyPressed(VK_ESCAPE))
+	/*if (input->IsKeyPressed(VK_ESCAPE))
 	{
 		EventDispatcher::Get()->Emit(Event(EventType::POP_GAMESTATE));
 		return;
@@ -222,7 +225,7 @@ void SceneEditorState::ProcessInput()
 			manager->GetCurrentCamera()->RotateRight(mouseMovement.x);
 			player->SetLookDirection(manager->GetCurrentCamera()->GetTargetDirection());
 		}
-	}
+	}*/
 
 	m_editorStates[static_cast<unsigned int>(m_editorMode)]->ProcessInput();
 }
@@ -233,8 +236,8 @@ void SceneEditorState::Update(float dt)
 	unsigned int n;
 
 	PointLightManager* lightManager = PointLightManager::Get();
-	PlayerCameraManager* cameraManager = PlayerCameraManager::Get();
-	Camera* cam = cameraManager->GetCurrentCamera();
+	/*PlayerCameraManager* cameraManager = FrameWork::Get()->GetPlayerCameraManager();
+	Camera* cam = cameraManager->GetCurrentCamera();*/
 
 	Character* player = /*World::Get()->GetPlayer();*/m_player.get();
 
@@ -243,9 +246,9 @@ void SceneEditorState::Update(float dt)
 	player->Update(dt);
 	//player->Update(dt);
 
-	cam->SetPosition(player->GetPosition());
+	/*cam->SetPosition(player->GetPosition());
 	cam->SetTarget(player->GetPosition() + player->GetLookDirection());
-	cameraManager->Update();
+	cameraManager->Update();*/
 
 	n = lightManager->GetNrOfPointLights();
 	for (unsigned int i = 0; i < n; i++)
@@ -266,16 +269,18 @@ void SceneEditorState::Update(float dt)
 	//World::Get()->GetFPSCounter()->Update(dt);
 	//m_fpsCounter.get()->Update(dt);
 
-	ConstantBufferStorage::Get()->SetVSViewMatrix(Direct3D::Get()->GetDeviceContext(), cam->GetViewMatrix());
+	//ConstantBufferStorage::Get()->SetVSViewMatrix(FrameWork::Get()->GetDirect3D()->GetDeviceContext(), cam->GetViewMatrix());
+	//ConstantBufferStorage::Get()->SetVSViewMatrix(Direct3D::Get()->GetDeviceContext(), cam->GetViewMatrix());
 }
 
 void SceneEditorState::MapProjectionMatrix()
 {
-	Camera* cam = PlayerCameraManager::Get()->GetCurrentCamera();
+	//Camera* cam = FrameWork::Get()->GetPlayerCameraManager()->GetCurrentCamera();
 	ConstantBufferStorage* storage = ConstantBufferStorage::Get();
-	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
+	//ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
+	//ID3D11DeviceContext* deviceContext = FrameWork::Get()->GetDirect3D()->GetDeviceContext();
 
-	storage->SetVSProjectionMatrix(deviceContext, cam->GetProjectionMatrix());
+	//storage->SetVSProjectionMatrix(deviceContext, cam->GetProjectionMatrix());
 }
 
 void SceneEditorState::Render()
@@ -287,19 +292,20 @@ void SceneEditorState::Render()
 
 void SceneEditorState::RenderNormal()
 {
-	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
-	Camera* cam0 = PlayerCameraManager::Get()->GetCamera(0);
+	//ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
+	//ID3D11DeviceContext* deviceContext = FrameWork::Get()->GetDirect3D()->GetDeviceContext();
+	//Camera* cam0 = FrameWork::Get()->GetPlayerCameraManager()->GetCamera(0);
 	ConstantBufferStorage* bufferStorage = ConstantBufferStorage::Get();
 
 	// Render textured objects
-	bufferStorage->SetVSPointLight(deviceContext, cam0->GetPosition(), 1.0f);
+	//bufferStorage->SetVSPointLight(deviceContext, cam0->GetPosition(), 1.0f);
 	RenderManager::Get()->RenderTexturedObjects();
 
 	// For some unknown reason, this can't happen after single colored objects are rendered
 	m_editorStates[static_cast<unsigned int>(m_editorMode)]->Render();
 
 	// Render single colored objects
-	bufferStorage->SetPSPointLight(deviceContext, cam0->GetPosition(), 1.0f);
+	//bufferStorage->SetPSPointLight(deviceContext, cam0->GetPosition(), 1.0f);
 	RenderManager::Get()->RenderSingleColoredObjects();
 
 

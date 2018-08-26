@@ -2,16 +2,16 @@
 #define FRUSTUM_HPP
 #include "Plane.hpp"
 #include "AABB.hpp"
-#include <DirectXMath.h>
+#include "Matrix.hpp"
 
 struct Frustum
 {
-	void Create(const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection);
+	void Create(const Matrix& view, const Matrix& projection);
 
 	Plane planes[6];
 };
 
-void FrustumCorners(const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection, Vector3f* cornerArray);
-AABB FrustumAABB(const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection);
+void FrustumCorners(const Matrix& view, const Matrix& projection, Vector3f* cornerArray);
+AABB FrustumAABB(const Matrix& view, const Matrix& projection);
 
 #endif

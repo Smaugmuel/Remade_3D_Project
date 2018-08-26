@@ -1,13 +1,19 @@
 #include "MaterialStorageV2.hpp"
 #include "Material.hpp"
 
-MaterialStorageV2* Singleton<MaterialStorageV2>::s_instance = nullptr;
+//MaterialStorageV2* Singleton<MaterialStorageV2>::s_instance = nullptr;
 
 MaterialStorageV2::MaterialStorageV2()
 {
 }
 MaterialStorageV2::~MaterialStorageV2()
 {
+}
+
+bool MaterialStorageV2::Initialize(TextureManager * textureManager)
+{
+	m_textureManager = textureManager;
+	return true;
 }
 
 int MaterialStorageV2::LoadMaterial(const std::string & name)
@@ -24,7 +30,7 @@ int MaterialStorageV2::LoadMaterial(const std::string & name)
 	material->material = std::make_unique<Material>();
 
 	// Abort if the material fails to load
-	if (!material->material->Initialize(name))
+	if (!material->material->Initialize(name, m_textureManager))
 	{
 		m_materials.pop_back();
 		return -1;

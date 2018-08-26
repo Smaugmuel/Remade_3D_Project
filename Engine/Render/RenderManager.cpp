@@ -1,6 +1,8 @@
 #include "RenderManager.hpp"
 
-#include "../FrameWork/Direct3D.hpp"
+//#include "../FrameWork/Direct3D.hpp"
+//#include "../Core/Engine.hpp"
+#include "../FrameWork/FrameWork.hpp"
 
 #include "../Buffers/ConstantBufferStorage.hpp"
 #include "Shaders/ShaderStorage.hpp"
@@ -35,7 +37,8 @@ void RenderManager::Reset()
 
 void RenderManager::RenderTexturedObjects()
 {
-	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
+	ID3D11DeviceContext* deviceContext = FrameWork::Get()->GetDirect3D()->GetDeviceContext();
+	//ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
 	TextureStorage* textureStorage = TextureStorage::Get();
 	ModelStorage* modelStorage = ModelStorage::Get();
 	ConstantBufferStorage* bufferStorage = ConstantBufferStorage::Get();
@@ -65,7 +68,8 @@ void RenderManager::RenderTexturedObjects()
 }
 void RenderManager::RenderSingleColoredObjects()
 {
-	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
+	ID3D11DeviceContext* deviceContext = FrameWork::Get()->GetDirect3D()->GetDeviceContext();
+	//ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
 	ModelStorage* modelStorage = ModelStorage::Get();
 	ConstantBufferStorage* bufferStorage = ConstantBufferStorage::Get();
 

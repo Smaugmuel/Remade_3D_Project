@@ -3,13 +3,15 @@
 #include <string>
 #include "../../Math/Vector3.hpp"
 
+class TextureManager;
+
 class Material
 {
 public:
 	Material();
 	~Material();
 
-	bool Initialize(const std::string& name);
+	bool Initialize(const std::string& name, TextureManager* textureManager);
 	
 	const std::string& GetTextureName() const;
 	int GetTextureIndex() const;

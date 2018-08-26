@@ -5,10 +5,12 @@
 #include <vector>
 
 #include "../../Buffers/Buffers.hpp"
-#include "../../FrameWork/Direct3D.hpp"
+//#include "../../FrameWork/Direct3D.hpp"
+//#include "../../Core/Engine.hpp"
+#include "../../FrameWork/FrameWork.hpp"
 
-SingleColorModel::SingleColorModel() :
-	Model(),
+SingleColorModel::SingleColorModel(FrameWork* frameWork) :
+	Model(frameWork),
 	m_vertices(nullptr)
 {
 }
@@ -101,7 +103,9 @@ bool SingleColorModel::LoadFromFile(const char* fileName)
 }
 bool SingleColorModel::CreateVertexBuffer()
 {
-	m_vertexBuffer = Buffers::CreateVertexBuffer(Direct3D::Get()->GetDevice(), m_nrOfVerts * sizeof(SingleColorVertex), m_vertices);
+	m_vertexBuffer = Buffers::CreateVertexBuffer(m_frameWork->GetDirect3D()->GetDevice(), m_nrOfVerts * sizeof(SingleColorVertex), m_vertices);
+	//m_vertexBuffer = Buffers::CreateVertexBuffer(Direct3D::Get()->GetDevice(), m_nrOfVerts * sizeof(SingleColorVertex), m_vertices);
+	
 	//m_vertexBuffer = Buffers::CreateDynamicVertexBuffer(Direct3D::Get()->GetDevice(), m_nrOfVerts * sizeof(SingleColorVertex), m_vertices);
 
 	if (!m_vertexBuffer)
@@ -139,7 +143,8 @@ bool SingleColorModel::CreateOBB()
 
 void SingleColorModel::SetupRender()
 {
-	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
+	ID3D11DeviceContext* deviceContext = m_frameWork->GetDirect3D()->GetDeviceContext();
+	//ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
 	unsigned int vertexSize = sizeof(SingleColorVertex);
 	unsigned int offset = 0;
 

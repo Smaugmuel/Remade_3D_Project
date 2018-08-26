@@ -1,48 +1,49 @@
 #include "Frustum.hpp"
 
-void Frustum::Create(const DirectX::XMMATRIX & view, const DirectX::XMMATRIX & projection)
+void Frustum::Create(const Matrix & view, const Matrix & projection)
 {
-	DirectX::XMMATRIX viewProjection = DirectX::XMMatrixMultiply(view, projection);
-	DirectX::XMFLOAT4X4 matrix;
+	Matrix matrix = view * projection;
+	/*DirectX::XMMATRIX viewProjection = DirectX::XMMatrixMultiply(view, projection);
+	DirectX::XMFLOAT4X4 matrix;*/
 	float invLength;
 
-	DirectX::XMStoreFloat4x4(&matrix, viewProjection);
+	//DirectX::XMStoreFloat4x4(&matrix, viewProjection);
 
 	// Top clipping plane
-	planes[0].normal.x = -(matrix._14 - matrix._12);
-	planes[0].normal.y = -(matrix._24 - matrix._22);
-	planes[0].normal.z = -(matrix._34 - matrix._32);
-	planes[0].d = -(matrix._44 - matrix._42);
+	//planes[0].normal.x = -(matrix._14 - matrix._12);
+	//planes[0].normal.y = -(matrix._24 - matrix._22);
+	//planes[0].normal.z = -(matrix._34 - matrix._32);
+	//planes[0].d = -(matrix._44 - matrix._42);
 
-	// Bottom clipping plane
-	planes[1].normal.x = -(matrix._14 + matrix._12);
-	planes[1].normal.y = -(matrix._24 + matrix._22);
-	planes[1].normal.z = -(matrix._34 + matrix._32);
-	planes[1].d = -(matrix._44 + matrix._42);
+	//// Bottom clipping plane
+	//planes[1].normal.x = -(matrix._14 + matrix._12);
+	//planes[1].normal.y = -(matrix._24 + matrix._22);
+	//planes[1].normal.z = -(matrix._34 + matrix._32);
+	//planes[1].d = -(matrix._44 + matrix._42);
 
-	// Left clipping plane
-	planes[2].normal.x = -(matrix._14 + matrix._11);
-	planes[2].normal.y = -(matrix._24 + matrix._21);
-	planes[2].normal.z = -(matrix._34 + matrix._31);
-	planes[2].d = -(matrix._44 + matrix._41);
+	//// Left clipping plane
+	//planes[2].normal.x = -(matrix._14 + matrix._11);
+	//planes[2].normal.y = -(matrix._24 + matrix._21);
+	//planes[2].normal.z = -(matrix._34 + matrix._31);
+	//planes[2].d = -(matrix._44 + matrix._41);
 
-	// Right clipping plane
-	planes[3].normal.x = -(matrix._14 - matrix._11);
-	planes[3].normal.y = -(matrix._24 - matrix._21);
-	planes[3].normal.z = -(matrix._34 - matrix._31);
-	planes[3].d = -(matrix._44 - matrix._41);
+	//// Right clipping plane
+	//planes[3].normal.x = -(matrix._14 - matrix._11);
+	//planes[3].normal.y = -(matrix._24 - matrix._21);
+	//planes[3].normal.z = -(matrix._34 - matrix._31);
+	//planes[3].d = -(matrix._44 - matrix._41);
 
-	// Near clipping plane
-	planes[4].normal.x = -(matrix._14 + matrix._13);
-	planes[4].normal.y = -(matrix._24 + matrix._23);
-	planes[4].normal.z = -(matrix._34 + matrix._33);
-	planes[4].d = -(matrix._44 + matrix._43);
+	//// Near clipping plane
+	//planes[4].normal.x = -(matrix._14 + matrix._13);
+	//planes[4].normal.y = -(matrix._24 + matrix._23);
+	//planes[4].normal.z = -(matrix._34 + matrix._33);
+	//planes[4].d = -(matrix._44 + matrix._43);
 
-	// Far clipping plane
-	planes[5].normal.x = -(matrix._14 - matrix._13);
-	planes[5].normal.y = -(matrix._24 - matrix._23);
-	planes[5].normal.z = -(matrix._34 - matrix._33);
-	planes[5].d = -(matrix._44 - matrix._43);
+	//// Far clipping plane
+	//planes[5].normal.x = -(matrix._14 - matrix._13);
+	//planes[5].normal.y = -(matrix._24 - matrix._23);
+	//planes[5].normal.z = -(matrix._34 - matrix._33);
+	//planes[5].d = -(matrix._44 - matrix._43);
 
 	// Normalize plane
 	for (int i = 0; i < 6; i++)
@@ -59,23 +60,23 @@ void Frustum::Create(const DirectX::XMMATRIX & view, const DirectX::XMMATRIX & p
 	}
 }
 
-void FrustumCorners(const DirectX::XMMATRIX & view, const DirectX::XMMATRIX & projection, Vector3f * cornerArray)
+void FrustumCorners(const Matrix & view, const Matrix & projection, Vector3f * cornerArray)
 {
-	DirectX::XMMATRIX matrix;
+	/*DirectX::XMMATRIX matrix;
 	DirectX::XMVECTOR determinant;
 	DirectX::XMMATRIX inverse;
 
-	DirectX::XMVECTOR corners[8];
+	DirectX::XMVECTOR corners[8];*/
 
 	// Boundaries in NDC space
-	corners[0] = { -1, -1, 0, 1 };
+	/*corners[0] = { -1, -1, 0, 1 };
 	corners[1] = { -1, -1, 1, 1 };
 	corners[2] = { -1,  1, 0, 1 };
 	corners[3] = { -1,  1, 1, 1 };
 	corners[4] = {  1, -1, 0, 1 };
 	corners[5] = {  1, -1, 1, 1 };
 	corners[6] = {  1,  1, 0, 1 };
-	corners[7] = {  1,  1, 1, 1 };
+	corners[7] = {  1,  1, 1, 1 };*/
 
 	/* ========================================= Conversion from world to NDC-coordinates =========================================== */
 	//DirectX::XMVECTOR originWorldSpace = { 0.0f, 0.0f, 0.0f, 1 };
@@ -92,7 +93,7 @@ void FrustumCorners(const DirectX::XMMATRIX & view, const DirectX::XMMATRIX & pr
 
 
 	// Convert to view space
-	matrix = DirectX::XMMatrixTranspose(projection);
+	/*matrix = DirectX::XMMatrixTranspose(projection);
 	determinant = DirectX::XMMatrixDeterminant(matrix);
 	inverse = DirectX::XMMatrixInverse(&determinant, matrix);
 	for (unsigned int i = 0; i < 8; i++)
@@ -111,18 +112,18 @@ void FrustumCorners(const DirectX::XMMATRIX & view, const DirectX::XMMATRIX & pr
 
 		cornerArray[i] = corners[i];
 		cornerArray[i] *= (1.0f / corners[i].m128_f32[3]);
-	}
+	}*/
 
 	return;
 }
 
-AABB FrustumAABB(const DirectX::XMMATRIX & view, const DirectX::XMMATRIX & projection)
+AABB FrustumAABB(const Matrix & view, const Matrix & projection)
 {
 	Vector3f cornerArray[8];
 	Vector3f aabbMin, aabbMax;
 	AABB aabb;
 
-	FrustumCorners(view, projection, cornerArray);
+	//FrustumCorners(view, projection, cornerArray);
 
 	for (unsigned int i = 0; i < 8; i++)
 	{

@@ -4,7 +4,8 @@
 #include <fstream>
 
 // For loading the default texture
-#include "../Textures/TextureStorageV2.hpp"
+//#include "../Textures/TextureStorageV2.hpp"
+#include "../../FrameWork/TextureManager.hpp"
 
 Material::Material()
 {
@@ -14,7 +15,7 @@ Material::~Material()
 {
 }
 
-bool Material::Initialize(const std::string & name)
+bool Material::Initialize(const std::string & name, TextureManager* textureManager)
 {
 	std::string fileName = "../Materials/" + name;
 
@@ -59,7 +60,7 @@ bool Material::Initialize(const std::string & name)
 			iss >> m_textureName;
 			
 			//if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), m_textureName))
-			if (m_textureIndex = TextureStorageV2::Get()->LoadTexture(m_textureName); m_textureIndex == -1)
+			if (m_textureIndex = textureManager->LoadTexture(m_textureName); m_textureIndex == -1)
 			{
 				return false;
 			}
@@ -75,7 +76,7 @@ bool Material::Initialize(const std::string & name)
 	if (m_textureName == "" || m_textureIndex == -1)
 	{
 		m_textureName = "Missing.jpg";
-		m_textureIndex = TextureStorageV2::Get()->LoadTexture(m_textureName);
+		m_textureIndex = textureManager->LoadTexture(m_textureName);
 		
 		//if (!TextureStorage::Get()->LoadTexture(Direct3D::Get()->GetDevice(), m_textureName))
 		if (m_textureIndex == -1)

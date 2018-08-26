@@ -1,8 +1,10 @@
 #ifndef SCENE_MANAGER_HPP
 #define SCENE_MANAGER_HPP
-#include "../Misc/Singleton.hpp"
+//#include "../Misc/Singleton.hpp"
 #include "../Objects/Objects/TextureObject.hpp"
 #include <vector>
+
+class FrameWork;
 
 enum class RenderModes
 {
@@ -33,6 +35,11 @@ struct SceneObject
 class SceneManager : public Singleton<SceneManager>
 {
 public:
+	SceneManager();
+	~SceneManager();
+
+	bool Initialize(FrameWork* frameWork);
+
 	void Update(float dt);
 
 	void Render();
@@ -52,11 +59,6 @@ public:
 	void SetRenderMode(RenderModes mode);
 
 private:
-	friend class Singleton<SceneManager>;
-
-	SceneManager();
-	~SceneManager();
-
 	void RenderNormal();
 	void RenderDeferredFirstPass();
 	void RenderDeferredFirstPassChunks();
@@ -75,6 +77,12 @@ private:
 
 	//std::vector<std::vector<std::vector<std::vector<SceneObject>>>> m_objects;
 	std::vector<SceneObject> m_objects;
+
+
+	int m_vsViewMatID;
+	int m_vsProjMatID;
+
+	FrameWork* m_frameWork;
 };
 
 #endif

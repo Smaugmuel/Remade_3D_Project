@@ -1,6 +1,5 @@
 #ifndef GUI_MANAGER_HPP
 #define GUI_MANAGER_HPP
-#include "../Misc/Singleton.hpp"
 #include "../Math/Vector2.hpp"
 #include <vector>
 #include <string>
@@ -11,6 +10,9 @@ namespace DirectX
 	class SpriteFont;
 	class SpriteBatch;
 }
+
+class Direct3D;
+class TextureManager;
 
 enum class Fonts
 {
@@ -47,9 +49,14 @@ struct GUI_Image : public GUI_Object
 	GUI_Image() : GUI_Object() {}
 };
 
-class GUIManager final : public Singleton<GUIManager>
+class GUIManager final
 {
 public:
+	GUIManager();
+	~GUIManager();
+
+	bool Initialize(Direct3D* d3d, TextureManager* textureManager);
+
 	void Render();
 
 	int CreateText(const std::string& text, Vector2i position = Vector2i(0, 0), Fonts font = Fonts::COURIER_32, Vector2i origin = Vector2i(0, 0));
@@ -73,11 +80,6 @@ public:
 	Vector2i GetDimensionsOfText(const std::wstring& text, Fonts font = Fonts::COURIER_32) const;
 
 private:
-	friend class Singleton<GUIManager>;
-
-	GUIManager();
-	~GUIManager();
-
 	int GetTextIndex(int id) const;
 	int GetImageIndex(int id) const;
 
@@ -88,6 +90,9 @@ private:
 
 	std::unique_ptr<DirectX::SpriteFont> m_spriteFonts[NR_OF_FONTS];
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+
+	Direct3D* m_d3d;
+	TextureManager* m_textureManager;
 };
 
 #endif

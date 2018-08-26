@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -19,106 +19,252 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Buffers\Buffers.cpp" />
-    <ClCompile Include="Buffers\ConstantBufferStorage.cpp" />
-    <ClCompile Include="Camera\Camera.cpp" />
-    <ClCompile Include="Camera\PlayerCameraManager.cpp" />
+    <ClCompile Include="Buffers\Buffers.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Buffers\ConstantBufferStorage.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Camera\Camera.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Camera\CameraManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Camera\PlayerCameraManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Core\CameraManagerV2.cpp" />
+    <ClCompile Include="Core\CameraV3.cpp" />
     <ClCompile Include="Core\Engine.cpp" />
+    <ClCompile Include="Core\SceneManagerV3.cpp" />
     <ClCompile Include="Events\EventDispatcher.cpp" />
-    <ClCompile Include="FrameWork\BufferStorage.cpp" />
+    <ClCompile Include="FrameWork\ConstantBufferManager.cpp" />
+    <ClCompile Include="FrameWork\DeferredScreenTarget.cpp" />
     <ClCompile Include="FrameWork\Direct3D.cpp" />
-    <ClCompile Include="FrameWork\FrameWork.cpp" />
+    <ClCompile Include="FrameWork\FrameWorkManager.cpp" />
+    <ClCompile Include="Core\MaterialManager.cpp" />
+    <ClCompile Include="Core\ModelManager.cpp" />
+    <ClCompile Include="FrameWork\SamplerManager.cpp" />
+    <ClCompile Include="FrameWork\SceneManagerV2.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="FrameWork\ShaderCreator.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="FrameWork\ShaderManagerV2.cpp" />
+    <ClCompile Include="FrameWork\TextureManager.cpp" />
+    <ClCompile Include="FrameWork\VertexBufferManager.cpp" />
     <ClCompile Include="FrameWork\Window.cpp" />
-    <ClCompile Include="GUI\GUIManager.cpp" />
-    <ClCompile Include="GUI\HUDText.cpp" />
-    <ClCompile Include="GUI\HUDTexture.cpp" />
-    <ClCompile Include="Input\Input.cpp" />
-    <ClCompile Include="Lights\PointLight.cpp" />
-    <ClCompile Include="Lights\PointLightManager.cpp" />
+    <ClCompile Include="FrameWork\GUIManager.cpp" />
+    <ClCompile Include="GUI\HUDText.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="GUI\HUDTexture.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="FrameWork\Input.cpp" />
+    <ClCompile Include="Lights\PointLight.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Lights\PointLightManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Math\AABA.cpp" />
     <ClCompile Include="Math\AABB.cpp" />
     <ClCompile Include="Math\Collision.cpp" />
     <ClCompile Include="Math\Frustum.cpp" />
+    <ClCompile Include="Math\Matrix.cpp" />
     <ClCompile Include="Math\MatrixEulerConversion.cpp" />
     <ClCompile Include="Math\PickingRay.cpp" />
     <ClCompile Include="Math\Plane.cpp" />
     <ClCompile Include="Math\Sphere.cpp" />
-    <ClCompile Include="GUI\FPS_Counter.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="GUI\FPS_CounterV2.cpp" />
     <ClCompile Include="Misc\HelperFunctions.cpp" />
     <ClCompile Include="Misc\StringConverter.cpp" />
-    <ClCompile Include="Objects\Materials\Material.cpp" />
-    <ClCompile Include="Objects\Materials\MaterialStorage.cpp" />
-    <ClCompile Include="Objects\Materials\MaterialStorageV2.cpp" />
-    <ClCompile Include="Objects\Models\LineModel.cpp" />
-    <ClCompile Include="Objects\Models\Model.cpp" />
-    <ClCompile Include="Objects\Models\ModelStorage.cpp" />
-    <ClCompile Include="Objects\Models\ModelStorageV2.cpp" />
-    <ClCompile Include="Objects\Models\SingleColorModel.cpp" />
-    <ClCompile Include="Objects\Models\TextureModel.cpp" />
-    <ClCompile Include="Objects\Objects\LineObject.cpp" />
-    <ClCompile Include="Objects\Objects\Object.cpp" />
-    <ClCompile Include="Objects\Objects\SingleColorObject.cpp" />
-    <ClCompile Include="Objects\Objects\TextureObject.cpp" />
-    <ClCompile Include="Objects\Textures\Texture.cpp" />
-    <ClCompile Include="Objects\Textures\TextureStorage.cpp" />
-    <ClCompile Include="Objects\Textures\TextureStorageV2.cpp" />
-    <ClCompile Include="Render\DeferredScreenTarget.cpp" />
-    <ClCompile Include="Render\RenderManager.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    <ClCompile Include="Objects\Materials\Material.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Render\SamplerStorage.cpp" />
-    <ClCompile Include="Render\SceneManager.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderGroup.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderGroups\DeferredLightMultipleLightsShaderGroup.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderGroups\DeferredLightMultipleShadowLightsShaderGroup.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderGroups\DeferredLightShadowShaderGroup.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderGroups\DeferredLightSplitScreenShaderGroup.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderGroups\DeferredShadowShaderGroup.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderGroups\DeferredSingleColorShaderGroup.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderGroups\DeferredTextureChunkShaderGroup.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderGroups\DeferredTextureShaderGroup.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderGroups\DepthShaderGroup.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderGroups\HUDShaderGroup.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderGroups\LineShaderGroup.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderGroups\ShadowShaderGroup.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderGroups\SingleColorShaderGroup.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderGroups\TextureShaderGroup.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderManager.cpp" />
-    <ClCompile Include="Render\Shaders\ShaderStorage.cpp" />
+    <ClCompile Include="Objects\Materials\MaterialStorage.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Objects\Materials\MaterialStorageV2.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Objects\Models\LineModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Objects\Models\Model.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Objects\Models\ModelStorage.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Objects\Models\ModelStorageV2.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Objects\Models\SingleColorModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Objects\Models\TextureModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Objects\Objects\LineObject.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Objects\Objects\Object.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Objects\Objects\SingleColorObject.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Objects\Objects\TextureObject.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Objects\Textures\Texture.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Objects\Textures\TextureStorage.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Objects\Textures\TextureStorageV2.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\RenderManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\SceneManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderGroup.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderGroups\DeferredLightMultipleLightsShaderGroup.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderGroups\DeferredLightMultipleShadowLightsShaderGroup.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderGroups\DeferredLightShadowShaderGroup.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderGroups\DeferredLightSplitScreenShaderGroup.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderGroups\DeferredShadowShaderGroup.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderGroups\DeferredSingleColorShaderGroup.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderGroups\DeferredTextureChunkShaderGroup.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderGroups\DeferredTextureShaderGroup.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderGroups\DepthShaderGroup.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderGroups\HUDShaderGroup.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderGroups\LineShaderGroup.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderGroups\ShadowShaderGroup.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderGroups\SingleColorShaderGroup.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderGroups\TextureShaderGroup.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Render\Shaders\ShaderStorage.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Buffers\Buffers.hpp" />
-    <ClInclude Include="Buffers\ConstantBufferStorage.hpp" />
-    <ClInclude Include="Buffers\ConstantBufferTypes.hpp" />
-    <ClInclude Include="Camera\Camera.hpp" />
-    <ClInclude Include="Camera\PlayerCameraManager.hpp" />
+    <ClInclude Include="Buffers\Buffers.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Buffers\ConstantBufferStorage.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Buffers\ConstantBufferTypes.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Camera\Camera.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Camera\CameraManager.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Camera\PlayerCameraManager.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Core\CameraManagerV2.hpp" />
+    <ClInclude Include="Core\CameraV3.hpp" />
     <ClInclude Include="Core\Engine.hpp" />
+    <ClInclude Include="Core\SceneManagerV3.hpp" />
     <ClInclude Include="Events\Event.hpp" />
     <ClInclude Include="Events\EventDispatcher.hpp" />
     <ClInclude Include="Events\EventReceiver.hpp" />
     <ClInclude Include="Events\EventTypes.hpp" />
-    <ClInclude Include="FrameWork\BufferStorage.hpp" />
+    <ClInclude Include="FrameWork\ConstantBufferManager.hpp" />
+    <ClInclude Include="Camera\CameraV2.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="FrameWork\DeferredScreenTarget.hpp" />
     <ClInclude Include="FrameWork\Direct3D.hpp" />
-    <ClInclude Include="FrameWork\FrameWork.hpp" />
+    <ClInclude Include="Core\MaterialManager.hpp" />
+    <ClInclude Include="Core\ModelManager.hpp" />
+    <ClInclude Include="FrameWork\ObjectV2.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="FrameWork\FrameWorkManager.hpp" />
+    <ClInclude Include="FrameWork\ReusableStorage.hpp" />
+    <ClInclude Include="FrameWork\SamplerManager.hpp" />
+    <ClInclude Include="FrameWork\SceneManagerV2.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="FrameWork\ShaderCreator.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="FrameWork\ShaderManagerV2.hpp" />
+    <ClInclude Include="FrameWork\TextureManager.hpp" />
+    <ClInclude Include="FrameWork\VertexBufferManager.hpp" />
     <ClInclude Include="FrameWork\Window.hpp" />
     <ClInclude Include="FrameWork\WindowSettings.hpp" />
-    <ClInclude Include="GUI\GUIManager.hpp">
+    <ClInclude Include="FrameWork\GUIManager.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="GUI\HUDText.hpp" />
-    <ClInclude Include="GUI\HUDTexture.hpp" />
-    <ClInclude Include="Input\Input.hpp" />
-    <ClInclude Include="Lights\LightSettings.hpp" />
-    <ClInclude Include="Lights\PointLight.hpp" />
-    <ClInclude Include="Lights\PointLightManager.hpp" />
+    <ClInclude Include="GUI\HUDText.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="GUI\HUDTexture.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="FrameWork\Input.hpp" />
+    <ClInclude Include="Lights\LightSettings.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Lights\PointLight.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Lights\PointLightManager.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Math\AABA.hpp" />
     <ClInclude Include="Math\AABB.hpp" />
     <ClInclude Include="Math\Collision.hpp" />
     <ClInclude Include="Math\Frustum.hpp" />
+    <ClInclude Include="Math\Matrix.hpp" />
     <ClInclude Include="Math\MatrixEulerConversion.hpp" />
     <ClInclude Include="Math\OBB.hpp" />
     <ClInclude Include="Math\PickingRay.hpp" />
@@ -127,62 +273,163 @@
     <ClInclude Include="Math\Sphere.hpp" />
     <ClInclude Include="Math\Vector2.hpp" />
     <ClInclude Include="Math\Vector3.hpp" />
-    <ClInclude Include="GUI\FPS_Counter.hpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="GUI\FPS_CounterV2.hpp" />
     <ClInclude Include="Misc\HelperFunctions.hpp" />
     <ClInclude Include="Misc\Singleton.hpp" />
     <ClInclude Include="Misc\StateMachines\StateMachine.hpp" />
     <ClInclude Include="Misc\StateMachines\StateMachineV2.hpp" />
     <ClInclude Include="Misc\StringConverter.hpp" />
-    <ClInclude Include="Objects\Materials\Material.hpp" />
-    <ClInclude Include="Objects\Materials\MaterialStorage.hpp" />
-    <ClInclude Include="Objects\Materials\MaterialStorageV2.hpp" />
-    <ClInclude Include="Objects\Models\LineModel.hpp" />
-    <ClInclude Include="Objects\Models\Model.hpp" />
-    <ClInclude Include="Objects\Models\ModelStorage.hpp" />
-    <ClInclude Include="Objects\Models\ModelStorageV2.hpp" />
-    <ClInclude Include="Objects\Models\SingleColorModel.hpp" />
-    <ClInclude Include="Objects\Models\TextureModel.hpp" />
-    <ClInclude Include="Objects\Objects\LineObject.hpp" />
-    <ClInclude Include="Objects\Objects\Object.hpp" />
-    <ClInclude Include="Objects\Objects\SingleColorObject.hpp" />
-    <ClInclude Include="Objects\Objects\TextureObject.hpp" />
-    <ClInclude Include="Objects\Textures\Texture.hpp" />
-    <ClInclude Include="Objects\Textures\TextureStorage.hpp" />
-    <ClInclude Include="Objects\Textures\TextureStorageV2.hpp" />
-    <ClInclude Include="Render\ChunkRenderSettings.hpp" />
-    <ClInclude Include="Render\DeferredScreenTarget.hpp" />
-    <ClInclude Include="Render\RenderManager.hpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    <ClInclude Include="Objects\Materials\Material.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Render\SamplerStorage.hpp" />
-    <ClInclude Include="Render\SceneManager.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderGroup.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderGroups\DeferredLightMultipleLightsShaderGroup.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderGroups\DeferredLightMultipleShadowLightsShaderGroup.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderGroups\DeferredLightShadowShaderGroup.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderGroups\DeferredLightSplitScreenShaderGroup.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderGroups\DeferredShadowShaderGroup.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderGroups\DeferredSingleColorShaderGroup.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderGroups\DeferredTextureChunkShaderGroup.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderGroups\DeferredTextureShaderGroup.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderGroups\DepthShaderGroup.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderGroups\HUDShaderGroup.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderGroups\LineShaderGroup.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderGroups\ShadowShaderGroup.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderGroups\SingleColorShaderGroup.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderGroups\TextureShaderGroup.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderManager.hpp" />
-    <ClInclude Include="Render\Shaders\ShaderStorage.hpp" />
+    <ClInclude Include="Objects\Materials\MaterialStorage.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Objects\Materials\MaterialStorageV2.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Objects\Models\LineModel.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Objects\Models\Model.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Objects\Models\ModelStorage.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Objects\Models\ModelStorageV2.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Objects\Models\SingleColorModel.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Objects\Models\TextureModel.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Objects\Objects\LineObject.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Objects\Objects\Object.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Objects\Objects\SingleColorObject.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Objects\Objects\TextureObject.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Objects\Textures\Texture.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Objects\Textures\TextureStorage.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Objects\Textures\TextureStorageV2.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\ChunkRenderSettings.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\RenderManager.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\SceneManager.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderGroup.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderGroups\DeferredLightMultipleLightsShaderGroup.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderGroups\DeferredLightMultipleShadowLightsShaderGroup.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderGroups\DeferredLightShadowShaderGroup.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderGroups\DeferredLightSplitScreenShaderGroup.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderGroups\DeferredShadowShaderGroup.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderGroups\DeferredSingleColorShaderGroup.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderGroups\DeferredTextureChunkShaderGroup.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderGroups\DeferredTextureShaderGroup.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderGroups\DepthShaderGroup.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderGroups\HUDShaderGroup.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderGroups\LineShaderGroup.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderGroups\ShadowShaderGroup.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderGroups\SingleColorShaderGroup.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderGroups\TextureShaderGroup.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderManager.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Render\Shaders\ShaderStorage.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Misc\StateMachines\StateMachines.hpp" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="FrameWork\HLSL\PS_FirstPass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="FrameWork\HLSL\PS_LightPass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="FrameWork\HLSL\VS_FirstPass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="FrameWork\HLSL\VS_LightPass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Render\Shaders\HLSL\VS_Generic.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Render\Shaders\HLSL\VS_GenericV2.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>

@@ -1,19 +1,24 @@
 #include "Input.hpp"
-#include "../FrameWork/Window.hpp"
 
-Input* Singleton<Input>::s_instance = nullptr;
-
-Input::Input()
+Input::Input() : m_hwnd(nullptr)
 {
+}
+
+Input::~Input()
+{
+}
+
+bool Input::Initialize(HWND__* handle)
+{
+	m_hwnd = handle;
+
 	for (unsigned int i = 0; i < 256; i++)
 	{
 		m_keysDown[i] = false;
 		m_keysDownPrev[i] = false;
 	}
-}
 
-Input::~Input()
-{
+	return true;
 }
 
 void Input::Update()
@@ -22,19 +27,18 @@ void Input::Update()
 	{
 		m_keysDownPrev[i] = m_keysDown[i];
 		m_keysDown[i] = static_cast<bool>(GetAsyncKeyState(i) & 0x8000);
-
-		if (m_keysDown[i])
-		{
-			int apa = 0;
-		}
 	}
 
-	// Coordinates on screen
+	/*
+	Coordinates on screen
+	*/
 	tagPOINT mouseCoords;
 	GetCursorPos(&mouseCoords);
 
-	// Coordinates on window, below header
-	ScreenToClient(Window::Get()->GetHandle(), &mouseCoords);
+	/*
+	Coordinates on window, below header
+	*/
+	ScreenToClient(m_hwnd, &mouseCoords);
 
 	m_mousePosPrev = m_mousePos;
 	m_mousePos.x = mouseCoords.x;

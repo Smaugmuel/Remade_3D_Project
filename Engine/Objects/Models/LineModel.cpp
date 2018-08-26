@@ -3,7 +3,7 @@
 #include "../../Buffers/Buffers.hpp"
 #include "../../FrameWork/Direct3D.hpp"
 
-LineModel::LineModel() : Model()
+LineModel::LineModel(FrameWork* frameWork) : Model(frameWork)
 {
 	m_nrOfVerts = 2;
 
@@ -25,13 +25,14 @@ bool LineModel::LoadFromFile(const char * fileName)
 
 bool LineModel::CreateVertexBuffer()
 {
-	m_vertexBuffer = Buffers::CreateVertexBuffer(Direct3D::Get()->GetDevice(), m_nrOfVerts * sizeof(LineVertex), m_vertices);
+	/*m_vertexBuffer = Buffers::CreateVertexBuffer(Direct3D::Get()->GetDevice(), m_nrOfVerts * sizeof(LineVertex), m_vertices);
 
 	if (!m_vertexBuffer)
 	{
 		return false;
 	}
-	return true;
+	return true;*/
+	return false;
 }
 
 bool LineModel::CreateOBB()
@@ -41,10 +42,10 @@ bool LineModel::CreateOBB()
 
 void LineModel::SetupRender()
 {
-	ID3D11DeviceContext * deviceContext = Direct3D::Get()->GetDeviceContext();
+	/*ID3D11DeviceContext * deviceContext = Direct3D::Get()->GetDeviceContext();
 	unsigned int vertexSize = sizeof(LineVertex);
 	unsigned int offset = 0;
 
 	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &vertexSize, &offset);
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);*/
 }

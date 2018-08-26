@@ -1,5 +1,7 @@
 #include "SceneManager.hpp"
-#include "../FrameWork/Direct3D.hpp"
+//#include "../FrameWork/Direct3D.hpp"
+//#include "../Core/Engine.hpp"
+#include "../FrameWork/FrameWork.hpp"
 #include "../Render/Shaders/ShaderManager.hpp"
 //#include "../Objects/Models/ModelStorage.hpp"
 //#include "../Objects/Textures/TextureStorage.hpp"
@@ -8,20 +10,28 @@
 #include "../Buffers/ConstantBufferStorage.hpp"
 #include "../Objects/Models/TextureModel.hpp"
 
-#include "../Camera/PlayerCameraManager.hpp"
+//#include "../Camera/PlayerCameraManager.hpp"
 #include "../Camera/Camera.hpp"
 
 #include "../Render/SamplerStorage.hpp"
 
-#include "../Render/DeferredScreenTarget.hpp"
+//#include "../Render/DeferredScreenTarget.hpp"
 
-SceneManager* Singleton<SceneManager>::s_instance = nullptr;
+//SceneManager* Singleton<SceneManager>::s_instance = nullptr;
 
 SceneManager::SceneManager() : m_renderMode(RenderModes::NORMAL)
 {
 }
 SceneManager::~SceneManager()
 {
+}
+
+bool SceneManager::Initialize(FrameWork * frameWork)
+{
+	m_frameWork = frameWork;
+	m_vsViewMatID = m_frameWork->CreateConstantBuffer(sizeof(float) * 16);
+	m_vsProjMatID = m_frameWork->CreateConstantBuffer(sizeof(float) * 16);
+	return true;
 }
 
 void SceneManager::Update(float dt)
@@ -152,7 +162,9 @@ void SceneManager::Render()
 
 void SceneManager::RenderNormal()
 {
-	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
+	ID3D11DeviceContext* deviceContext = m_frameWork->GetDirect3D()->GetDeviceContext();
+	//ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
+
 	//TextureStorage* textureStorage = TextureStorage::Get();
 	//ModelStorage* modelStorage = ModelStorage::Get();
 	ConstantBufferStorage* bufferStorage = ConstantBufferStorage::Get();
@@ -165,12 +177,13 @@ void SceneManager::RenderNormal()
 	//d3d->EnableZBuffer();
 	//d3d->SetDefaultRasterizerState();
 
-	// This has no special functionality, but is required for now
+	// This has no special functionality, but is required for some reason
 	// Without changing to an existing shader before the one below, the GUI and scene are not rendered correctly
+	// Note that simply setting a nullptr to each shader did not work, nor did a reset of the one below
 	ShaderManager::Get()->SetShaderType(deviceContext, ShaderType::SINGLE_COLOR);
 
 
-	Camera* camera = PlayerCameraManager::Get()->GetCamera(0);
+	Camera* camera = ->Get->GetPlayerCameraManager()->GetCamera(0);
 	if (!camera)
 	{
 		return;
@@ -178,7 +191,10 @@ void SceneManager::RenderNormal()
 
 	ShaderManager::Get()->SetShaderType(deviceContext, ShaderType::TEXTURE);
 
+
 	bufferStorage->SetVSPointLight(deviceContext, camera->GetPosition(), 1.0f);
+
+	
 	bufferStorage->SetVSViewMatrix(deviceContext, camera->GetViewMatrix());
 	bufferStorage->SetVSProjectionMatrix(deviceContext, camera->GetProjectionMatrix());
 
@@ -228,10 +244,11 @@ void SceneManager::RenderDeferredFirstPass()
 }
 void SceneManager::RenderDeferredFirstPassChunks()
 {
-	Direct3D* d3d = Direct3D::Get();
+	Direct3D* d3d = FrameWork::Get()->GetDirect3D();
+	//Direct3D* d3d = Direct3D::Get();
 	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 	ShaderManager* shaderManager = ShaderManager::Get();
-	Camera* cam = PlayerCameraManager::Get()->GetCurrentCamera();
+	Camera* cam = FrameWork::Get()->GetPlayerCameraManager()->GetCurrentCamera();
 
 	ModelStorageV2* modelStorage = ModelStorageV2::Get();
 	TextureStorageV2* textureStorage = TextureStorageV2::Get();
@@ -300,10 +317,11 @@ void SceneManager::RenderShadowPass()
 }
 void SceneManager::RenderShadowPassChunks()
 {
-	Direct3D* d3d = Direct3D::Get();
+	Direct3D* d3d = FrameWork::Get()->GetDirect3D();
+	//Direct3D* d3d = Direct3D::Get();
 	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 	ShaderManager* shaders = ShaderManager::Get();
-	Camera* cam0 = PlayerCameraManager::Get()->GetCamera(0);
+	Camera* cam0 = FrameWork::Get()->GetPlayerCameraManager()->GetCamera(0);
 
 	ModelStorageV2* modelStorage = ModelStorageV2::Get();
 	ConstantBufferStorage* bufferStorage = ConstantBufferStorage::Get();
@@ -364,10 +382,11 @@ void SceneManager::RenderMultipleShadowsPass()
 }
 void SceneManager::RenderDeferredLightShadowPass()
 {
-	Direct3D* d3d = Direct3D::Get();
+	Direct3D* d3d = FrameWork::Get()->GetDirect3D();
+	//Direct3D* d3d = Direct3D::Get();
 	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 	ShaderManager* shaders = ShaderManager::Get();
-	Camera* cam0 = PlayerCameraManager::Get()->GetCamera(0);
+	Camera* cam0 = FrameWork::Get()->GetPlayerCameraManager()->GetCamera(0);
 
 	ConstantBufferStorage* bufferStorage = ConstantBufferStorage::Get();
 
@@ -385,7 +404,7 @@ void SceneManager::RenderDeferredLightShadowPass()
 		d3d->GetDeferredShaderResourceViews(),
 		d3d->GetShadowShaderResourceView());
 
-	DeferredScreenTarget::Get()->Render(deviceContext);
+	FrameWork::Get()->GetDeferredScreenTarget()->Render(/*deviceContext*/);
 }
 void SceneManager::RenderDeferredLightSplitPass()
 {

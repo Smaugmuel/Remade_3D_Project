@@ -1,0 +1,63 @@
+#include "VertexBufferManager.hpp"
+#include <d3d11.h>
+
+VertexBufferManager::VertexBufferManager() : m_device(nullptr), m_deviceContext(nullptr)
+{
+}
+
+VertexBufferManager::~VertexBufferManager()
+{
+	for (unsigned int i = 0; i < m_buffers.size(); i++)
+	{
+		if (m_buffers[i].buffer)
+		{
+			m_buffers[i].buffer->Release();
+		}
+	}
+}
+
+bool VertexBufferManager::Initialize(ID3D11Device * device, ID3D11DeviceContext * deviceContext)
+{
+	m_device = device;
+	m_deviceContext = deviceContext;
+	return true;
+}
+
+int VertexBufferManager::CreateBuffer(unsigned int bufferSize, unsigned int vertexSize, void * initialData)
+{
+	D3D11_BUFFER_DESC desc;
+	D3D11_SUBRESOURCE_DATA data;
+	Buffer buffer;
+
+	memset(&desc, 0, sizeof(desc));
+	desc.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
+	desc.ByteWidth = bufferSize;
+	desc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_VERTEX_BUFFER;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
+	desc.StructureByteStride = 0;
+
+	data.pSysMem = initialData;
+	data.SysMemPitch = 0;
+	data.SysMemSlicePitch = 0;
+
+	if (FAILED(m_device->CreateBuffer(&desc, &data, &buffer.buffer)))
+		return -1;
+
+	buffer.vertexSize = vertexSize;
+
+	m_buffers.push_back(buffer);
+	return m_buffers.size() - 1;
+}
+
+bool VertexBufferManager::SetBufferToInputAssembler(int index, int slotInShader)
+{
+	if (index < 0 || index >= static_cast<int>(m_buffers.size()))
+		return false;
+
+	unsigned int offset = 0;
+	
+	m_deviceContext->IASetVertexBuffers(slotInShader, 1, &m_buffers[index].buffer, &m_buffers[index].vertexSize, &offset);
+	
+	return true;
+}

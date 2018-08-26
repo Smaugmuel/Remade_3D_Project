@@ -1,13 +1,19 @@
 #ifndef TEXTURE_STORAGE_V2_HPP
 #define TEXTURE_STORAGE_V2_HPP
-#include "../../Misc/Singleton.hpp"
+//#include "../../Misc/Singleton.hpp"
 #include <vector>
 
 struct ID3D11ShaderResourceView;
+class FrameWork;
 
-class TextureStorageV2 : public Singleton<TextureStorageV2>
+class TextureStorageV2 //: public Singleton<TextureStorageV2>
 {
 public:
+	TextureStorageV2();
+	~TextureStorageV2();
+
+	bool Initialize(FrameWork* frameWork);
+
 	int LoadTexture(const std::string& name);
 
 	int GetIndexByName(const std::string& name);
@@ -18,7 +24,7 @@ public:
 	unsigned int GetNrOfTextures() const;
 
 private:
-	friend class Singleton<TextureStorageV2>;
+	//friend class Singleton<TextureStorageV2>;
 
 	struct Texture
 	{
@@ -30,10 +36,9 @@ private:
 		ID3D11ShaderResourceView* texture = nullptr;
 	};
 
-	TextureStorageV2();
-	~TextureStorageV2();
-
 	std::vector<Texture> m_textures;
+
+	FrameWork* m_frameWork;
 };
 
 #endif

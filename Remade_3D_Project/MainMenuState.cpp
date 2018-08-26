@@ -3,9 +3,9 @@
 #include "../Engine/FrameWork/WindowSettings.hpp"
 
 #include "../Engine/Events/EventDispatcher.hpp"
-#include "../Engine/Input/Input.hpp"
+//#include "../Engine/Input/Input.hpp"
 
-#include "../Engine/GUI/GUIManager.hpp"
+//#include "../Engine/GUI/GUIManager.hpp"
 #include "../Engine/Misc/StringConverter.hpp"
 
 #include "../Engine/Core/Engine.hpp"
@@ -21,7 +21,7 @@ MainMenuState::MainMenuState(StateMachineV2<GameState>* stateMachine) : GameStat
 	m_buttonManager = new TextButtonManager<MainMenuState>;
 
 	// Calculate the size of the PLAY button, then create it
-	Vector2i halfDimensions = GUIManager::Get()->GetDimensionsOfText(L"PLAY") * 0.5;
+	/*Vector2i halfDimensions = GUIManager::Get()->GetDimensionsOfText(L"PLAY") * 0.5;
 	m_buttonManager->CreateButton(this, &MainMenuState::PressedPlay, L"PLAY", Vector2i(400, 100), halfDimensions);
 
 	// Calculate the size of the EDITOR button, then create it
@@ -30,7 +30,7 @@ MainMenuState::MainMenuState(StateMachineV2<GameState>* stateMachine) : GameStat
 
 	// Calculate the size of the EXIT button, then create it
 	halfDimensions = GUIManager::Get()->GetDimensionsOfText(L"EXIT") * 0.5;
-	m_buttonManager->CreateButton(this, &MainMenuState::PressedExit, L"EXIT", Vector2i(400, 500), halfDimensions);
+	m_buttonManager->CreateButton(this, &MainMenuState::PressedExit, L"EXIT", Vector2i(400, 500), halfDimensions);*/
 }
 MainMenuState::~MainMenuState()
 {
@@ -75,7 +75,7 @@ bool MainMenuState::Initialize()
 
 void MainMenuState::ProcessInput()
 {
-	Input* input = Input::Get();
+	/*Input* input = Input::Get();
 
 	if (input->IsKeyPressed(VK_ESCAPE))
 	{
@@ -85,7 +85,7 @@ void MainMenuState::ProcessInput()
 	if (input->IsKeyPressed(VK_LBUTTON))
 	{
 		m_buttonManager->ProcessMouseClick(input->MousePosition());
-	}
+	}*/
 }
 
 void MainMenuState::Update(float dt)

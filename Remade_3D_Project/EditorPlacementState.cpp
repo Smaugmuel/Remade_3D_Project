@@ -1,6 +1,6 @@
 #include "EditorPlacementState.hpp"
 
-#include "../Engine/Input/Input.hpp"
+//#include "../Engine/Input/Input.hpp"
 
 #include "../Engine/Objects/Materials/Material.hpp"
 //#include "../Engine/Objects/Materials/MaterialStorage.hpp"
@@ -13,7 +13,9 @@
 #include "../Engine/Objects/Textures/TextureStorageV2.hpp"
 
 #include "../Engine/Render/RenderManager.hpp"
-#include "../Engine/FrameWork/Direct3D.hpp"
+//#include "../Engine/FrameWork/Direct3D.hpp"
+//#include "../Engine/Core/Engine.hpp"
+//#include "../Engine/FrameWork/FrameWork.hpp"
 #include "../Engine/Render/Shaders/ShaderManager.hpp"
 
 #include "../Engine/Math/PickingRay.hpp"
@@ -50,7 +52,7 @@ bool EditorPlacementState::Initialize()
 
 void EditorPlacementState::ProcessInput()
 {
-	Input* input = Input::Get();
+	/*Input* input = Input::Get();
 
 	if (input->IsKeyPressed(VK_RBUTTON))
 	{
@@ -72,34 +74,35 @@ void EditorPlacementState::ProcessInput()
 	{
 		m_scene->AddTexturedObject(
 			m_previewObject->GetModelName(),
-			/*m_previewObject->GetTextureName(),*/
+			//m_previewObject->GetTextureName(),
 			m_previewObject->GetPosition(),
 			m_previewObject->GetRotation(),
 			m_previewObject->GetScale()
 		);
 
 		RenderManager::Get()->AddTexturedObject(m_scene->GetTexturedObjects()[m_scene->GetNrOfTexturedObjects() - 1]);
-	}
+	}*/
 }
 
 void EditorPlacementState::Update(float dt)
 {
 	// Position the preview object
-	if (m_previewObject)
+	/*if (m_previewObject)
 	{
-		Ray ray = HF::CreatePickingRay();
+		Ray ray = HF::CreatePickingRay(FrameWork::Get()->GetPlayerCameraManager()->GetCurrentCamera());
 		Vector3f position = ray.origin + ray.direction * 10;
 
 		m_previewObject->SetPosition(position);
 		m_previewObject->Update();
-	}
+	}*/
 }
 
 void EditorPlacementState::Render()
 {
 	// Render the preview object
 
-	ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
+	/*ID3D11DeviceContext* deviceContext = FrameWork::Get()->GetDirect3D()->GetDeviceContext();
+	//ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
 	ID3D11ShaderResourceView* texture = TextureStorageV2::Get()->GetTexture(m_previewObject->GetTextureIndex());
 	TextureModel* model = ModelStorageV2::Get()->GetTextureModel(m_previewObject->GetModelIndex());
 
@@ -108,7 +111,7 @@ void EditorPlacementState::Render()
 	model->SetupRender();
 	ConstantBufferStorage::Get()->SetVSWorldMatrix(deviceContext, m_previewObject->GetWorldMatrix());
 
-	model->Render();
+	model->Render();*/
 }
 
 //void EditorPlacementState::RenderHUD()

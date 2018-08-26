@@ -1,6 +1,6 @@
 #include "Window.hpp"
 
-Window* Singleton<Window>::s_instance = nullptr;
+//Window* Singleton<Window>::s_instance = nullptr;
 
 Window::Window()
 {
@@ -19,7 +19,7 @@ bool Window::Initialize(const Vector2i& dimensions)
 	}
 
 	m_dimensions = dimensions;
-	windowHandle = this;
+	//windowHandle = this;
 	m_programName = L"Remade_Project";
 	m_hInstance = GetModuleHandle(NULL);
 
@@ -61,7 +61,7 @@ bool Window::Initialize(const Vector2i& dimensions)
 	return true;
 }
 
-const HWND& Window::GetHandle() const
+HWND__* Window::GetHandle() const
 {
 	return m_windowHandle;
 }

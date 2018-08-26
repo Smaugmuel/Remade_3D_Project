@@ -1,17 +1,26 @@
 #include "TextureStorageV2.hpp"
 #include "../../../packages/directxtk_desktop_2015.2018.7.3.1/include/WICTextureLoader.h"
 #include "../../Misc/StringConverter.hpp"
-#include "../../FrameWork/Direct3D.hpp"
+//#include "../../FrameWork/Direct3D.hpp"
+//#include "../../Core/Engine.hpp"
+#include "../../FrameWork/FrameWork.hpp"
 
-TextureStorageV2* Singleton<TextureStorageV2>::s_instance = nullptr;
+//TextureStorageV2* Singleton<TextureStorageV2>::s_instance = nullptr;
 
 TextureStorageV2::TextureStorageV2()
 {
-	LoadTexture("Missing.jpg");
 }
 
 TextureStorageV2::~TextureStorageV2()
 {
+}
+
+bool TextureStorageV2::Initialize(FrameWork * frameWork)
+{
+	m_frameWork = frameWork;
+	if (LoadTexture("Missing.jpg") == -1)
+		return false;
+	return true;
 }
 
 int TextureStorageV2::LoadTexture(const std::string & name)
@@ -29,7 +38,8 @@ int TextureStorageV2::LoadTexture(const std::string & name)
 
 	ID3D11ShaderResourceView* resource = nullptr;
 
-	if (FAILED(DirectX::CreateWICTextureFromFile(Direct3D::Get()->GetDevice(), wstr.value().c_str(), nullptr, &resource)))
+	if (FAILED(DirectX::CreateWICTextureFromFile(m_frameWork->GetDirect3D()->GetDevice(), wstr.value().c_str(), nullptr, &resource)))
+	//if (FAILED(DirectX::CreateWICTextureFromFile(Direct3D::Get()->GetDevice(), wstr.value().c_str(), nullptr, &resource)))
 	{
 		return -1;
 	}

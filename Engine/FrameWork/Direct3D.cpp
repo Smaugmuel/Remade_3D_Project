@@ -1,7 +1,5 @@
 #include "Direct3D.hpp"
 
-Direct3D* Singleton<Direct3D>::s_instance = nullptr;
-
 Direct3D::Direct3D()
 {
 
@@ -128,15 +126,15 @@ Direct3D::~Direct3D()
 	}
 }
 
-bool Direct3D::Initialize(const HWND& windowHandle, const Vector2i& dimensions)
+bool Direct3D::Initialize(HWND__* windowHandle, const Vector2i& windowDimensions)
 {
-	if (dimensions.x <= 0 || dimensions.y <= 0)
+	if (windowDimensions.x <= 0 || windowDimensions.y <= 0)
 	{
 		return false;
 	}
 
 	m_windowHandle = windowHandle;
-	m_windowDimensions = dimensions;
+	m_windowDimensions = windowDimensions;
 
 	if (!InitializeDeviceAndSwapChain())
 	{
@@ -191,10 +189,7 @@ bool Direct3D::Initialize(const HWND& windowHandle, const Vector2i& dimensions)
 
 	return true;
 }
-bool Direct3D::Initialize(Window* window)
-{
-	return Initialize(window->GetHandle(), window->GetDimensions());
-}
+
 bool Direct3D::InitializeDeviceAndSwapChain()
 {
 	DXGI_SWAP_CHAIN_DESC swapChainDesc;
@@ -236,7 +231,7 @@ bool Direct3D::InitializeDefaultRenderTargetView()
 {
 	ID3D11Texture2D* backBuffer = nullptr;
 
-	if (FAILED(m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer)))
+	if (FAILED(m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer)))
 	{
 		return false;
 	}

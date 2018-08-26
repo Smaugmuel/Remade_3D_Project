@@ -2,27 +2,28 @@
 
 //#include "../Engine/Render/RenderManager.hpp"
 
-#include "../Engine/Objects/Models/ModelStorageV2.hpp"
-#include "../Engine/Objects/Materials/MaterialStorageV2.hpp"
-#include "../Engine/Objects/Textures/TextureStorageV2.hpp"
+//#include "../Engine/Objects/Models/ModelStorageV2.hpp"
+//#include "../Engine/Objects/Materials/MaterialStorageV2.hpp"
+//#include "../Engine/Objects/Textures/TextureStorageV2.hpp"
 
-#include "../Engine/Lights/PointLightManager.hpp"
+//#include "../Engine/Lights/PointLightManager.hpp"
 #include "../Engine/Math/Collision.hpp"
 #include "../Engine/Events/EventDispatcher.hpp"
 
-#include "PlayState.hpp"
-#include "MainMenuState.hpp"
-#include "SceneStorage.hpp"
+//#include "PlayState.hpp"
+//#include "MainMenuState.hpp"
+//#include "SceneStorage.hpp"
 //#include "SceneEditorState.hpp"
 
 // These were added / changed when engine was reworked
-#include "../Engine/GUI/GUIManager.hpp"
-#include "../Engine/Render/SceneManager.hpp"
+//#include "../Engine/GUI/GUIManager.hpp"
+//#include "../Engine/Render/SceneManager.hpp"
 #include "../Engine/Core/Engine.hpp"
-#include "../Engine/Camera/PlayerCameraManager.hpp"
-#include "../Engine/Camera/Camera.hpp"
-#include "../Engine/Input/Input.hpp"
-#include <Windows.h>
+//#include "../Engine/Camera/PlayerCameraManager.hpp"
+//#include "../Engine/FrameWork/FrameWork.hpp"
+//#include "../Engine/Camera/Camera.hpp"
+//#include "../Engine/Input/Input.hpp"
+//#include <Windows.h>
 
 Game* Singleton<Game>::s_instance = nullptr;
 
@@ -39,22 +40,22 @@ Game::~Game()
 
 	//RenderManager::Delete();
 	
-	SceneStorage::Delete();
+	/*SceneStorage::Delete();*/
 
 	EventDispatcher::Delete();
 
-	PointLightManager::Delete();
+	//PointLightManager::Delete();
 	Collision::Delete();
 
 	// Added when engine was reworked
 	Engine::Delete();
-	GUIManager::Delete();
-	SceneManager::Delete();
+	//GUIManager::Delete();
+	//SceneManager::Delete();
 }
 
 bool Game::Initialize()
 {
-	if (!Engine::Get()->Initialize(1500, 800))
+	if (!Engine::Get()->Initialize(Vector2i(1500, 800)))
 		return false;
 	
 	/*if (!SceneStorage::Get()->LoadScene("Scene1"))
@@ -76,27 +77,72 @@ bool Game::Initialize()
 	m_shutdown_flag = false;
 #endif
 
-	Camera* cam = PlayerCameraManager::Get()->CreateCamera();
-	cam->SetPosition(0, 0, -10);
-	cam->SetTarget(0, 0, 0);
-	cam->Update();
+	m_cameraIndex = Engine::Get()->GetCameraManager()->CreateCamera();
+	CameraV3* cam = Engine::Get()->GetCameraManager()->GetCamera(m_cameraIndex);
+	
+	cam->position = Vector3f(0, 20, -20);
+	cam->target = Vector3f(0, 0, 0);
+	cam->up = Vector3f(0, 1, 0);
+	cam->UpdateViewMatrix();
+	cam->fov = 3.14159265f / 2.0f;
+	cam->aspectRatio = Engine::Get()->GetWindowSize().x / static_cast<float>(Engine::Get()->GetWindowSize().y);
+	cam->nearPlane = 0.01f;
+	cam->farPlane = 1000.0f;
+	cam->UpdateProjectionMatrix();
+	Engine::Get()->GetSceneManager()->SetViewAndProjectionMatrices(cam->viewMatrix.GetTranspose(), cam->projectionMatrix.GetTranspose());
 
-	for (int i = 0; i < 100; i++)
+	/*cam->SetPosition(0, 0, -10);
+	cam->SetTarget(0, 0, 0);
+	cam->Update();*/
+
+	/*ObjectV3* obj = Engine::Get()->GetSceneManager()->GetObjectV3(Engine::Get()->GetSceneManager()->CreateObject());
+	if (!obj)
+		return false;
+	obj->modelIndex = Engine::Get()->GetModelManager()->LoadModel("SimpleCharacter.obj");
+	if (obj->modelIndex == -1)
+		return false;
+	obj->position = Vector3f(0.0f, 0.0f, 0.0f);
+	obj->rotation = Vector3f(0.0f, 0.0f, 0.0f);
+	obj->scale = Vector3f(1.0f, 1.0f, 1.0f);
+	
+	Matrix trans;
+	trans.SetTranslation(obj->position);
+	Matrix rot;
+	rot.SetRotationAroundAxis(Vector3f(0, 1, 0), 0);
+	Matrix scale;
+	scale.SetScale(obj->scale);
+	obj->worldMatrix = trans; //* rot * scale;*/
+
+	for (int i = 0; i < 10; i++)
 	{
-		for (int j = 0; j < 100; j++)
+		for (int j = 0; j < 10; j++)
 		{
-			int obj1 = SceneManager::Get()->AddObject("SimpleCharacter.obj", Vector3f(-100 + 2 * i, -10, j * 2));
-			if (obj1 == -1)
+			int index = Engine::Get()->GetSceneManager()->CreateObject();
+			if (index == -1)
 				return false;
+
+			ObjectV3* obj = Engine::Get()->GetSceneManager()->GetObjectV3(index);
+			obj->modelIndex = Engine::Get()->GetModelManager()->LoadModel("SimpleCharacter.obj");
+			if (obj->modelIndex == -1)
+				return false;
+
+			obj->position = Vector3f(static_cast<float>(-10 + 2 * i), 0.0f, static_cast<float>(j * 2));
+			obj->worldMatrix.SetTranslation(obj->position);
+
+			//int obj1 = SceneManager::Get()->AddObject("SimpleCharacter.obj", Vector3f(-100 + 2 * i, -10, j * 2));
+			//if (obj1 == -1)
+			//	return false;
 		}
 	}
 
-
-	int gui1 = GUIManager::Get()->CreateText("hello world", Vector2i(0, 100), Fonts::COMIC_SANS_MS_16);
-	if (gui1 == -1)
+	int guiIndex = Engine::Get()->GetGUIManager()->CreateText("hello world", Vector2i(0, 100), Fonts::COMIC_SANS_MS_16);
+	if (guiIndex == -1)
 		return false;
+	/*int gui1 = GUIManager::Get()->CreateText("hello world", Vector2i(0, 100), Fonts::COMIC_SANS_MS_16);
+	if (gui1 == -1)
+		return false;*/
 
-	SceneManager::Get()->SetRenderMode(RenderModes::NORMAL);
+	//SceneManager::Get()->SetRenderMode(RenderModes::NORMAL);
 
 	Engine::Get()->ShowFPSCounter();
 
@@ -106,8 +152,8 @@ bool Game::Initialize()
 void Game::Run()
 {
 	Engine* engine = Engine::Get();
-	SceneManager* sceneManager = SceneManager::Get();
-	GUIManager* guiManager = GUIManager::Get();
+	//SceneManager* sceneManager = SceneManager::Get();
+	//GUIManager* guiManager = GUIManager::Get();
 
 	while (true)
 	{
@@ -128,25 +174,26 @@ void Game::Run()
 			}
 		}*/
 
-		if (Input::Get()->IsKeyPressed('T'))
+		/*if (Input::Get()->IsKeyPressed('T'))
 		{
 			sceneManager->SetObjectModel(5000, "generator.obj");
-		}
+		}*/
 
 
 		if (!engine->Update())
 			break;
 
-		engine->Clear(0, 1, 0, 1);
-		sceneManager->Render();
-		guiManager->Render();
+		engine->Clear(0, 0, 0, 1);
+		engine->Render();
+		/*sceneManager->Render();
+		guiManager->Render();*/
 		engine->Present();
 	}
 }
 
 void Game::ReceiveEvent(const Event & e)
 {
-	switch (e.type)
+	/*switch (e.type)
 	{
 	case EventType::FAILED_TO_INITIALIZE:
 		m_shutdown_flag = true;
@@ -155,5 +202,5 @@ void Game::ReceiveEvent(const Event & e)
 		break;
 	default:
 		break;
-	}
+	}*/
 }

@@ -1,9 +1,9 @@
 #include "EditorSelectionState.hpp"
 
-#include "../Engine/Input/Input.hpp"
+//#include "../Engine/Input/Input.hpp"
 #include "../Engine/Objects/Textures/TextureStorageV2.hpp"
 #include "../Engine/Objects/Objects/TextureObject.hpp"
-#include "../Engine/FrameWork/Direct3D.hpp"
+//#include "../Engine/FrameWork/FrameWork.hpp"
 #include "../Engine/Render/RenderManager.hpp"
 #include "../Engine/Math/PickingRay.hpp"
 #include "../Engine/Math/Collision.hpp"
@@ -27,21 +27,21 @@ bool EditorSelectionState::Initialize()
 		return false;
 	}*/
 
-	if (TextureStorageV2::Get()->LoadTexture("BrickWallRaw.jpg") != -1)
+	/*if (TextureStorageV2::Get()->LoadTexture("BrickWallRaw.jpg") != -1)
 	{
 		return false;
-	}
+	}*/
 
 	return true;
 }
 
 void EditorSelectionState::ProcessInput()
 {
-	Input* input = Input::Get();
+	/*Input* input = Input::Get();
 
 	if (input->IsKeyPressed(VK_LBUTTON))
 	{
-		SelectCube(HF::CreatePickingRay());
+		SelectCube(HF::CreatePickingRay(FrameWork::Get()->GetPlayerCameraManager()->GetCurrentCamera()));
 	}
 
 	if (input->IsKeyPressed(VK_DELETE))
@@ -57,7 +57,7 @@ void EditorSelectionState::ProcessInput()
 				EventDispatcher::Get()->Emit(Event(EventType::SWITCHED_SELECTED_OBJECT, static_cast<void*>(m_selectedObject)));
 			}
 		}
-	}
+	}*/
 }
 
 void EditorSelectionState::Update(float dt)

@@ -2,7 +2,8 @@
 
 #include "../Engine/Input/Input.hpp"
 #include "../Engine/Render/RenderManager.hpp"
-#include "../Engine/Camera/PlayerCameraManager.hpp"
+//#include "../Engine/Camera/PlayerCameraManager.hpp"
+#include "../Engine/FrameWork/FrameWork.hpp"
 #include "../Engine/Camera/Camera.hpp"
 #include "../Engine/Objects/Objects/TextureObject.hpp"
 #include "../Engine/Math/Frustum.hpp"
@@ -41,7 +42,7 @@ void EditorMoveState::ProcessInput()
 		{
 			// Set the current movement directions
 
-			Camera* cam = PlayerCameraManager::Get()->GetCurrentCamera();
+			Camera* cam = FrameWork::Get()->GetPlayerCameraManager()->GetCurrentCamera();
 			Vector3f corners[8];
 
 			FrustumCorners(cam->GetViewMatrix(), cam->GetProjectionMatrix(), corners);

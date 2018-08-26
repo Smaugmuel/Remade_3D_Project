@@ -1,6 +1,5 @@
 #ifndef DIRECT_3D_HPP
 #define DIRECT_3D_HPP
-#include "../Misc/Singleton.hpp"
 #include "../Math/Vector2.hpp"
 #include "Window.hpp"
 #include <vector>
@@ -20,16 +19,13 @@ enum DeferredBufferType
 	//S_DEPTH				// Shadow
 };
 
-class Direct3D final : public Singleton<Direct3D>
+class Direct3D final
 {
-	friend class Singleton<Direct3D>;
-
+public:
 	Direct3D();
 	~Direct3D();
 
-public:
-	bool Initialize(const HWND& windowHandle, const Vector2i& dimensions);
-	bool Initialize(Window* window);
+	bool Initialize(HWND__* windowHandle, const Vector2i& windowDimensions);
 
 	void ClearDefaultTarget(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
 	void ClearDeferredTargets(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
@@ -74,8 +70,9 @@ private:
 	bool InitializeShadowViewport();
 
 
-	HWND m_windowHandle;
+	HWND__* m_windowHandle;
 	Vector2i m_windowDimensions;
+
 	IDXGISwapChain* m_swapChain;
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_deviceContext;

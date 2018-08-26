@@ -1,20 +1,20 @@
 #ifndef PLAYER_CAMERA_MANAGER_HPP
 #define PLAYER_CAMERA_MANAGER_HPP
-#include "../Misc/Singleton.hpp"
+//#include "../Misc/Singleton.hpp"
 #include <vector>
 #include <memory>
 #include "../Math/Vector2.hpp"
 
 class Camera;
 
-class PlayerCameraManager final : public Singleton<PlayerCameraManager>
+class PlayerCameraManager final/* : public Singleton<PlayerCameraManager>*/
 {
-	friend class Singleton <PlayerCameraManager>;
+	//friend class Singleton <PlayerCameraManager>;
 
+public:
 	PlayerCameraManager();
 	~PlayerCameraManager();
 
-public:
 	bool Initialize();
 
 	void Update();
