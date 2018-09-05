@@ -40,3 +40,41 @@ void CameraV3::UpdateProjectionMatrix()
 {
 	projectionMatrix.SetProjection(fov, aspectRatio, nearPlane, farPlane);
 }
+
+void CameraV3::MoveForward(float amount)
+{
+	Vector3f dir = TargetDirection();
+	position += Forward() * amount;
+	target = position + dir;
+}
+
+void CameraV3::MoveRight(float amount)
+{
+	Vector3f dir = TargetDirection();
+	position += Right() * amount;
+	target = position + dir;
+}
+
+void CameraV3::RotateUp(float amount)
+{
+
+}
+
+void CameraV3::RotateDown(float amount)
+{
+}
+
+Vector3f CameraV3::TargetDirection() const
+{
+	return (target - position).normalized();
+}
+
+Vector3f CameraV3::Right() const
+{
+	return TargetDirection().crossLH(up).normalized();
+}
+
+Vector3f CameraV3::Forward() const
+{
+	return Right().crossRH(up).normalized();
+}

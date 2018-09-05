@@ -48,37 +48,6 @@ Direct3D::~Direct3D()
 	//}
 
 
-	// Deferred
-	if (m_d_depthStencilView)
-	{
-		m_d_depthStencilView->Release();
-		m_d_depthStencilView = nullptr;
-	}
-	if (m_d_depthStencilBuffer)
-	{
-		m_d_depthStencilBuffer->Release();
-		m_d_depthStencilBuffer = nullptr;
-	}
-	for (unsigned int i = 0; i < DeferredBufferType::NR_OF_D_ELEMENTS; i++)
-	{
-		if (m_d_shaderResourceViews[i])
-		{
-			m_d_shaderResourceViews[i]->Release();
-			m_d_shaderResourceViews[i] = nullptr;
-		}
-		if (m_d_renderTargetViews[i])
-		{
-			m_d_renderTargetViews[i]->Release();
-			m_d_renderTargetViews[i] = nullptr;
-		}
-		if (m_d_renderTargetTextures[i])
-		{
-			m_d_renderTargetTextures[i]->Release();
-			m_d_renderTargetTextures[i] = nullptr;
-		}
-	}
-
-
 	// Default
 	if (m_depthStencilView)
 	{
@@ -154,18 +123,10 @@ bool Direct3D::Initialize(HWND__* windowHandle, const Vector2i& windowDimensions
 	}
 
 	// Deferred
-	if (!InitializeDeferredRenderTargetViews())
+	/*if (!m_deferredRenderingManager.InitializeNormal(m_device, m_deviceContext, windowDimensions))
 	{
 		return false;
-	}
-	if (!InitializeDeferredDepthBufferAndDepthStencilView())
-	{
-		return false;
-	}
-	if (!InitializeDeferredViewport())
-	{
-		return false;
-	}
+	}*/
 
 	/* Render to texture */
 	//if (!InitializeRenderToTextureRenderTargetView())
@@ -397,113 +358,6 @@ bool Direct3D::InitializeDefaultRasterizerState()
 	return true;
 }
 
-bool Direct3D::InitializeDeferredRenderTargetViews()
-{
-	D3D11_TEXTURE2D_DESC textureDesc;
-	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-
-
-	ZeroMemory(&textureDesc, sizeof(textureDesc));
-	textureDesc.Width = m_windowDimensions.x;
-	textureDesc.Height = m_windowDimensions.y;
-	textureDesc.MipLevels = 1;
-	textureDesc.ArraySize = 1;
-	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	textureDesc.SampleDesc.Count = 1;
-	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	textureDesc.CPUAccessFlags = 0;
-	textureDesc.MiscFlags = 0;
-
-	for (unsigned int i = 0; i < DeferredBufferType::NR_OF_D_ELEMENTS; i++)
-	{
-		if (FAILED(m_device->CreateTexture2D(&textureDesc, nullptr, &m_d_renderTargetTextures[i])))
-			return false;
-	}
-
-	renderTargetViewDesc.Format = textureDesc.Format;
-	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	renderTargetViewDesc.Texture2D.MipSlice = 0;
-
-	for (unsigned int i = 0; i < DeferredBufferType::NR_OF_D_ELEMENTS; i++)
-	{
-		if (FAILED(m_device->CreateRenderTargetView(m_d_renderTargetTextures[i], &renderTargetViewDesc, &m_d_renderTargetViews[i])))
-			return false;
-	}
-
-	shaderResourceViewDesc.Format = textureDesc.Format;
-	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-	shaderResourceViewDesc.Texture2D.MipLevels = 1;
-
-	for (unsigned int i = 0; i < DeferredBufferType::NR_OF_D_ELEMENTS; i++)
-	{
-		if (FAILED(m_device->CreateShaderResourceView(m_d_renderTargetTextures[i], &shaderResourceViewDesc, &m_d_shaderResourceViews[i])))
-			return false;
-	}
-
-	return true;
-}
-bool Direct3D::InitializeDeferredDepthBufferAndDepthStencilView()
-{
-	D3D11_TEXTURE2D_DESC depthBufferDesc;
-	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
-
-	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
-	depthBufferDesc.Width = m_windowDimensions.x;
-	depthBufferDesc.Height = m_windowDimensions.y;
-	depthBufferDesc.MipLevels = 1;
-	depthBufferDesc.ArraySize = 1;
-	depthBufferDesc.Format = /*DXGI_FORMAT_D32_FLOAT*/ /*DXGI_FORMAT_R32G32B32A32_FLOAT*/ DXGI_FORMAT_R24G8_TYPELESS /*DXGI_FORMAT_D24_UNORM_S8_UINT*/;
-	depthBufferDesc.SampleDesc.Count = 1;
-	depthBufferDesc.SampleDesc.Quality = 0;
-	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-	depthBufferDesc.CPUAccessFlags = /*D3D11_USAGE_DEFAULT*/ 0;
-	depthBufferDesc.MiscFlags = 0;
-
-	if (FAILED(m_device->CreateTexture2D(&depthBufferDesc, nullptr, &m_d_depthStencilBuffer)))
-	{
-		return false;
-	}
-
-	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-	depthStencilViewDesc.Flags = 0;
-	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	depthStencilViewDesc.Texture2D.MipSlice = 0;
-
-	if (FAILED(m_device->CreateDepthStencilView(m_d_depthStencilBuffer, &depthStencilViewDesc, &m_d_depthStencilView)))
-	{
-		return false;
-	}
-
-
-	/*
-	*
-	*
-	*
-	* Why is this released?
-	*
-	*
-	*/
-	//m_d_depthStencilBuffer->Release();
-
-	return true;
-}
-bool Direct3D::InitializeDeferredViewport()
-{
-	m_d_viewPort.Width = (float)m_windowDimensions.x;
-	m_d_viewPort.Height = (float)m_windowDimensions.y;
-	m_d_viewPort.MinDepth = 0.0f;
-	m_d_viewPort.MaxDepth = 1.0f;
-	m_d_viewPort.TopLeftX = 0.0f;
-	m_d_viewPort.TopLeftY = 0.0f;
-
-	return true;
-}
-
 bool Direct3D::InitializeShadowDepthBufferAndDepthStencilView()
 {
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
@@ -572,16 +426,10 @@ void Direct3D::ClearDefaultTarget(float r, float g, float b, float a)
 	m_deviceContext->ClearRenderTargetView(m_renderTargetView, clearColor);
 	m_deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
-void Direct3D::ClearDeferredTargets(float r, float g, float b, float a)
-{
-	float clearColor[] = { r, g, b, a };
-	for (unsigned int i = 0; i < DeferredBufferType::NR_OF_D_ELEMENTS; i++)
-	{
-		m_deviceContext->ClearRenderTargetView(m_d_renderTargetViews[i], clearColor);
-	}
-
-	m_deviceContext->ClearDepthStencilView(m_d_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-}
+//void Direct3D::ClearDeferredTargets(float r, float g, float b, float a)
+//{
+//	m_deferredRenderingManager.ClearRenderTargets(r, g, b, a);
+//}
 void Direct3D::ClearShadowTarget()
 {
 	m_deviceContext->ClearDepthStencilView(m_s_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -589,7 +437,7 @@ void Direct3D::ClearShadowTarget()
 void Direct3D::ClearAllTargets()
 {
 	ClearDefaultTarget();
-	ClearDeferredTargets();
+	//ClearDeferredTargets();
 	ClearShadowTarget();
 }
 
@@ -603,11 +451,10 @@ void Direct3D::SetDefaultTarget()
 	m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
 	m_deviceContext->RSSetViewports(1, &m_viewPort);
 }
-void Direct3D::SetDeferredTargets()
-{
-	m_deviceContext->OMSetRenderTargets(DeferredBufferType::NR_OF_D_ELEMENTS, m_d_renderTargetViews, m_d_depthStencilView);
-	m_deviceContext->RSSetViewports(1, &m_d_viewPort);
-}
+//void Direct3D::SetDeferredTargets()
+//{
+//	m_deferredRenderingManager.SetRenderTargets();
+//}
 void Direct3D::SetShadowTarget()
 {
 	m_deviceContext->OMSetRenderTargets(0, nullptr, m_s_depthStencilView);
@@ -645,10 +492,10 @@ ID3D11DeviceContext* Direct3D::GetDeviceContext() const
 	return m_deviceContext;
 }
 
-ID3D11ShaderResourceView ** Direct3D::GetDeferredShaderResourceViews()
-{
-	return m_d_shaderResourceViews;
-}
+//ID3D11ShaderResourceView ** Direct3D::GetDeferredShaderResourceViews()
+//{
+//	return m_deferredRenderingManager.GetShaderResourceViews();
+//}
 ID3D11ShaderResourceView * Direct3D::GetShadowShaderResourceView()
 {
 	return m_s_shaderResourceView;

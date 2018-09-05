@@ -18,3 +18,8 @@ CameraV3 * CameraManagerV2::GetCamera(int index)
 {
 	return index >= 0 && index < static_cast<int>(m_cameras.size()) ? &m_cameras[index] : nullptr;
 }
+
+unsigned int CameraManagerV2::NrOfCameras() const
+{
+	return m_cameras.size();
+}

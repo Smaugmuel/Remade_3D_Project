@@ -20,7 +20,7 @@ bool FrameWorkManager::Initialize(Vector2i windowSize)
 		return false;
 	if (!m_vertexBufferManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext()))
 		return false;
-	if (!m_deferredScreenTarget.Initialize(this))
+	if (!m_deferredRenderingManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext(), m_window.GetDimensions(), &m_vertexBufferManager, &m_shaderManager))
 		return false;
 	if (!m_shaderManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext()))
 		return false;
@@ -36,7 +36,7 @@ bool FrameWorkManager::Initialize(Vector2i windowSize)
 
 void FrameWorkManager::SetFirstPassRenderTargets()
 {
-	m_d3d.SetDeferredTargets();
+	m_deferredRenderingManager.SetRenderTargets();
 }
 
 void FrameWorkManager::SetLightPassRenderTarget()
@@ -46,7 +46,7 @@ void FrameWorkManager::SetLightPassRenderTarget()
 
 void FrameWorkManager::ClearFirstPassRenderTargets(float r, float g, float b, float a)
 {
-	m_d3d.ClearDeferredTargets(r, g, b, a);
+	m_deferredRenderingManager.ClearRenderTargets(r, g, b, a);
 }
 
 void FrameWorkManager::ClearLightPassRenderTargets(float r, float g, float b, float a)
@@ -62,7 +62,8 @@ void FrameWorkManager::RenderWithCurrentSettings(int nrOfVertices)
 
 void FrameWorkManager::RenderLightPass()
 {
-	m_deferredScreenTarget.Render();
+	m_d3d.SetDefaultTarget();
+	m_deferredRenderingManager.RenderLightPass();
 }
 
 void FrameWorkManager::Present()

@@ -30,6 +30,9 @@ bool Engine::Initialize(Vector2i windowSize)
 
 	m_isRunning = true;
 	m_windowSize = windowSize;
+	
+	m_renderCameraIndex = -1;
+	m_hasFirstPersonControls = false;
 
 	m_t1 = Clock::now();
 	m_t2 = Clock::now();
@@ -56,17 +59,49 @@ bool Engine::Update()
 	}
 	
 	/*
-	Update input and fps counter
+	Update input
 	*/
 	m_frameWorkManager.GetInput()->Update();
-	m_fps.Update(dt);
-
-
+	
 	if (m_frameWorkManager.GetInput()->IsKeyDown(VK_ESCAPE))
 	{
 		m_isRunning = false;
 	}
+	
+	/*
+	Update fps counter
+	*/
+	m_fps.Update(dt);
 
+
+	if (m_renderCameraIndex == -1)
+	{
+		if (m_cameraManager.NrOfCameras() > 0)
+		{
+			// No camera is set, but a camera exists
+			m_renderCameraIndex = 0;
+		}
+		else
+		{
+			// No camera is set, and no camera exists
+		}
+	}
+	else
+	{
+		if (CameraV3* cam = m_cameraManager.GetCamera(m_renderCameraIndex); cam)
+		{
+			// A camera is set, and it exists
+			if (m_hasFirstPersonControls)
+				ControlCamera(dt);
+			m_sceneManager.SetViewAndProjectionMatrices(cam->viewMatrix, cam->projectionMatrix);
+		}
+		else
+		{
+			// A camera is set, but it doesn't exist
+			m_renderCameraIndex = -1;
+		}
+	}
+	
 	return m_isRunning;
 }
 
@@ -85,6 +120,50 @@ void Engine::Render()
 void Engine::Present()
 {
 	m_frameWorkManager.Present();
+}
+
+void Engine::EnableFirstPersonControls()
+{
+	m_hasFirstPersonControls = true;
+}
+
+void Engine::DisableFirstPersonControls()
+{
+	m_hasFirstPersonControls = false;
+}
+
+void Engine::ControlCamera(float dt)
+{
+	Input* input = m_frameWorkManager.GetInput();
+	CameraV3* cam = m_cameraManager.GetCamera(m_renderCameraIndex);
+
+	bool isChanged = false;
+
+	if (input->IsKeyDown('D'))
+	{
+		cam->MoveRight(10.0f * dt);
+		isChanged = true;
+	}
+	if (input->IsKeyDown('A'))
+	{
+		cam->MoveRight(-10.0f * dt);
+		isChanged = true;
+	}
+	if (input->IsKeyDown('W'))
+	{
+		cam->MoveForward(10.0f * dt);
+		isChanged = true;
+	}
+	if (input->IsKeyDown('S'))
+	{
+		cam->MoveForward(-10.0f * dt);
+		isChanged = true;
+	}
+
+	if (isChanged)
+	{
+		cam->UpdateViewMatrix();
+	}
 }
 
 void Engine::ShowFPSCounter()
@@ -132,6 +211,11 @@ ModelManager * Engine::GetModelManager()
 MaterialManager * Engine::GetMaterialManager()
 {
 	return &m_materialManager;
+}
+
+Input * Engine::GetInput()
+{
+	return m_frameWorkManager.GetInput();
 }
 
 Vector2i Engine::GetWindowSize() const

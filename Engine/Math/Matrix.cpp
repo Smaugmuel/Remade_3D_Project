@@ -192,6 +192,41 @@ Matrix Matrix::GetTranspose() const
 	);
 }
 
+Matrix Matrix::Translation(const Vector3f & translation)
+{
+	return Matrix(DirectX::XMMatrixTranslation(translation.x, translation.y, translation.z));
+}
+
+Matrix Matrix::Rotation(const Vector3f & axis, float angle)
+{
+	return Matrix(DirectX::XMMatrixRotationAxis({ axis.x, axis.y, axis.z }, angle));
+}
+
+Matrix Matrix::Scale(const Vector3f & scale)
+{
+	return Matrix(DirectX::XMMatrixScaling(scale.x, scale.y, scale.z));
+}
+
+Matrix Matrix::View(const Vector3f & position, const Vector3f & target, const Vector3f & up)
+{
+	return Matrix(DirectX::XMMatrixLookAtLH({ position.x, position.y, position.z }, { target.x, target.y, target.z }, { up.x, up.y, up.z }));
+}
+
+Matrix Matrix::Projection(float fov, float aspectRatio, float nearPlane, float farPlane)
+{
+	return Matrix(DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlane, farPlane));
+}
+
+Matrix Matrix::Transpose(const Matrix & matrix)
+{
+	return matrix.GetTranspose();
+}
+
+Matrix::Matrix(const DirectX::XMMATRIX & m)
+{
+	std::memcpy(rows, m.r, 64U);
+}
+
 Matrix & Matrix::SetFromXMMATRIX(const DirectX::XMMATRIX & m)
 {
 	std::memcpy(rows, m.r, 64U);

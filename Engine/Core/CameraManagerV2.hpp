@@ -11,6 +11,7 @@ public:
 
 	int CreateCamera();
 	CameraV3* GetCamera(int index);
+	unsigned int NrOfCameras() const;
 
 private:
 	std::vector<CameraV3> m_cameras;

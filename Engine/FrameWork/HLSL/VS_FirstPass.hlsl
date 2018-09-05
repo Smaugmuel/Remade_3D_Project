@@ -1,7 +1,8 @@
 cbuffer PerFrameBuffer : register(b0)
 {
-	float4x4 viewMatrix;
-	float4x4 projectionMatrix;
+	/*float4x4 viewMatrix;
+	float4x4 projectionMatrix;*/
+	float4x4 viewProjectionMatrix;
 };
 
 cbuffer PerObjectBuffer : register(b1)
@@ -29,8 +30,9 @@ VS_OUTPUT_DATA main(VS_INPUT_DATA input)
 
 	output.position = mul(float4(input.position, 1.0f), worldMatrix);
 	output.worldPosition = output.position.xyz;
-	output.position = mul(output.position, viewMatrix);
-	output.position = mul(output.position, projectionMatrix);
+	output.position = mul(output.position, viewProjectionMatrix);
+	/*output.position = mul(output.position, viewMatrix);
+	output.position = mul(output.position, projectionMatrix);*/
 	
 	output.normal = mul(float4(input.normal, 0.0f), worldMatrix).xyz;
 

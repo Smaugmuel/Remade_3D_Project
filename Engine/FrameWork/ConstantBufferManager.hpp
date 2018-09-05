@@ -32,7 +32,7 @@ private:
 	ID3D11Device * m_device;
 	ID3D11DeviceContext* m_deviceContext;
 	
-	static const unsigned int MAX_NR_OF_BUFFERS = 2;
+	static const unsigned int MAX_NR_OF_BUFFERS = 4;
 	Buffer m_buffers[MAX_NR_OF_BUFFERS];
 	unsigned int m_nrOfBuffers;
 

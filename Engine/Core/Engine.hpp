@@ -22,6 +22,9 @@ public:
 	void Render();
 	void Present();
 
+	void EnableFirstPersonControls();
+	void DisableFirstPersonControls();
+
 	void ShowFPSCounter();
 	void HideFPSCounter();
 
@@ -33,6 +36,7 @@ public:
 	CameraManagerV2* GetCameraManager();
 	ModelManager* GetModelManager();
 	MaterialManager* GetMaterialManager();
+	Input* GetInput();
 
 	Vector2i GetWindowSize() const;
 
@@ -45,20 +49,32 @@ private:
 	Engine();
 	~Engine();
 
+	void ControlCamera(float dt);
+
 	bool m_isRunning;
 
 	Vector2i m_windowSize;
 
-	FPSCounterV2 m_fps;
+	int m_renderCameraIndex;
+	bool m_hasFirstPersonControls;
 
-	Time m_t1;
-	Time m_t2;
-
+	/*
+	NOTE:
+	The FPS counter has a pointer to the gui manager
+	Upon FPS counter destruction, it calls one of gui manager's functions
+	Because of this, AND because the gui manager is destroyed when the framework manager is destroyed,
+	AND because elements are created in the order up->down and destroyed in the order down->up,
+	the FPS counter must be created AFTER (not directly) the framework manager
+	*/
 	FrameWorkManager m_frameWorkManager;
 	ModelManager m_modelManager;
 	MaterialManager m_materialManager;
 	SceneManagerV3 m_sceneManager;
 	CameraManagerV2 m_cameraManager;
+
+	FPSCounterV2 m_fps;
+	Time m_t1;
+	Time m_t2;
 };
 
 #endif

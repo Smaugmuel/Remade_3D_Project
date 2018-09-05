@@ -66,6 +66,8 @@ private:
 
 	int m_cameraIndex;
 	
+	int m_GUIhelloWorldIndex;
+
 	/*RenderMode m_renderMode;
 	HUDMode m_HUDMode;
 	OrthogonalMode m_orthogonal;*/

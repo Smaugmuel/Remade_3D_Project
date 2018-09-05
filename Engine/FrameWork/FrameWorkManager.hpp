@@ -5,10 +5,10 @@
 #include "Direct3D.hpp"
 #include "ConstantBufferManager.hpp"
 #include "VertexBufferManager.hpp"
+#include "DeferredRenderingManager.hpp"
 #include "ShaderManagerV2.hpp"
 #include "TextureManager.hpp"
 #include "GUIManager.hpp"
-#include "DeferredScreenTarget.hpp"
 #include "SamplerManager.hpp"
 
 class FrameWorkManager final
@@ -46,7 +46,7 @@ private:
 	Direct3D m_d3d;
 	ConstantBufferManager m_constantBufferManager;
 	VertexBufferManager m_vertexBufferManager;
-	DeferredScreenTarget m_deferredScreenTarget;
+	DeferredRenderingManager m_deferredRenderingManager;
 	ShaderManagerV2 m_shaderManager;
 	TextureManager m_textureManager;
 	GUIManager m_guiManager;

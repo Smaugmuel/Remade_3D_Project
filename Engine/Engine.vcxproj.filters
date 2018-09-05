@@ -168,9 +168,6 @@
     <ClCompile Include="FrameWork\TextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FrameWork\DeferredScreenTarget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FrameWork\ShaderCreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -211,6 +208,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core\CameraV3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameWork\DeferredRenderingManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameWork\Shaders\BaseShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameWork\Shaders\FirstPassShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -410,13 +416,7 @@
     <ClInclude Include="FrameWork\TextureManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FrameWork\DeferredScreenTarget.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FrameWork\ShaderCreator.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameWork\ReusableStorage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FrameWork\GUIManager.hpp">
@@ -458,6 +458,21 @@
     <ClInclude Include="FrameWork\SamplerManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Core\ReusableStorage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\DeferredRenderingManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\LightManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\Shaders\BaseShader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\Shaders\FirstPassShader.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -470,5 +485,6 @@
     <FxCompile Include="FrameWork\HLSL\VS_LightPass.hlsl" />
     <FxCompile Include="FrameWork\HLSL\PS_FirstPass.hlsl" />
     <FxCompile Include="FrameWork\HLSL\PS_LightPass.hlsl" />
+    <FxCompile Include="FrameWork\HLSL\VS_FirstPassMatrixBuffer.hlsl" />
   </ItemGroup>
 </Project>

@@ -8,7 +8,10 @@ FPSCounterV2::FPSCounterV2() : m_id(-1), m_timeElapsed(0.0f), m_nrOfUpdates(0), 
 
 FPSCounterV2::~FPSCounterV2()
 {
-	m_guiManager->RemoveText(m_id);
+	if (m_guiManager && m_id != -1)
+	{
+		m_guiManager->RemoveText(m_id);
+	}
 }
 
 bool FPSCounterV2::Initialize(GUIManager * guiManager)

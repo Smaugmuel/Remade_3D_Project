@@ -27,7 +27,7 @@
 
 Game* Singleton<Game>::s_instance = nullptr;
 
-Game::Game()
+Game::Game() : m_cameraIndex(-1), m_GUIhelloWorldIndex(-1)
 {
 	EventDispatcher::Get()->Subscribe(EventType::POP_GAMESTATE, this);
 	EventDispatcher::Get()->Subscribe(EventType::FAILED_TO_INITIALIZE, this);
@@ -78,9 +78,10 @@ bool Game::Initialize()
 #endif
 
 	m_cameraIndex = Engine::Get()->GetCameraManager()->CreateCamera();
+	Engine::Get()->EnableFirstPersonControls();
 	CameraV3* cam = Engine::Get()->GetCameraManager()->GetCamera(m_cameraIndex);
 	
-	cam->position = Vector3f(0, 20, -20);
+	cam->position = Vector3f(0, 20, -128);
 	cam->target = Vector3f(0, 0, 0);
 	cam->up = Vector3f(0, 1, 0);
 	cam->UpdateViewMatrix();
@@ -89,7 +90,7 @@ bool Game::Initialize()
 	cam->nearPlane = 0.01f;
 	cam->farPlane = 1000.0f;
 	cam->UpdateProjectionMatrix();
-	Engine::Get()->GetSceneManager()->SetViewAndProjectionMatrices(cam->viewMatrix.GetTranspose(), cam->projectionMatrix.GetTranspose());
+	Engine::Get()->GetSceneManager()->SetViewAndProjectionMatrices(cam->viewMatrix, cam->projectionMatrix);
 
 	/*cam->SetPosition(0, 0, -10);
 	cam->SetTarget(0, 0, 0);
@@ -117,20 +118,26 @@ bool Game::Initialize()
 	Matrix m(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 	Matrix m2 = m.GetTranspose();*/
 
-	for (int i = 0; i < 100; i++)
+	const unsigned int nObjX = 2;//128U;
+	const unsigned int nObjZ = 2;// MAX_NR_OF_OBJECTS / nObjX;
+	Vector3f startPos = Vector3f(nObjX, 0, nObjZ) * -1.0f;
+	Vector3f offset(4, 0, 4);
+
+	for (int i = 0; i < nObjX; i++)
 	{
-		for (int j = 0; j < 200; j++)
+		for (int j = 0; j < nObjZ; j++)
 		{
 			int index = Engine::Get()->GetSceneManager()->CreateObject();
 			if (index == -1)
 				return false;
 
 			ObjectV3* obj = Engine::Get()->GetSceneManager()->GetObjectV3(index);
-			obj->modelIndex = Engine::Get()->GetModelManager()->LoadModel("SimpleCharacter.obj");
+			//obj->modelIndex = Engine::Get()->GetModelManager()->LoadModel("SimpleCharacter.obj");
+			obj->modelIndex = Engine::Get()->GetModelManager()->LoadModel("cube_uv.obj");
 			if (obj->modelIndex == -1)
 				return false;
 
-			obj->position = Vector3f(static_cast<float>(-100 + 2 * i), 0.0f, static_cast<float>(j * 2));
+			obj->position = startPos + Vector3f(offset.x * i, offset.y * 0, offset.z * j);
 			obj->worldMatrix.SetTranslation(obj->position);
 
 			//int obj1 = SceneManager::Get()->AddObject("SimpleCharacter.obj", Vector3f(-100 + 2 * i, -10, j * 2));
@@ -139,12 +146,9 @@ bool Game::Initialize()
 		}
 	}
 
-	int guiIndex = Engine::Get()->GetGUIManager()->CreateText("hello world", Vector2i(0, 100), Fonts::COMIC_SANS_MS_16);
-	if (guiIndex == -1)
+	m_GUIhelloWorldIndex = Engine::Get()->GetGUIManager()->CreateText("hello world", Vector2i(0, 100), Fonts::COMIC_SANS_MS_16);
+	if (m_GUIhelloWorldIndex == -1)
 		return false;
-	/*int gui1 = GUIManager::Get()->CreateText("hello world", Vector2i(0, 100), Fonts::COMIC_SANS_MS_16);
-	if (gui1 == -1)
-		return false;*/
 
 	//SceneManager::Get()->SetRenderMode(RenderModes::NORMAL);
 
@@ -156,8 +160,8 @@ bool Game::Initialize()
 void Game::Run()
 {
 	Engine* engine = Engine::Get();
+	SceneManagerV3* sceneManager = engine->GetSceneManager();
 	//SceneManager* sceneManager = SceneManager::Get();
-	//GUIManager* guiManager = GUIManager::Get();
 
 	while (true)
 	{
@@ -183,6 +187,11 @@ void Game::Run()
 			sceneManager->SetObjectModel(5000, "generator.obj");
 		}*/
 
+		/*for (unsigned int i = 0; i < sceneManager->GetNrOfObjects(); i++)
+		{
+			ObjectV3* obj = engine->GetSceneManager()->GetObjectV3(i);
+			obj->worldMatrix = Matrix::Rotation(Vector3f(0, 1, 0), 0.01f) * obj->worldMatrix;
+		}*/
 
 		if (!engine->Update())
 			break;

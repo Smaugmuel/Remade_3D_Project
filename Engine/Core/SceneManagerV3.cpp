@@ -20,11 +20,23 @@ bool SceneManagerV3::Initialize(ModelManager * modelManager, MaterialManager * m
 
 	m_nrOfObjects = 0;
 
-	m_viewProjBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(ViewProjectionMatrices));
+	//m_viewProjBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(ViewProjectionMatrices));
+	m_viewProjBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(Matrix));
 	m_worldBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(Matrix));
 
 	if (m_viewProjBufferIndex == -1 || m_worldBufferIndex == -1)
 		return false;
+
+	/*
+	For instancing
+	*/
+#ifdef USING_INSTANCING
+	m_matrixBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(MatrixBuffer));
+	m_instanceBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(InstanceBuffer));
+
+	if (m_matrixBufferIndex == -1 || m_instanceBufferIndex == -1)
+		return false;
+#endif
 
 	return true;
 }
@@ -95,9 +107,10 @@ void SceneManagerV3::Render()
 
 void SceneManagerV3::SetViewAndProjectionMatrices(const Matrix & view, const Matrix & projection)
 {
-	ViewProjectionMatrices wp(view, projection);
+	//ViewProjectionMatrices vp(view.GetTranspose(), projection.GetTranspose());
+	Matrix vp = projection.GetTranspose() * view.GetTranspose();
 
-	m_frameWorkManager->GetConstantBufferManager()->MapDataToBuffer(m_viewProjBufferIndex, static_cast<void*>(&wp));
+	m_frameWorkManager->GetConstantBufferManager()->MapDataToBuffer(m_viewProjBufferIndex, static_cast<void*>(&vp));
 }
 
 int SceneManagerV3::CreateObject()
@@ -111,12 +124,14 @@ int SceneManagerV3::CreateObject()
 	}
 
 	return m_nrOfObjects++;
-
-	/*m_objects.push_back(ObjectV3());
-	return m_objects.size() - 1;*/
 }
 
 ObjectV3 * SceneManagerV3::GetObjectV3(int index)
 {
-	return index >= 0 && index < static_cast<int>(m_nrOfObjects/*m_objects.size()*/) ? &m_objects[index] : nullptr;
+	return index >= 0 && index < static_cast<int>(m_nrOfObjects) ? &m_objects[index] : nullptr;
+}
+
+unsigned int SceneManagerV3::GetNrOfObjects() const
+{
+	return m_nrOfObjects;
 }

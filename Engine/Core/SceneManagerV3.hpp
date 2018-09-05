@@ -3,9 +3,15 @@
 #include "../Math/Matrix.hpp"
 #include <vector>
 
+//#define USING_INSTANCING
+
+
 class ModelManager;
 class MaterialManager;
 class FrameWorkManager;
+
+static const unsigned int MAX_NR_OF_FLOAT4S_IN_BUFFER = 4096;
+static const unsigned int MAX_NR_OF_OBJECTS = MAX_NR_OF_FLOAT4S_IN_BUFFER * 4;
 
 struct ObjectV3
 {
@@ -33,8 +39,10 @@ public:
 	int CreateObject();
 	ObjectV3* GetObjectV3(int index);
 
+	unsigned int GetNrOfObjects() const;
+
 private:
-	struct ViewProjectionMatrices
+	/*struct ViewProjectionMatrices
 	{
 		ViewProjectionMatrices(const Matrix& _view, const Matrix& _projection)
 			: view(_view), projection(_projection)
@@ -42,12 +50,25 @@ private:
 		}
 		Matrix view;
 		Matrix projection;
-	};
-
+	};*/
 	int m_viewProjBufferIndex;
 	int m_worldBufferIndex;
 
-	static const unsigned int MAX_NR_OF_OBJECTS = 20000;
+#ifdef USING_INSTANCING
+	struct MatrixBuffer
+	{
+		Matrix matrices[MAX_NR_OF_FLOAT4S_IN_BUFFER / 4];
+	};
+	struct InstanceBuffer
+	{
+		int instanceID;
+		int padding[3];
+	};
+	int m_matrixBufferIndex;
+	int m_instanceBufferIndex;
+#endif
+
+
 	ObjectV3 m_objects[MAX_NR_OF_OBJECTS];
 	unsigned int m_nrOfObjects;
 	//std::vector<ObjectV3> m_objects;
