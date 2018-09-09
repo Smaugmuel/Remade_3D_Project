@@ -17,52 +17,82 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 
 	ID3D10Blob* blob;
 	HRESULT result;
+	VertexShaderData vsData;
 
-	D3D11_INPUT_ELEMENT_DESC firstDesc[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
-	D3D11_INPUT_ELEMENT_DESC lightDesc[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
-	
-	/*
-	Create the vertex shader and input layout for the first pass
-	*/
-	result = D3DCompileFromFile(L"../Engine/FrameWork/HLSL/VS_FirstPass.hlsl", nullptr, nullptr, "main", "vs_5_0", 0, 0, &blob, nullptr);
-	if (FAILED(result))
+	if (!m_shaderCreator.Initialize(device))
 		return false;
-	result = m_device->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &m_vertexShaders[static_cast<unsigned int>(ShaderTypeV2::FIRST_PASS)]);
-	if (FAILED(result))
+	if (!m_inputLayoutCreator.Initialize(device))
 		return false;
-	result = m_device->CreateInputLayout(firstDesc, sizeof(firstDesc) / sizeof(firstDesc[0]), blob->GetBufferPointer(), blob->GetBufferSize(), &m_inputLayouts[static_cast<unsigned int>(ShaderTypeV2::FIRST_PASS)]);
-	if (FAILED(result))
-		return false;
-	blob->Release();
 
 	/*
-	Create the pixel shader for the first pass
+	Define shader defines
 	*/
-	result = D3DCompileFromFile(L"../Engine/FrameWork/HLSL/PS_FirstPass.hlsl", nullptr, nullptr, "main", "ps_5_0", 0, 0, &blob, nullptr);
-	if (FAILED(result))
+	ShaderDefine vsDefines1[] =
+	{
+		{ "CBUFFER_HAS_VIEW_PROJECTION_MATRIX", nullptr },
+		{ "CBUFFER_HAS_WORLD_MATRIX", nullptr },
+		{ "VBUFFER_HAS_NORMAL", nullptr },
+		{ "VBUFFER_HAS_UV", nullptr },
+		{ "VBUFFER_PASS_WPOS", nullptr }
+	};
+	ShaderDefine vsDefines2[] =
+	{
+		{ "VBUFFER_HAS_UV", nullptr }
+	};
+
+	/*
+	Define input layout elements
+	*/
+	InputElement vsElements1[] =
+	{
+		{ "POSITION", ElementFormat::FLOAT3 },
+		{ "NORMAL", ElementFormat::FLOAT3 },
+		{ "TEXCOORD", ElementFormat::FLOAT2 }
+	};
+	InputElement vsElements2[] =
+	{
+		{ "POSITION", ElementFormat::FLOAT3 },
+		{ "TEXCOORD", ElementFormat::FLOAT2 }
+	};
+
+	const unsigned int nVSDefines1 = sizeof(vsDefines1) / sizeof(ShaderDefine);
+	const unsigned int nVSDefines2 = sizeof(vsDefines2) / sizeof(ShaderDefine);
+	const unsigned int nVSElements1 = sizeof(vsElements1) / sizeof(InputElement);
+	const unsigned int nVSElements2 = sizeof(vsElements2) / sizeof(InputElement);
+	const unsigned int gPassIndex = static_cast<unsigned int>(ShaderTypeV2::GEOMETRY_PASS);
+	const unsigned int lPassIndex = static_cast<unsigned int>(ShaderTypeV2::LIGHT_PASS);
+
+	/*
+	Create the vertex shader and input layout for the geometry pass
+	*/
+	vsData = m_shaderCreator.CompileAndCreateVertexShader(nVSDefines1, vsDefines1);
+	if (!vsData.blob || !vsData.vs)
 		return false;
-	result = m_device->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &m_pixelShaders[static_cast<unsigned int>(ShaderTypeV2::FIRST_PASS)]);
-	if (FAILED(result))
+	m_vertexShaders[gPassIndex] = vsData.vs;
+	m_inputLayouts[gPassIndex] = m_inputLayoutCreator.CreateInputLayout(vsData.blob, nVSElements1, vsElements1);
+	if (!m_inputLayouts[gPassIndex])
 		return false;
-	blob->Release();
+	vsData.blob->Release();
 
 	/*
 	Create the vertex shader and input layout for the light pass
 	*/
-	result = D3DCompileFromFile(L"../Engine/FrameWork/HLSL/VS_LightPass.hlsl", nullptr, nullptr, "main", "vs_5_0", 0, 0, &blob, nullptr);
+	vsData = m_shaderCreator.CompileAndCreateVertexShader(nVSDefines2, vsDefines2);
+	if (!vsData.blob || !vsData.vs)
+		return false;
+	m_vertexShaders[lPassIndex] = vsData.vs;
+	m_inputLayouts[lPassIndex] = m_inputLayoutCreator.CreateInputLayout(vsData.blob, nVSElements2, vsElements2);
+	if (!m_inputLayouts[lPassIndex])
+		return false;
+	vsData.blob->Release();
+
+	/*
+	Create the pixel shader for the first pass
+	*/
+	result = D3DCompileFromFile(L"../Engine/FrameWork/HLSL/PS_GeometryPass.hlsl", nullptr, nullptr, "main", "ps_5_0", 0, 0, &blob, nullptr);
 	if (FAILED(result))
 		return false;
-	result = m_device->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &m_vertexShaders[static_cast<unsigned int>(ShaderTypeV2::LIGHT_PASS)]);
-	if (FAILED(result))
-		return false;
-	result = m_device->CreateInputLayout(lightDesc, sizeof(lightDesc) / sizeof(lightDesc[0]), blob->GetBufferPointer(), blob->GetBufferSize(), &m_inputLayouts[static_cast<unsigned int>(ShaderTypeV2::LIGHT_PASS)]);
+	result = m_device->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &m_pixelShaders[static_cast<unsigned int>(ShaderTypeV2::GEOMETRY_PASS)]);
 	if (FAILED(result))
 		return false;
 	blob->Release();
@@ -81,7 +111,7 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	/*
 	Disable geometry shaders for these passes
 	*/
-	m_geometryShaders[static_cast<unsigned int>(ShaderTypeV2::FIRST_PASS)] = nullptr;
+	m_geometryShaders[static_cast<unsigned int>(ShaderTypeV2::GEOMETRY_PASS)] = nullptr;
 	m_geometryShaders[static_cast<unsigned int>(ShaderTypeV2::LIGHT_PASS)] = nullptr;
 
 	return true;

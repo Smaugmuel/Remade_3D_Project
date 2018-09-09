@@ -2,6 +2,8 @@
 #define SHADER_MANAGER_HPP
 #include <vector>
 #include <string>
+#include "Shaders/InputLayoutCreator.hpp"
+#include "Shaders/ShaderCreatorV2.hpp"
 
 #pragma comment (lib, "d3dcompiler.lib")
 
@@ -23,10 +25,12 @@ struct ID3D11DeviceContext;
 
 enum class ShaderTypeV2
 {
-	FIRST_PASS,
+	GEOMETRY_PASS,
 	LIGHT_PASS,
 	SHADOW_PASS
 };
+
+static const unsigned int NR_OF_SHADER_TYPES = static_cast<unsigned int>(ShaderTypeV2::SHADOW_PASS) + 1U;
 
 class ShaderManagerV2 final
 {
@@ -52,14 +56,17 @@ private:
 	bool ValidGSID(int id);
 	bool ValidPSID(int id);*/
 
+	ShaderCreatorV2 m_shaderCreator;
+	InputLayoutCreator m_inputLayoutCreator;
+
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_deviceContext;
 
-	ID3D11VertexShader* m_vertexShaders[2];
-	ID3D11GeometryShader* m_geometryShaders[2];
-	ID3D11PixelShader* m_pixelShaders[2];
+	ID3D11VertexShader* m_vertexShaders[NR_OF_SHADER_TYPES];
+	ID3D11GeometryShader* m_geometryShaders[NR_OF_SHADER_TYPES];
+	ID3D11PixelShader* m_pixelShaders[NR_OF_SHADER_TYPES];
 
-	ID3D11InputLayout* m_inputLayouts[2];
+	ID3D11InputLayout* m_inputLayouts[NR_OF_SHADER_TYPES];
 };
 
 #endif

@@ -10,8 +10,9 @@ class ModelManager;
 class MaterialManager;
 class FrameWorkManager;
 
-static const unsigned int MAX_NR_OF_FLOAT4S_IN_BUFFER = 4096;
-static const unsigned int MAX_NR_OF_OBJECTS = MAX_NR_OF_FLOAT4S_IN_BUFFER * 4;
+//static const unsigned int MAX_NR_OF_MATRICES_IN_BUFFER = MAX_NR_OF_FLOAT4S_IN_BUFFER / 4;
+//static const unsigned int MAX_NR_OF_OBJECTS_PER_BUFFER = MAX_NR_OF_MATRICES_IN_BUFFER;
+static const unsigned int MAX_NR_OF_OBJECTS = 16384U;
 
 struct ObjectV3
 {
@@ -68,8 +69,7 @@ private:
 	int m_instanceBufferIndex;
 #endif
 
-
-	ObjectV3 m_objects[MAX_NR_OF_OBJECTS];
+	ObjectV3* m_objects;
 	unsigned int m_nrOfObjects;
 	//std::vector<ObjectV3> m_objects;
 

@@ -4,16 +4,24 @@
 #include "MaterialManager.hpp"
 
 SceneManagerV3::SceneManagerV3() :
-	m_modelManager(nullptr), m_materialManager(nullptr), m_frameWorkManager(nullptr)
+	m_objects(nullptr), m_modelManager(nullptr), m_materialManager(nullptr), m_frameWorkManager(nullptr)
 {
 }
 
 SceneManagerV3::~SceneManagerV3()
 {
+	if (m_objects)
+	{
+		delete[] m_objects;
+	}
 }
 
 bool SceneManagerV3::Initialize(ModelManager * modelManager, MaterialManager * materialManager, FrameWorkManager * frameWorkManager)
 {
+	m_objects = new ObjectV3[MAX_NR_OF_OBJECTS];
+	if (!m_objects)
+		return false;
+
 	m_modelManager = modelManager;
 	m_materialManager = materialManager;
 	m_frameWorkManager = frameWorkManager;
@@ -56,7 +64,7 @@ void SceneManagerV3::Render()
 	/*
 	Set up first deferred pass
 	*/
-	m_frameWorkManager->GetShaderManager()->SetShaders(ShaderTypeV2::FIRST_PASS);
+	m_frameWorkManager->GetShaderManager()->SetShaders(ShaderTypeV2::GEOMETRY_PASS);
 
 	/*
 	Set view- and projection matrices

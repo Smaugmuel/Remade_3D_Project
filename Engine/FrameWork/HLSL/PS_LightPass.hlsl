@@ -6,9 +6,6 @@ SamplerState samplerState : register(s0);
 /*
 Additional resources for lights and shadows
 */
-//#ifdef MAX_NR_OF_LIGHTS
-//Texture2D normalTexture : register(t1);
-//Texture2D worldPosTexture : register(t2);
 //Texture2D lightDepthTextures[MAX_NR_OF_LIGHTS];
 //
 //cbuffer PerFrame : register(b0)

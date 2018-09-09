@@ -17,6 +17,7 @@ private:
 		unsigned int m_nrOfLights;
 	};
 
+	int m_lightBufferID;
 	LightBuffer m_lightBuffer;
 };
 

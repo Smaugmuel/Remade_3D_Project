@@ -465,7 +465,7 @@ void Direct3D::SetDefaultBlendState()
 {
 	const float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	const UINT sampleMask = 0xfffffff;
-
+	
 	m_deviceContext->OMSetBlendState(m_defaultBlendState, blendFactor, sampleMask);
 }
 

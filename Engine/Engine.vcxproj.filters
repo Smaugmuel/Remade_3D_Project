@@ -213,10 +213,13 @@
     <ClCompile Include="FrameWork\DeferredRenderingManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FrameWork\Shaders\BaseShader.cpp">
+    <ClCompile Include="FrameWork\WorldMatrixStorage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FrameWork\Shaders\FirstPassShader.cpp">
+    <ClCompile Include="FrameWork\Shaders\InputLayoutCreator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameWork\Shaders\ShaderCreatorV2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -467,10 +470,13 @@
     <ClInclude Include="FrameWork\LightManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FrameWork\Shaders\BaseShader.hpp">
+    <ClInclude Include="FrameWork\WorldMatrixStorage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FrameWork\Shaders\FirstPassShader.hpp">
+    <ClInclude Include="FrameWork\Shaders\InputLayoutCreator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\Shaders\ShaderCreatorV2.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -481,10 +487,9 @@
   <ItemGroup>
     <FxCompile Include="Render\Shaders\HLSL\VS_Generic.hlsl" />
     <FxCompile Include="Render\Shaders\HLSL\VS_GenericV2.hlsl" />
-    <FxCompile Include="FrameWork\HLSL\VS_FirstPass.hlsl" />
-    <FxCompile Include="FrameWork\HLSL\VS_LightPass.hlsl" />
-    <FxCompile Include="FrameWork\HLSL\PS_FirstPass.hlsl" />
     <FxCompile Include="FrameWork\HLSL\PS_LightPass.hlsl" />
     <FxCompile Include="FrameWork\HLSL\VS_FirstPassMatrixBuffer.hlsl" />
+    <FxCompile Include="FrameWork\HLSL\PS_GeometryPass.hlsl" />
+    <FxCompile Include="FrameWork\HLSL\VS_Generic.hlsl" />
   </ItemGroup>
 </Project>

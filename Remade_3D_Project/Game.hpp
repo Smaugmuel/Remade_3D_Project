@@ -1,6 +1,7 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 //#include "../Engine/Misc/Singleton.hpp"
+#include "../Engine/Core/Engine.hpp"
 #include "../Engine/Misc/StateMachines/StateMachineV2.hpp"
 #include "../Engine/Events/EventReceiver.hpp"
 
@@ -63,6 +64,8 @@ private:
 	/*StateMachineV2<GameState> m_gameStateMachine;
 	bool m_pop_game_state_flag;
 	bool m_shutdown_flag;*/
+
+	Engine m_engine;
 
 	int m_cameraIndex;
 	

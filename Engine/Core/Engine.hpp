@@ -1,6 +1,6 @@
 #ifndef ENGINE_HPP
 #define ENGINE_HPP
-#include "../Misc/Singleton.hpp"
+//#include "../Misc/Singleton.hpp"
 #include "../Math/Vector2.hpp"
 #include <chrono>
 
@@ -11,9 +11,12 @@
 #include "CameraManagerV2.hpp"
 #include "../GUI/FPS_CounterV2.hpp"
 
-class Engine final : public Singleton<Engine>
+class Engine final //: public Singleton<Engine>
 {
 public:
+	Engine();
+	~Engine();
+
 	bool Initialize(Vector2i windowSize = Vector2i(800, 600));
 
 	bool Update();
@@ -41,13 +44,10 @@ public:
 	Vector2i GetWindowSize() const;
 
 private:
-	friend class Singleton<Engine>;
+	//friend class Singleton<Engine>;
 
 	typedef std::chrono::high_resolution_clock Clock;
 	typedef std::chrono::time_point<std::chrono::steady_clock> Time;
-
-	Engine();
-	~Engine();
 
 	void ControlCamera(float dt);
 
@@ -64,7 +64,7 @@ private:
 	Upon FPS counter destruction, it calls one of gui manager's functions
 	Because of this, AND because the gui manager is destroyed when the framework manager is destroyed,
 	AND because elements are created in the order up->down and destroyed in the order down->up,
-	the FPS counter must be created AFTER (not directly) the framework manager
+	the FPS counter must be created AFTER (not necessarily directly) the framework manager
 	*/
 	FrameWorkManager m_frameWorkManager;
 	ModelManager m_modelManager;

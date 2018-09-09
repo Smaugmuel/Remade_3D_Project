@@ -42,13 +42,16 @@
     <ClCompile Include="FrameWork\FrameWorkManager.cpp" />
     <ClCompile Include="Core\MaterialManager.cpp" />
     <ClCompile Include="Core\ModelManager.cpp" />
+    <ClCompile Include="FrameWork\Shaders\InputLayoutCreator.cpp" />
+    <ClCompile Include="FrameWork\Shaders\ShaderCreatorV2.cpp" />
+    <ClCompile Include="FrameWork\WorldMatrixStorage.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="FrameWork\SamplerManager.cpp" />
     <ClCompile Include="FrameWork\ShaderCreator.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="FrameWork\ShaderManagerV2.cpp" />
-    <ClCompile Include="FrameWork\Shaders\BaseShader.cpp" />
-    <ClCompile Include="FrameWork\Shaders\FirstPassShader.cpp" />
     <ClCompile Include="FrameWork\TextureManager.cpp" />
     <ClCompile Include="FrameWork\VertexBufferManager.cpp" />
     <ClCompile Include="FrameWork\Window.cpp" />
@@ -193,14 +196,19 @@
     <ClInclude Include="Core\ReusableStorage.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="FrameWork\LightManager.hpp" />
+    <ClInclude Include="FrameWork\LightManager.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="FrameWork\Shaders\InputLayoutCreator.hpp" />
+    <ClInclude Include="FrameWork\Shaders\ShaderCreatorV2.hpp" />
+    <ClInclude Include="FrameWork\WorldMatrixStorage.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="FrameWork\SamplerManager.hpp" />
     <ClInclude Include="FrameWork\ShaderCreator.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="FrameWork\ShaderManagerV2.hpp" />
-    <ClInclude Include="FrameWork\Shaders\BaseShader.hpp" />
-    <ClInclude Include="FrameWork\Shaders\FirstPassShader.hpp" />
     <ClInclude Include="FrameWork\TextureManager.hpp" />
     <ClInclude Include="FrameWork\VertexBufferManager.hpp" />
     <ClInclude Include="FrameWork\Window.hpp" />
@@ -334,7 +342,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="FrameWork\HLSL\PS_FirstPass.hlsl">
+    <FxCompile Include="FrameWork\HLSL\PS_GeometryPass.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
@@ -348,20 +356,13 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="FrameWork\HLSL\VS_FirstPass.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
-    </FxCompile>
     <FxCompile Include="FrameWork\HLSL\VS_FirstPassMatrixBuffer.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-    <FxCompile Include="FrameWork\HLSL\VS_LightPass.hlsl">
+    <FxCompile Include="FrameWork\HLSL\VS_Generic.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>

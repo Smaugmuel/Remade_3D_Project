@@ -24,13 +24,11 @@ cbuffer PerObject : register(b1)
 /*
 Constant buffer for an array of matrices sent once per frame
 */
-#ifdef MATRIX_BUFFER
 #ifdef NR_OF_MATRICES
 cbuffer MatrixBuffer : register(b2)
 {
 	matrix<float, 4, 4> buffer[NR_OF_MATRICES];
 };
-#endif
 #endif
 
 /*

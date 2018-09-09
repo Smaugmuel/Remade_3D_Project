@@ -18,14 +18,14 @@
 // These were added / changed when engine was reworked
 //#include "../Engine/GUI/GUIManager.hpp"
 //#include "../Engine/Render/SceneManager.hpp"
-#include "../Engine/Core/Engine.hpp"
+//#include "../Engine/Core/Engine.hpp"
 //#include "../Engine/Camera/PlayerCameraManager.hpp"
 //#include "../Engine/FrameWork/FrameWork.hpp"
 //#include "../Engine/Camera/Camera.hpp"
 //#include "../Engine/Input/Input.hpp"
 //#include <Windows.h>
 
-Game* Singleton<Game>::s_instance = nullptr;
+//Game* Singleton<Game>::s_instance = nullptr;
 
 Game::Game() : m_cameraIndex(-1), m_GUIhelloWorldIndex(-1)
 {
@@ -48,14 +48,14 @@ Game::~Game()
 	Collision::Delete();
 
 	// Added when engine was reworked
-	Engine::Delete();
+	//Engine::Delete();
 	//GUIManager::Delete();
 	//SceneManager::Delete();
 }
 
 bool Game::Initialize()
 {
-	if (!Engine::Get()->Initialize(Vector2i(1500, 800)))
+	if (!m_engine.Initialize(Vector2i(1500, 800)))
 		return false;
 	
 	/*if (!SceneStorage::Get()->LoadScene("Scene1"))
@@ -77,20 +77,20 @@ bool Game::Initialize()
 	m_shutdown_flag = false;
 #endif
 
-	m_cameraIndex = Engine::Get()->GetCameraManager()->CreateCamera();
-	Engine::Get()->EnableFirstPersonControls();
-	CameraV3* cam = Engine::Get()->GetCameraManager()->GetCamera(m_cameraIndex);
+	m_cameraIndex = m_engine.GetCameraManager()->CreateCamera();
+	m_engine.EnableFirstPersonControls();
+	CameraV3* cam = m_engine.GetCameraManager()->GetCamera(m_cameraIndex);
 	
 	cam->position = Vector3f(0, 20, -128);
 	cam->target = Vector3f(0, 0, 0);
 	cam->up = Vector3f(0, 1, 0);
 	cam->UpdateViewMatrix();
 	cam->fov = 3.14159265f / 2.0f;
-	cam->aspectRatio = Engine::Get()->GetWindowSize().x / static_cast<float>(Engine::Get()->GetWindowSize().y);
+	cam->aspectRatio = m_engine.GetWindowSize().x / static_cast<float>(m_engine.GetWindowSize().y);
 	cam->nearPlane = 0.01f;
 	cam->farPlane = 1000.0f;
 	cam->UpdateProjectionMatrix();
-	Engine::Get()->GetSceneManager()->SetViewAndProjectionMatrices(cam->viewMatrix, cam->projectionMatrix);
+	m_engine.GetSceneManager()->SetViewAndProjectionMatrices(cam->viewMatrix, cam->projectionMatrix);
 
 	/*cam->SetPosition(0, 0, -10);
 	cam->SetTarget(0, 0, 0);
@@ -118,22 +118,22 @@ bool Game::Initialize()
 	Matrix m(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 	Matrix m2 = m.GetTranspose();*/
 
-	const unsigned int nObjX = 2;//128U;
-	const unsigned int nObjZ = 2;// MAX_NR_OF_OBJECTS / nObjX;
-	Vector3f startPos = Vector3f(nObjX, 0, nObjZ) * -1.0f;
+	const unsigned int nObjX = /*2;*/128U;
+	const unsigned int nObjZ = /*2;*/ MAX_NR_OF_OBJECTS / nObjX;
+	Vector3f startPos = Vector3f(static_cast<float>(nObjX), 0, static_cast<float>(nObjZ)) * -1.0f;
 	Vector3f offset(4, 0, 4);
 
 	for (int i = 0; i < nObjX; i++)
 	{
 		for (int j = 0; j < nObjZ; j++)
 		{
-			int index = Engine::Get()->GetSceneManager()->CreateObject();
+			int index = m_engine.GetSceneManager()->CreateObject();
 			if (index == -1)
 				return false;
 
-			ObjectV3* obj = Engine::Get()->GetSceneManager()->GetObjectV3(index);
-			//obj->modelIndex = Engine::Get()->GetModelManager()->LoadModel("SimpleCharacter.obj");
-			obj->modelIndex = Engine::Get()->GetModelManager()->LoadModel("cube_uv.obj");
+			ObjectV3* obj = m_engine.GetSceneManager()->GetObjectV3(index);
+			obj->modelIndex = m_engine.GetModelManager()->LoadModel("SimpleCharacter.obj");
+			//obj->modelIndex = Engine::Get()->GetModelManager()->LoadModel("cube_uv.obj");
 			if (obj->modelIndex == -1)
 				return false;
 
@@ -146,21 +146,20 @@ bool Game::Initialize()
 		}
 	}
 
-	m_GUIhelloWorldIndex = Engine::Get()->GetGUIManager()->CreateText("hello world", Vector2i(0, 100), Fonts::COMIC_SANS_MS_16);
+	m_GUIhelloWorldIndex = m_engine.GetGUIManager()->CreateText("hello world", Vector2i(0, 100), Fonts::COMIC_SANS_MS_16);
 	if (m_GUIhelloWorldIndex == -1)
 		return false;
 
 	//SceneManager::Get()->SetRenderMode(RenderModes::NORMAL);
 
-	Engine::Get()->ShowFPSCounter();
+	m_engine.ShowFPSCounter();
 
 	return true;
 }
 
 void Game::Run()
 {
-	Engine* engine = Engine::Get();
-	SceneManagerV3* sceneManager = engine->GetSceneManager();
+	SceneManagerV3* sceneManager = m_engine.GetSceneManager();
 	//SceneManager* sceneManager = SceneManager::Get();
 
 	while (true)
@@ -187,20 +186,20 @@ void Game::Run()
 			sceneManager->SetObjectModel(5000, "generator.obj");
 		}*/
 
-		/*for (unsigned int i = 0; i < sceneManager->GetNrOfObjects(); i++)
+		for (unsigned int i = 0; i < sceneManager->GetNrOfObjects(); i++)
 		{
-			ObjectV3* obj = engine->GetSceneManager()->GetObjectV3(i);
+			ObjectV3* obj = sceneManager->GetObjectV3(i);
 			obj->worldMatrix = Matrix::Rotation(Vector3f(0, 1, 0), 0.01f) * obj->worldMatrix;
-		}*/
+		}
 
-		if (!engine->Update())
+		if (!m_engine.Update())
 			break;
 
-		engine->Clear(0, 0, 0, 1);
-		engine->Render();
+		m_engine.Clear(0, 0, 0, 1);
+		m_engine.Render();
 		/*sceneManager->Render();
 		guiManager->Render();*/
-		engine->Present();
+		m_engine.Present();
 	}
 }
 
