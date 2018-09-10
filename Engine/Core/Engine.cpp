@@ -16,7 +16,7 @@ Engine::~Engine()
 
 bool Engine::Initialize(Vector2i windowSize)
 {
-	if (!m_frameWorkManager.Initialize(windowSize))
+	if (!m_frameWorkManager.Initialize(windowSize, MAX_NR_OF_LIGHTS))
 		return false;
 	if (!m_materialManager.Initialize(m_frameWorkManager.GetTextureManager()))
 		return false;

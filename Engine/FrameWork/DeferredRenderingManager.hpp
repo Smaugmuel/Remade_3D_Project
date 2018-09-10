@@ -22,7 +22,7 @@ enum class DeferredBufferTypes
 	COLORS
 };
 
-static const unsigned int NR_OF_DEFERRED_OUTPUT_BUFFERS = static_cast<unsigned int>(DeferredBufferTypes::COLORS) + 1;
+static const unsigned int NR_OF_DEFERRED_OUTPUT_BUFFERS = static_cast<unsigned int>(DeferredBufferTypes::COLORS) + 1U;
 
 class DeferredRenderingManager final
 {

@@ -24,7 +24,7 @@ bool ConstantBufferManager::Initialize(ID3D11Device* device, ID3D11DeviceContext
 	return true;
 }
 
-int ConstantBufferManager::CreateConstantBuffer(unsigned int bufferSize, void* initialData)
+int ConstantBufferManager::CreateConstantBuffer(unsigned int bufferSize/*, void* initialData*/)
 {
 	/*
 	Simple "solution" for now
@@ -46,7 +46,7 @@ int ConstantBufferManager::CreateConstantBuffer(unsigned int bufferSize, void* i
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = 0;
 
-	data.pSysMem = initialData;
+	data.pSysMem = nullptr;//initialData;
 	data.SysMemPitch = 0;
 	data.SysMemSlicePitch = 0;
 	

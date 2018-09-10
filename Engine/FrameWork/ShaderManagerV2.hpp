@@ -38,7 +38,7 @@ public:
 	ShaderManagerV2();
 	~ShaderManagerV2();
 
-	bool Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
+	bool Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, int maxNrOfLights = 1);
 
 	/*int CreateVertexShader(unsigned int flags);
 	//int CreateVertexShader(const std::string& fileName);

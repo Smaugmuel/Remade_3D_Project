@@ -4,6 +4,12 @@
 
 static const unsigned int MAX_NR_OF_LIGHTS = 4;
 
+struct Light
+{
+	Vector3f position;
+	float dropoff = -0.01f;
+};
+
 class LightManager final
 {
 public:
@@ -13,6 +19,7 @@ public:
 private:
 	struct LightBuffer
 	{
+
 		Vector3f m_lightPositions[MAX_NR_OF_LIGHTS];
 		unsigned int m_nrOfLights;
 	};

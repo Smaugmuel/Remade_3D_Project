@@ -8,7 +8,7 @@ FrameWorkManager::~FrameWorkManager()
 {
 }
 
-bool FrameWorkManager::Initialize(Vector2i windowSize)
+bool FrameWorkManager::Initialize(Vector2i windowSize, int maxNrOfLights)
 {
 	if (!m_window.Initialize(windowSize))
 		return false;
@@ -20,15 +20,17 @@ bool FrameWorkManager::Initialize(Vector2i windowSize)
 		return false;
 	if (!m_vertexBufferManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext()))
 		return false;
-	if (!m_deferredRenderingManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext(), m_window.GetDimensions(), &m_vertexBufferManager, &m_shaderManager))
-		return false;
-	if (!m_shaderManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext()))
+	if (!m_shaderManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext(), maxNrOfLights))
 		return false;
 	if (!m_textureManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext()))
 		return false;
 	if (!m_guiManager.Initialize(&m_d3d, &m_textureManager))
 		return false;
 	if (!m_samplerManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext()))
+		return false;
+	if (!m_deferredRenderingManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext(), m_window.GetDimensions(), &m_vertexBufferManager, &m_shaderManager))
+		return false;
+	if (!m_shadowMapRenderingManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext(), m_window.GetDimensions()))
 		return false;
 
 	return true;
@@ -44,6 +46,11 @@ void FrameWorkManager::SetLightPassRenderTarget()
 	m_d3d.SetDefaultTarget();
 }
 
+void FrameWorkManager::SetShadowPassRenderTarget()
+{
+	m_shadowMapRenderingManager.SetRenderTarget();
+}
+
 void FrameWorkManager::ClearFirstPassRenderTargets(float r, float g, float b, float a)
 {
 	m_deferredRenderingManager.ClearRenderTargets(r, g, b, a);
@@ -52,6 +59,11 @@ void FrameWorkManager::ClearFirstPassRenderTargets(float r, float g, float b, fl
 void FrameWorkManager::ClearLightPassRenderTargets(float r, float g, float b, float a)
 {
 	m_d3d.ClearDefaultTarget(r, g, b, a);
+}
+
+void FrameWorkManager::ClearShadowPassRenderTargets()
+{
+	m_shadowMapRenderingManager.ClearDepthStencilView();
 }
 
 void FrameWorkManager::RenderWithCurrentSettings(int nrOfVertices)

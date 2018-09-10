@@ -22,7 +22,7 @@ Additional resources for lights and shadows
 cbuffer LightBuffer : register(b0)
 {
 	float4 lights[MAX_NR_OF_LIGHTS];	// Contains position and linear dropoff
-	unsigned int nrOfLights;
+	int nrOfLights;
 	int3 padding;
 };
 #endif
@@ -41,13 +41,15 @@ float4 main(PS_INPUT_DATA input) : SV_TARGET
 	float lightInfluence = 0.0f;
 
 #ifdef MAX_NR_OF_LIGHTS
+	float3 toLight, lightPosition;
+	float influence, lightDropoff;
 	for (unsigned int i = 0; i < nrOfLights; i++)
 	{
-		float3 lightPosition = lights[i].xyz;
-		float lightDropoff = lights[i].w;
+		lightPosition = lights[i].xyz;
+		lightDropoff = lights[i].w;
 
-		float3 toLight = lightPosition - wpos.xyz;
-		float influence = length(toLight) * lightDropoff + 1;
+		toLight = lightPosition - wpos.xyz;
+		influence = length(toLight) * lightDropoff + 1;
 		
 		if (influence > 0)
 		{
@@ -58,5 +60,5 @@ float4 main(PS_INPUT_DATA input) : SV_TARGET
 	lightInfluence = 1.0f;
 #endif
 
-	return color * lightInfluence;
+	return color * saturate(lightInfluence);
 }

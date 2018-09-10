@@ -28,12 +28,25 @@ bool SceneManagerV3::Initialize(ModelManager * modelManager, MaterialManager * m
 
 	m_nrOfObjects = 0;
 
-	//m_viewProjBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(ViewProjectionMatrices));
+	/*
+	Initialize lights
+	*/
+	LightBuffer lightBuffer;
+	lightBuffer.nrOfLights = min(max(4, 0), MAX_NR_OF_LIGHTS);
+	for (int i = 0; i < lightBuffer.nrOfLights; i++)
+	{
+		lightBuffer.lights[i].position = Vector3f((1 - i % 2) * 100.0f, 10.0f, (1 - i / 2) * 100.0f);
+		lightBuffer.lights[i].dropoff = -0.01f * (i + 1);
+	}
+
 	m_viewProjBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(Matrix));
 	m_worldBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(Matrix));
+	m_lightBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(LightBuffer));
 
-	if (m_viewProjBufferIndex == -1 || m_worldBufferIndex == -1)
+	if (m_viewProjBufferIndex == -1 || m_worldBufferIndex == -1 || m_lightBufferIndex == -1)
 		return false;
+
+	m_frameWorkManager->GetConstantBufferManager()->MapDataToBuffer(m_lightBufferIndex, &lightBuffer);
 
 	/*
 	For instancing
@@ -71,7 +84,6 @@ void SceneManagerV3::Render()
 	*/
 	m_frameWorkManager->GetConstantBufferManager()->SetConstantBufferToVertexShader(m_viewProjBufferIndex, 0);
 
-
 	//unsigned int nObj = m_objects.size();
 	//if (nObj == 0)
 	if (m_nrOfObjects == 0)
@@ -106,6 +118,12 @@ void SceneManagerV3::Render()
 		*/
 		m_frameWorkManager->RenderWithCurrentSettings(model->nrOfVertices);
 	}
+
+
+	/*
+	Set lights
+	*/
+	m_frameWorkManager->GetConstantBufferManager()->SetConstantBufferToPixelShader(m_lightBufferIndex, 0);
 
 	/*
 	Render second pass of deferred rendering

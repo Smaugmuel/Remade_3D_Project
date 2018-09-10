@@ -5,11 +5,12 @@
 #include "Direct3D.hpp"
 #include "ConstantBufferManager.hpp"
 #include "VertexBufferManager.hpp"
-#include "DeferredRenderingManager.hpp"
 #include "ShaderManagerV2.hpp"
 #include "TextureManager.hpp"
 #include "GUIManager.hpp"
 #include "SamplerManager.hpp"
+#include "DeferredRenderingManager.hpp"
+#include "ShadowMapRenderingManager.hpp"
 
 class FrameWorkManager final
 {
@@ -17,13 +18,15 @@ public:
 	FrameWorkManager();
 	~FrameWorkManager();
 
-	bool Initialize(Vector2i windowSize = Vector2i(800, 600));
+	bool Initialize(Vector2i windowSize, int maxNrOfLights);
 
 	void SetFirstPassRenderTargets();
 	void SetLightPassRenderTarget();
+	void SetShadowPassRenderTarget();
 
 	void ClearFirstPassRenderTargets(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
 	void ClearLightPassRenderTargets(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
+	void ClearShadowPassRenderTargets();
 	
 	void RenderWithCurrentSettings(int nrOfVertices);
 	void RenderLightPass();
@@ -46,11 +49,12 @@ private:
 	Direct3D m_d3d;
 	ConstantBufferManager m_constantBufferManager;
 	VertexBufferManager m_vertexBufferManager;
-	DeferredRenderingManager m_deferredRenderingManager;
 	ShaderManagerV2 m_shaderManager;
 	TextureManager m_textureManager;
 	GUIManager m_guiManager;
 	SamplerManager m_samplerManager;
+	DeferredRenderingManager m_deferredRenderingManager;
+	ShadowMapRenderingManager m_shadowMapRenderingManager;
 };
 
 #endif

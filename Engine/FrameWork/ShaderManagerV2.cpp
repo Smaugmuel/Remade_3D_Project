@@ -3,6 +3,11 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
+/*
+The deferred rendering light pass shader needs to know the light limit when compiling
+Whoever declares the constant buffer needs to know it
+*/
+
 ShaderManagerV2::ShaderManagerV2() : m_device(nullptr), m_deviceContext(nullptr)
 {
 }
@@ -10,19 +15,12 @@ ShaderManagerV2::~ShaderManagerV2()
 {
 }
 
-bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * deviceContext)
+bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * deviceContext, int maxNrOfLights)
 {
 	m_device = device;
 	m_deviceContext = deviceContext;
 
-	ID3D10Blob* blob;
-	HRESULT result;
 	VertexShaderData vsData;
-
-	if (!m_shaderCreator.Initialize(device))
-		return false;
-	if (!m_inputLayoutCreator.Initialize(device))
-		return false;
 
 	/*
 	Define shader defines
@@ -38,6 +36,11 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	ShaderDefine vsDefines2[] =
 	{
 		{ "VBUFFER_HAS_UV", nullptr }
+	};
+	std::string nLightsStr = std::to_string(maxNrOfLights);
+	ShaderDefine psDefines2[] =
+	{
+		{ "MAX_NR_OF_LIGHTS", nLightsStr.c_str() }
 	};
 
 	/*
@@ -57,10 +60,19 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 
 	const unsigned int nVSDefines1 = sizeof(vsDefines1) / sizeof(ShaderDefine);
 	const unsigned int nVSDefines2 = sizeof(vsDefines2) / sizeof(ShaderDefine);
+	const unsigned int nPSDefines2 = sizeof(psDefines2) / sizeof(ShaderDefine);
 	const unsigned int nVSElements1 = sizeof(vsElements1) / sizeof(InputElement);
 	const unsigned int nVSElements2 = sizeof(vsElements2) / sizeof(InputElement);
 	const unsigned int gPassIndex = static_cast<unsigned int>(ShaderTypeV2::GEOMETRY_PASS);
 	const unsigned int lPassIndex = static_cast<unsigned int>(ShaderTypeV2::LIGHT_PASS);
+
+	/*
+	Initialize creator members
+	*/
+	if (!m_shaderCreator.Initialize(device))
+		return false;
+	if (!m_inputLayoutCreator.Initialize(device))
+		return false;
 
 	/*
 	Create the vertex shader and input layout for the geometry pass
@@ -87,26 +99,21 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	vsData.blob->Release();
 
 	/*
-	Create the pixel shader for the first pass
+	Create the pixel shader for the geometry pass
 	*/
-	result = D3DCompileFromFile(L"../Engine/FrameWork/HLSL/PS_GeometryPass.hlsl", nullptr, nullptr, "main", "ps_5_0", 0, 0, &blob, nullptr);
-	if (FAILED(result))
+	m_pixelShaders[gPassIndex] = m_shaderCreator.CompileAndCreatePixelShaderFromFile("PS_GeometryPass.hlsl");
+	if (!m_pixelShaders[gPassIndex])
 		return false;
-	result = m_device->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &m_pixelShaders[static_cast<unsigned int>(ShaderTypeV2::GEOMETRY_PASS)]);
-	if (FAILED(result))
-		return false;
-	blob->Release();
 
 	/*
 	Create the pixel shader for the light pass
 	*/
-	result = D3DCompileFromFile(L"../Engine/FrameWork/HLSL/PS_LightPass.hlsl", nullptr, nullptr, "main", "ps_5_0", 0, 0, &blob, nullptr);
-	if (FAILED(result))
+	if (maxNrOfLights > 0)
+		m_pixelShaders[lPassIndex] = m_shaderCreator.CompileAndCreatePixelShaderFromFile("PS_LightPass.hlsl", nPSDefines2, psDefines2);
+	else
+		m_pixelShaders[lPassIndex] = m_shaderCreator.CompileAndCreatePixelShaderFromFile("PS_LightPass.hlsl");
+	if (!m_pixelShaders[lPassIndex])
 		return false;
-	result = m_device->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &m_pixelShaders[static_cast<unsigned int>(ShaderTypeV2::LIGHT_PASS)]);
-	if (FAILED(result))
-		return false;
-	blob->Release();
 
 	/*
 	Disable geometry shaders for these passes

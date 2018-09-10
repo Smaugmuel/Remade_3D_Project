@@ -222,6 +222,9 @@
     <ClCompile Include="FrameWork\Shaders\ShaderCreatorV2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FrameWork\ShadowMapRenderingManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Buffers\Buffers.hpp">
@@ -477,6 +480,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FrameWork\Shaders\ShaderCreatorV2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\ShadowMapRenderingManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
