@@ -42,6 +42,7 @@
     <ClCompile Include="FrameWork\FrameWorkManager.cpp" />
     <ClCompile Include="Core\MaterialManager.cpp" />
     <ClCompile Include="Core\ModelManager.cpp" />
+    <ClCompile Include="FrameWork\OnScreenTarget.cpp" />
     <ClCompile Include="FrameWork\Shaders\InputLayoutCreator.cpp" />
     <ClCompile Include="FrameWork\Shaders\ShaderCreatorV2.cpp" />
     <ClCompile Include="FrameWork\ShadowMapRenderingManager.cpp" />
@@ -200,6 +201,7 @@
     <ClInclude Include="FrameWork\LightManager.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="FrameWork\OnScreenTarget.hpp" />
     <ClInclude Include="FrameWork\Shaders\InputLayoutCreator.hpp" />
     <ClInclude Include="FrameWork\Shaders\ShaderCreatorV2.hpp" />
     <ClInclude Include="FrameWork\ShadowMapRenderingManager.hpp" />
@@ -344,6 +346,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="FrameWork\HLSL\PS_FinalPass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="FrameWork\HLSL\PS_GeometryPass.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -358,11 +367,11 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="FrameWork\HLSL\VS_FirstPassMatrixBuffer.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    <FxCompile Include="FrameWork\HLSL\PS_ShadowPass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="FrameWork\HLSL\VS_Generic.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>

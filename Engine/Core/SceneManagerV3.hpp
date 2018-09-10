@@ -14,7 +14,8 @@ class FrameWorkManager;
 //static const unsigned int MAX_NR_OF_OBJECTS_PER_BUFFER = MAX_NR_OF_MATRICES_IN_BUFFER;
 static const unsigned int MAX_NR_OF_OBJECTS = 16384U;
 
-static const unsigned int MAX_NR_OF_LIGHTS = 4U;
+// Because of the light buffer, "only" 4095 lights can exist, the remaining 32 bytes are occupied by the four ints
+static const unsigned int MAX_NR_OF_LIGHTS = 4095U;
 
 struct ObjectV3
 {
@@ -31,7 +32,6 @@ struct Light
 {
 	Vector3f position;
 	float dropoff = -0.01f;
-	//float data[4];	// First 3 are position, last is dropoff (should be negative)
 };
 
 struct LightBuffer

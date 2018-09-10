@@ -1,63 +1,74 @@
 #include "DeferredRenderingManager.hpp"
-#include "VertexBufferManager.hpp"
-#include "ShaderManagerV2.hpp"
 #include <d3d11.h>
 
 DeferredRenderingManager::DeferredRenderingManager() :
-	m_device(nullptr),
-	m_deviceContext(nullptr),
-	m_depthStencilView(nullptr),
-	/*m_viewPort(nullptr),*/
-	m_vertexBufferManager(nullptr),
-	m_shaderManager(nullptr),
-	m_vertexBufferID(-1)
+	m_device(nullptr), m_deviceContext(nullptr), m_gPassDSV(nullptr),
+	m_lPassRTV(nullptr), m_lPassSRV(nullptr), m_lPassDSV(nullptr)
 {
 	for (unsigned int i = 0; i < NR_OF_DEFERRED_OUTPUT_BUFFERS; i++)
 	{
-		m_renderTargetViews[i] = nullptr;
-		m_shaderResourceViews[i] = nullptr;
+		m_gPassRTVs[i] = nullptr;
+		m_gPassSRVs[i] = nullptr;
 	}
 }
 
 DeferredRenderingManager::~DeferredRenderingManager()
 {
-	/*if (m_viewPort)
+	/*
+	Release light pass resources
+	*/
+	if (m_lPassDSV)
 	{
-		delete m_viewPort;
-	}*/
+		m_lPassDSV->Release();
+		m_lPassDSV = nullptr;
+	}
+	if (m_lPassSRV)
+	{
+		m_lPassSRV->Release();
+		m_lPassSRV = nullptr;
+	}
+	if (m_lPassRTV)
+	{
+		m_lPassRTV->Release();
+		m_lPassRTV = nullptr;
+	}
 
-	if (m_depthStencilView)
+	/*
+	Release geometry pass resources
+	*/
+	if (m_gPassDSV)
 	{
-		m_depthStencilView->Release();
-		m_depthStencilView = nullptr;
+		m_gPassDSV->Release();
+		m_gPassDSV = nullptr;
 	}
 	for (unsigned int i = 0; i < NR_OF_DEFERRED_OUTPUT_BUFFERS; i++)
 	{
-		if (m_shaderResourceViews[i])
+		if (m_gPassSRVs[i])
 		{
-			m_shaderResourceViews[i]->Release();
-			m_shaderResourceViews[i] = nullptr;
+			m_gPassSRVs[i]->Release();
+			m_gPassSRVs[i] = nullptr;
 		}
-		if (m_renderTargetViews[i])
+		if (m_gPassRTVs[i])
 		{
-			m_renderTargetViews[i]->Release();
-			m_renderTargetViews[i] = nullptr;
+			m_gPassRTVs[i]->Release();
+			m_gPassRTVs[i] = nullptr;
 		}
 	}
 }
 
-bool DeferredRenderingManager::Initialize(ID3D11Device * device, ID3D11DeviceContext * deviceContext, const Vector2i& windowDimensions, VertexBufferManager * vertexBufferManager, ShaderManagerV2 * shaderManager)
+bool DeferredRenderingManager::Initialize(ID3D11Device * device, ID3D11DeviceContext * deviceContext, const Vector2i& windowDimensions)
 {
 	m_device = device;
 	m_deviceContext = deviceContext;
-	m_shaderManager = shaderManager;
-	m_vertexBufferManager = vertexBufferManager;
 
 	/*
 	Temporary texture buffers for creating rtv's, srv's and dsv's
 	*/
 	ID3D11Texture2D* renderTargetTextures[NR_OF_DEFERRED_OUTPUT_BUFFERS];
 	ID3D11Texture2D* depthStencilBuffer;
+
+	ID3D11Texture2D* lightRenderTargetTexture;
+	ID3D11Texture2D* lightDepthStencilBuffer;
 
 	/*
 	Descriptions
@@ -73,7 +84,7 @@ bool DeferredRenderingManager::Initialize(ID3D11Device * device, ID3D11DeviceCon
 	rttDesc.Height = windowDimensions.y;
 	rttDesc.MipLevels = 1;
 	rttDesc.ArraySize = 1;
-	rttDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT;
+	rttDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R16G16B16A16_FLOAT;
 	rttDesc.SampleDesc.Count = 1;
 	rttDesc.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
 	rttDesc.BindFlags = D3D11_BIND_FLAG::D3D11_BIND_RENDER_TARGET | D3D11_BIND_FLAG::D3D11_BIND_SHADER_RESOURCE;
@@ -112,70 +123,20 @@ bool DeferredRenderingManager::Initialize(ID3D11Device * device, ID3D11DeviceCon
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION::D3D11_DSV_DIMENSION_TEXTURE2D;
 	dsvDesc.Texture2D.MipSlice = 0;
 
-
-
-#ifdef VARYING_TEXTURE_PIXEL_SIZES
-	/*
-	World positions require only 3 floats
-	*/
-	rttDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT;
-	HRESULT result = m_device->CreateTexture2D(&rttDesc, nullptr, &renderTargetTextures[static_cast<unsigned int>(DeferredBufferTypes::WORLD_POSITIONS)]);
-	if (FAILED(result))
-		return false;
-	/*
-	Normals require only 3 floats
-	*/
-	rttDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT;
-	if (FAILED(m_device->CreateTexture2D(&rttDesc, nullptr, &renderTargetTextures[static_cast<unsigned int>(DeferredBufferTypes::NORMALS)])))
-		return false;
-	/*
-	Colors require 4 floats
-	*/
-	rttDesc.Format = DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT;
-	if (FAILED(m_device->CreateTexture2D(&rttDesc, nullptr, &renderTargetTextures[static_cast<unsigned int>(DeferredBufferTypes::COLORS)])))
-		return false;
-
 	for (unsigned int i = 0; i < NR_OF_DEFERRED_OUTPUT_BUFFERS; i++)
 	{
-		if (FAILED(m_device->CreateRenderTargetView(renderTargetTextures[i], &rtvDesc, &m_renderTargetViews[i])))
+		if (FAILED(m_device->CreateTexture2D(&rttDesc, nullptr, &renderTargetTextures[i])))
 			return false;
-		if (FAILED(m_device->CreateShaderResourceView(renderTargetTextures[i], &srvDesc, &m_shaderResourceViews[i])))
+		if (FAILED(m_device->CreateRenderTargetView(renderTargetTextures[i], &rtvDesc, &m_gPassRTVs[i])))
+			return false;
+		if (FAILED(m_device->CreateShaderResourceView(renderTargetTextures[i], &srvDesc, &m_gPassSRVs[i])))
 			return false;
 		renderTargetTextures[i]->Release();
 	}
 
-#else
-	for (unsigned int i = 0; i < NR_OF_DEFERRED_OUTPUT_BUFFERS; i++)
-	{
-		/*
-		Create texture buffers
-		*/
-		if (FAILED(m_device->CreateTexture2D(&rttDesc, nullptr, &renderTargetTextures[i])))
-			return false;
-		/*
-		Create render targets
-		*/
-		if (FAILED(m_device->CreateRenderTargetView(renderTargetTextures[i], &rtvDesc, &m_renderTargetViews[i])))
-			return false;
-		/*
-		Create shader resources
-		*/
-		if (FAILED(m_device->CreateShaderResourceView(renderTargetTextures[i], &srvDesc, &m_shaderResourceViews[i])))
-			return false;
-	}
-#endif
-
-
-
-	/*
-	Create depth stencil buffer
-	*/
 	if (FAILED(m_device->CreateTexture2D(&dbDesc, nullptr, &depthStencilBuffer)))
 		return false;
-	/*
-	Create depth stencil view
-	*/
-	if (FAILED(m_device->CreateDepthStencilView(depthStencilBuffer, &dsvDesc, &m_depthStencilView)))
+	if (FAILED(m_device->CreateDepthStencilView(depthStencilBuffer, &dsvDesc, &m_gPassDSV)))
 		return false;
 	depthStencilBuffer->Release();
 
@@ -187,30 +148,18 @@ bool DeferredRenderingManager::Initialize(ID3D11Device * device, ID3D11DeviceCon
 	m_viewPort->TopLeftX = 0.0f;
 	m_viewPort->TopLeftY = 0.0f;*/
 
-
 	/*
-	Create vertex buffer for screen target
+	Create resources for light pass
 	*/
-
-	/* A triangle perfectly covering the screen */
-	m_vertices[0].position = Vector3f(-3.0f, -1.0f, 0.0f);	// bottom left
-	m_vertices[1].position = Vector3f(1.0f, 3.0f, 0.0f);	// upper right
-	m_vertices[2].position = Vector3f(1.0f, -1.0f, 0.0f);	// bottom right
-	m_vertices[0].uv = Vector2f(-1.0f, 1.0f);
-	m_vertices[1].uv = Vector2f(1.0f, -1.0f);
-	m_vertices[2].uv = Vector2f(1.0f, 1.0f);
-
-	/* A triangle covering half the screen */
-	//m_vertices[0].position = Vector3f(-1.0f, -1.0f, 0.0f);	// bottom left
-	//m_vertices[1].position = Vector3f(1.0f, 1.0f, 0.0f);	// upper right
-	//m_vertices[2].position = Vector3f(1.0f, -1.0f, 0.0f);	// bottom right
-	//m_vertices[0].uv = Vector2f(0.0f, 1.0f);
-	//m_vertices[1].uv = Vector2f(1.0f, 0.0f);
-	//m_vertices[2].uv = Vector2f(1.0f, 1.0f);
-
-
-	m_vertexBufferID = m_vertexBufferManager->CreateBuffer(sizeof(Vertex) * 3, sizeof(Vertex), m_vertices);
-	if (m_vertexBufferID == -1)
+	if (FAILED(m_device->CreateTexture2D(&rttDesc, nullptr, &lightRenderTargetTexture)))
+		return false;
+	if (FAILED(m_device->CreateRenderTargetView(lightRenderTargetTexture, &rtvDesc, &m_lPassRTV)))
+		return false;
+	if (FAILED(m_device->CreateShaderResourceView(lightRenderTargetTexture, &srvDesc, &m_lPassSRV)))
+		return false;
+	if (FAILED(m_device->CreateTexture2D(&dbDesc, nullptr, &lightDepthStencilBuffer)))
+		return false;
+	if (FAILED(m_device->CreateDepthStencilView(lightDepthStencilBuffer, &dsvDesc, &m_lPassDSV)))
 		return false;
 
 	return true;
@@ -218,38 +167,46 @@ bool DeferredRenderingManager::Initialize(ID3D11Device * device, ID3D11DeviceCon
 
 void DeferredRenderingManager::RenderLightPass()
 {
-	m_shaderManager->SetShaders(ShaderTypeV2::LIGHT_PASS);
-
-	// Setting light pass render target is done before this
-
-	m_vertexBufferManager->SetBufferToInputAssembler(m_vertexBufferID, 0);
-	
 	/*
 	This and Direct3D should be changed to store the deferred textures in the texture manager instead,
 	then utilizing it when setting a texture to the shader
 	*/
-	m_deviceContext->PSSetShaderResources(0, NR_OF_DEFERRED_OUTPUT_BUFFERS, m_shaderResourceViews);
-	m_deviceContext->Draw(sizeof(m_vertices) / sizeof(Vertex), 0);
+	m_deviceContext->PSSetShaderResources(0, NR_OF_DEFERRED_OUTPUT_BUFFERS, m_gPassSRVs);
+	m_deviceContext->Draw(3, 0);
 }
 
-void DeferredRenderingManager::ClearRenderTargets(float r, float g, float b, float a)
+void DeferredRenderingManager::ClearGeometryRenderTargets(float r, float g, float b, float a)
 {
 	float clearColor[] = { r, g, b, a };
 	for (unsigned int i = 0; i < NR_OF_DEFERRED_OUTPUT_BUFFERS; i++)
 	{
-		m_deviceContext->ClearRenderTargetView(m_renderTargetViews[i], clearColor);
+		m_deviceContext->ClearRenderTargetView(m_gPassRTVs[i], clearColor);
 	}
 
-	m_deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_deviceContext->ClearDepthStencilView(m_gPassDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+}
+void DeferredRenderingManager::ClearLightRenderTarget(float r, float g, float b, float a)
+{
+	float clearColor[] = { r, g, b, a };
+
+	m_deviceContext->ClearRenderTargetView(m_lPassRTV, clearColor);
+	m_deviceContext->ClearDepthStencilView(m_lPassDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
-void DeferredRenderingManager::SetRenderTargets()
+void DeferredRenderingManager::SetGeometryRenderTargets()
 {
-	m_deviceContext->OMSetRenderTargets(NR_OF_DEFERRED_OUTPUT_BUFFERS, m_renderTargetViews, m_depthStencilView);
-	//m_deviceContext->RSSetViewports(1, m_viewPort);
+	m_deviceContext->OMSetRenderTargets(NR_OF_DEFERRED_OUTPUT_BUFFERS, m_gPassRTVs, m_gPassDSV);
+}
+void DeferredRenderingManager::SetLightRenderTarget()
+{
+	m_deviceContext->OMSetRenderTargets(1, &m_lPassRTV, m_lPassDSV);
 }
 
-ID3D11ShaderResourceView ** DeferredRenderingManager::GetShaderResourceViews()
+ID3D11ShaderResourceView ** DeferredRenderingManager::GetGeometryPassShaderResourceViews()
 {
-	return m_shaderResourceViews;
+	return m_gPassSRVs;
+}
+ID3D11ShaderResourceView * DeferredRenderingManager::GetLightPassShaderResourceView()
+{
+	return m_lPassSRV;
 }

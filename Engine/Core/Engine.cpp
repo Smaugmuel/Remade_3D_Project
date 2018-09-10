@@ -109,6 +109,7 @@ void Engine::Clear(float r, float g, float b, float a)
 {
 	m_frameWorkManager.ClearFirstPassRenderTargets(r, g, b, a);
 	m_frameWorkManager.ClearLightPassRenderTargets(r, g, b, a);
+	m_frameWorkManager.ClearFinalPassRenderTarget(r, g, b, a);
 }
 
 void Engine::Render()
@@ -139,24 +140,38 @@ void Engine::ControlCamera(float dt)
 
 	bool isChanged = false;
 
+	float speed = 10.0f;
+	if (input->IsKeyDown('B'))
+		speed *= 10.0f;
+
 	if (input->IsKeyDown('D'))
 	{
-		cam->MoveRight(10.0f * dt);
+		cam->MoveRight(speed * dt);
 		isChanged = true;
 	}
 	if (input->IsKeyDown('A'))
 	{
-		cam->MoveRight(-10.0f * dt);
+		cam->MoveRight(-speed * dt);
 		isChanged = true;
 	}
 	if (input->IsKeyDown('W'))
 	{
-		cam->MoveForward(10.0f * dt);
+		cam->MoveForward(speed * dt);
 		isChanged = true;
 	}
 	if (input->IsKeyDown('S'))
 	{
-		cam->MoveForward(-10.0f * dt);
+		cam->MoveForward(-speed * dt);
+		isChanged = true;
+	}
+	if (input->IsKeyDown(VK_SPACE))
+	{
+		cam->MoveUp(speed * dt);
+		isChanged = true;
+	}
+	if (input->IsKeyDown(VK_SHIFT))
+	{
+		cam->MoveUp(-speed * dt);
 		isChanged = true;
 	}
 

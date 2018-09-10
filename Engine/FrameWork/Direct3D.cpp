@@ -1,4 +1,11 @@
 #include "Direct3D.hpp"
+#include <d3d11.h>
+#pragma comment (lib, "d3d11.lib")
+
+/*
+Global viewPorts (could be allocated instead)
+*/
+D3D11_VIEWPORT viewPorts[2];
 
 Direct3D::Direct3D()
 {
@@ -6,78 +13,71 @@ Direct3D::Direct3D()
 }
 Direct3D::~Direct3D()
 {
+	/*
+	Release shadow pass resources
+	*/
+	if (m_sPassDSV)
+	{
+		m_sPassDSV->Release();
+		m_sPassDSV = nullptr;
+	}
+	if (m_sPassDSB)
+	{
+		m_sPassDSB->Release();
+		m_sPassDSB = nullptr;
+	}
+	if (m_sPassSRV)
+	{
+		m_sPassSRV->Release();
+		m_sPassSRV = nullptr;
+	}
+
+	/*
+	Release final pass resources
+	*/
+	if (m_fPassDSV)
+	{
+		m_fPassDSV->Release();
+		m_fPassDSV = nullptr;
+	}
+	/*if (m_fPassDSB)
+	{
+		m_fPassDSB->Release();
+		m_fPassDSB = nullptr;
+	}*/
+	if (m_fPassRTV)
+	{
+		m_fPassRTV->Release();
+		m_fPassRTV = nullptr;
+	}
+
+	/*
+	Release predefined states resources
+	*/
 	if (m_defaultBlendState)
 	{
 		m_defaultBlendState->Release();
 		m_defaultBlendState = nullptr;
 	}
-
-	/* Shadow */
-	if (m_s_shaderResourceView)
+	if (m_defaultRasterizerState)
 	{
-		m_s_shaderResourceView->Release();
-		m_s_shaderResourceView = nullptr;
-	}
-	if (m_s_depthStencilView)
-	{
-		m_s_depthStencilView->Release();
-		m_s_depthStencilView = nullptr;
-	}
-	if (m_s_depthStencilBuffer)
-	{
-		m_s_depthStencilBuffer->Release();
-		m_s_depthStencilBuffer = nullptr;
-	}
-
-
-	/* Render to texture */
-	//if (m_rt_shaderResourceView)
-	//{
-	//	m_rt_shaderResourceView->Release();
-	//	m_rt_shaderResourceView = nullptr;
-	//}
-	//if (m_rt_renderTargetView)
-	//{
-	//	m_rt_renderTargetView->Release();
-	//	m_rt_renderTargetView = nullptr;
-	//}
-	//if (m_rt_renderTargetTexture)
-	//{
-	//	m_rt_renderTargetTexture->Release();
-	//	m_rt_renderTargetTexture = nullptr;
-	//}
-
-
-	// Default
-	if (m_depthStencilView)
-	{
-		m_depthStencilView->Release();
-		m_depthStencilView = nullptr;
-	}
-
-	/* Added with rastertek */
-	if (m_depthStencilState)
-	{
-		m_depthStencilState->Release();
-		m_depthStencilState = nullptr;
+		m_defaultRasterizerState->Release();
+		m_defaultRasterizerState = nullptr;
 	}
 	if (m_depthDisabledStencilState)
 	{
 		m_depthDisabledStencilState->Release();
 		m_depthDisabledStencilState = nullptr;
 	}
-
-
-	if (m_depthStencilBuffer)
+	if (m_depthStencilState)
 	{
-		m_depthStencilBuffer->Release();
-		m_depthStencilBuffer = nullptr;
+		m_depthStencilState->Release();
+		m_depthStencilState = nullptr;
 	}
-	if (m_renderTargetView)
-	{
-		m_renderTargetView->Release();
-		m_renderTargetView = nullptr;
-	}
+
+	/*
+	Release core resources
+	*/
 	if (m_deviceContext)
 	{
 		m_deviceContext->Release();
@@ -109,30 +109,18 @@ bool Direct3D::Initialize(HWND__* windowHandle, const Vector2i& windowDimensions
 	{
 		return false;
 	}
-	if (!InitializeDefaultRenderTargetView())
+	if (!InitializeFinalRenderTargetView())
 	{
 		return false;
 	}
-	if (!InitializeDefaultDepthBufferAndDepthStencilView())
+	if (!InitializeFinalDepthBufferAndDepthStencilView())
 	{
 		return false;
 	}
-	if (!InitializeDefaultViewport())
+	if (!InitializeFinalViewport())
 	{
 		return false;
 	}
-
-	// Deferred
-	/*if (!m_deferredRenderingManager.InitializeNormal(m_device, m_deviceContext, windowDimensions))
-	{
-		return false;
-	}*/
-
-	/* Render to texture */
-	//if (!InitializeRenderToTextureRenderTargetView())
-	//{
-	//	return false;
-	//}
 
 	/* Shadow */
 	if (!InitializeShadowDepthBufferAndDepthStencilView())
@@ -147,7 +135,7 @@ bool Direct3D::Initialize(HWND__* windowHandle, const Vector2i& windowDimensions
 	{
 		return false;
 	}
-
+	
 	return true;
 }
 
@@ -188,7 +176,7 @@ bool Direct3D::InitializeDeviceAndSwapChain()
 	}
 	return true;
 }
-bool Direct3D::InitializeDefaultRenderTargetView()
+bool Direct3D::InitializeFinalRenderTargetView()
 {
 	ID3D11Texture2D* backBuffer = nullptr;
 
@@ -196,7 +184,7 @@ bool Direct3D::InitializeDefaultRenderTargetView()
 	{
 		return false;
 	}
-	if (FAILED(m_device->CreateRenderTargetView(backBuffer, NULL, &m_renderTargetView)))
+	if (FAILED(m_device->CreateRenderTargetView(backBuffer, NULL, &m_fPassRTV)))
 	{
 		return false;
 	}
@@ -206,11 +194,12 @@ bool Direct3D::InitializeDefaultRenderTargetView()
 
 	return true;
 }
-bool Direct3D::InitializeDefaultDepthBufferAndDepthStencilView()
+bool Direct3D::InitializeFinalDepthBufferAndDepthStencilView()
 {
 	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 	D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDesc;
+	ID3D11Texture2D* fPassDSB = nullptr;
 	//D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	HRESULT result;
 
@@ -228,7 +217,7 @@ bool Direct3D::InitializeDefaultDepthBufferAndDepthStencilView()
 	depthBufferDesc.CPUAccessFlags = D3D11_USAGE_DEFAULT;
 	depthBufferDesc.MiscFlags = 0;
 
-	result = m_device->CreateTexture2D(&depthBufferDesc, nullptr, &m_depthStencilBuffer);
+	result = m_device->CreateTexture2D(&depthBufferDesc, nullptr, &fPassDSB);
 	if (FAILED(result))
 	{
 		return false;
@@ -287,32 +276,36 @@ bool Direct3D::InitializeDefaultDepthBufferAndDepthStencilView()
 
 	// Depth stencil view ================================================================================================
 	
-	//ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
-	//depthStencilViewDesc.Flags = 0;
-	//depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	//depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	//depthStencilViewDesc.Texture2D.MipSlice = 0;
-
-	result = m_device->CreateDepthStencilView(m_depthStencilBuffer, nullptr, &m_depthStencilView);
+	result = m_device->CreateDepthStencilView(fPassDSB, nullptr, &m_fPassDSV);
 	if (FAILED(result))
 	{
 		return false;
 	}
 
-	m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
+	fPassDSB->Release();
+
+	m_deviceContext->OMSetRenderTargets(1, &m_fPassRTV, m_fPassDSV);
 
 	return true;
 }
-bool Direct3D::InitializeDefaultViewport()
+bool Direct3D::InitializeFinalViewport()
 {
-	m_viewPort.Width = (FLOAT)m_windowDimensions.x;
+	viewPorts[0].Width = (FLOAT)m_windowDimensions.x;
+	viewPorts[0].Height = (FLOAT)m_windowDimensions.y;
+	viewPorts[0].MinDepth = 0.0f;
+	viewPorts[0].MaxDepth = 1.0f;
+	viewPorts[0].TopLeftX = 0.0f;
+	viewPorts[0].TopLeftY = 0.0f;
+	m_fPassVP = &viewPorts[0];
+
+	/*m_viewPort.Width = (FLOAT)m_windowDimensions.x;
 	m_viewPort.Height = (FLOAT)m_windowDimensions.y;
 	m_viewPort.MinDepth = 0.0f;
 	m_viewPort.MaxDepth = 1.0f;
 	m_viewPort.TopLeftX = 0.0f;
-	m_viewPort.TopLeftY = 0.0f;
+	m_viewPort.TopLeftY = 0.0f;*/
 
-	m_deviceContext->RSSetViewports(1, &m_viewPort);
+	m_deviceContext->RSSetViewports(1, m_fPassVP);
 
 	return true;
 }
@@ -375,7 +368,7 @@ bool Direct3D::InitializeShadowDepthBufferAndDepthStencilView()
 	depthBufferDesc.CPUAccessFlags = 0;
 	depthBufferDesc.MiscFlags = 0;
 
-	if (FAILED(m_device->CreateTexture2D(&depthBufferDesc, nullptr, &m_s_depthStencilBuffer)))
+	if (FAILED(m_device->CreateTexture2D(&depthBufferDesc, nullptr, &m_sPassDSB)))
 	{
 		return false;
 	}
@@ -385,7 +378,7 @@ bool Direct3D::InitializeShadowDepthBufferAndDepthStencilView()
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
-	if (FAILED(m_device->CreateDepthStencilView(m_s_depthStencilBuffer, &depthStencilViewDesc, &m_s_depthStencilView)))
+	if (FAILED(m_device->CreateDepthStencilView(m_sPassDSB, &depthStencilViewDesc, &m_sPassDSV)))
 	{
 		return false;
 	}
@@ -401,7 +394,7 @@ bool Direct3D::InitializeShadowShaderResourceView()
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
-	if (FAILED(m_device->CreateShaderResourceView(m_s_depthStencilBuffer, &shaderResourceViewDesc, &m_s_shaderResourceView)))
+	if (FAILED(m_device->CreateShaderResourceView(m_sPassDSB, &shaderResourceViewDesc, &m_sPassSRV)))
 	{
 		return false;
 	}
@@ -410,35 +403,27 @@ bool Direct3D::InitializeShadowShaderResourceView()
 }
 bool Direct3D::InitializeShadowViewport()
 {
-	m_s_viewport.Width = (float)m_windowDimensions.x;
-	m_s_viewport.Height = (float)m_windowDimensions.y;
-	m_s_viewport.MinDepth = 0.0f;
-	m_s_viewport.MaxDepth = 1.0f;
-	m_s_viewport.TopLeftX = 0.0f;
-	m_s_viewport.TopLeftY = 0.0f;
+	viewPorts[1].Width = (float)m_windowDimensions.x;
+	viewPorts[1].Height = (float)m_windowDimensions.y;
+	viewPorts[1].MinDepth = 0.0f;
+	viewPorts[1].MaxDepth = 1.0f;
+	viewPorts[1].TopLeftX = 0.0f;
+	viewPorts[1].TopLeftY = 0.0f;
+
+	m_sPassVP = &viewPorts[1];
 
 	return true;
 }
 
-void Direct3D::ClearDefaultTarget(float r, float g, float b, float a)
+void Direct3D::ClearFinalTarget(float r, float g, float b, float a)
 {
 	float clearColor[] = { r, g, b, a };
-	m_deviceContext->ClearRenderTargetView(m_renderTargetView, clearColor);
-	m_deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_deviceContext->ClearRenderTargetView(m_fPassRTV, clearColor);
+	m_deviceContext->ClearDepthStencilView(m_fPassDSV, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
-//void Direct3D::ClearDeferredTargets(float r, float g, float b, float a)
-//{
-//	m_deferredRenderingManager.ClearRenderTargets(r, g, b, a);
-//}
 void Direct3D::ClearShadowTarget()
 {
-	m_deviceContext->ClearDepthStencilView(m_s_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
-}
-void Direct3D::ClearAllTargets()
-{
-	ClearDefaultTarget();
-	//ClearDeferredTargets();
-	ClearShadowTarget();
+	m_deviceContext->ClearDepthStencilView(m_sPassDSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
 void Direct3D::Present()
@@ -446,19 +431,15 @@ void Direct3D::Present()
 	m_swapChain->Present(0, 0);
 }
 
-void Direct3D::SetDefaultTarget()
-{
-	m_deviceContext->OMSetRenderTargets(1, &m_renderTargetView, m_depthStencilView);
-	m_deviceContext->RSSetViewports(1, &m_viewPort);
-}
-//void Direct3D::SetDeferredTargets()
-//{
-//	m_deferredRenderingManager.SetRenderTargets();
-//}
 void Direct3D::SetShadowTarget()
 {
-	m_deviceContext->OMSetRenderTargets(0, nullptr, m_s_depthStencilView);
-	m_deviceContext->RSSetViewports(1, &m_s_viewport);
+	m_deviceContext->OMSetRenderTargets(0, nullptr, m_sPassDSV);
+	m_deviceContext->RSSetViewports(1, m_sPassVP);
+}
+void Direct3D::SetFinalTarget()
+{
+	m_deviceContext->OMSetRenderTargets(1, &m_fPassRTV, m_fPassDSV);
+	m_deviceContext->RSSetViewports(1, m_fPassVP);
 }
 
 void Direct3D::SetDefaultBlendState()
@@ -468,7 +449,6 @@ void Direct3D::SetDefaultBlendState()
 	
 	m_deviceContext->OMSetBlendState(m_defaultBlendState, blendFactor, sampleMask);
 }
-
 void Direct3D::SetDefaultRasterizerState()
 {
 	m_deviceContext->RSSetState(m_defaultRasterizerState);
@@ -491,12 +471,7 @@ ID3D11DeviceContext* Direct3D::GetDeviceContext() const
 {
 	return m_deviceContext;
 }
-
-//ID3D11ShaderResourceView ** Direct3D::GetDeferredShaderResourceViews()
-//{
-//	return m_deferredRenderingManager.GetShaderResourceViews();
-//}
-ID3D11ShaderResourceView * Direct3D::GetShadowShaderResourceView()
+ID3D11ShaderResourceView * Direct3D::GetShadowShaderResourceView() const
 {
-	return m_s_shaderResourceView;
+	return m_sPassSRV;
 }

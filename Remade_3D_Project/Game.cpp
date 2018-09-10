@@ -118,8 +118,8 @@ bool Game::Initialize()
 	Matrix m(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 	Matrix m2 = m.GetTranspose();*/
 
-	const unsigned int nObjX = /*2;*/128U;
-	const unsigned int nObjZ = /*2;*/ MAX_NR_OF_OBJECTS / nObjX;
+	const unsigned int nObjX = std::sqrt(MAX_NR_OF_OBJECTS);
+	const unsigned int nObjZ = MAX_NR_OF_OBJECTS / nObjX;
 	Vector3f startPos = Vector3f(static_cast<float>(nObjX), 0, static_cast<float>(nObjZ)) * -1.0f;
 	Vector3f offset(4, 0, 4);
 
@@ -162,6 +162,9 @@ void Game::Run()
 	SceneManagerV3* sceneManager = m_engine.GetSceneManager();
 	//SceneManager* sceneManager = SceneManager::Get();
 
+	Matrix rotMatrix = Matrix::Rotation(Vector3f(0, 1, 0), 0.01f);
+
+
 	while (true)
 	{
 		/*if (m_pop_game_state_flag)
@@ -186,10 +189,11 @@ void Game::Run()
 			sceneManager->SetObjectModel(5000, "generator.obj");
 		}*/
 
-		for (unsigned int i = 0; i < sceneManager->GetNrOfObjects(); i++)
+		unsigned int n = sceneManager->GetNrOfObjects();
+		for (unsigned int i = 0; i < n; i++)
 		{
 			ObjectV3* obj = sceneManager->GetObjectV3(i);
-			obj->worldMatrix = Matrix::Rotation(Vector3f(0, 1, 0), 0.01f) * obj->worldMatrix;
+			obj->worldMatrix = rotMatrix * obj->worldMatrix;
 		}
 
 		if (!m_engine.Update())

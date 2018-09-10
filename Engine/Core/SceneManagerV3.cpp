@@ -32,10 +32,10 @@ bool SceneManagerV3::Initialize(ModelManager * modelManager, MaterialManager * m
 	Initialize lights
 	*/
 	LightBuffer lightBuffer;
-	lightBuffer.nrOfLights = min(max(4, 0), MAX_NR_OF_LIGHTS);
+	lightBuffer.nrOfLights = 128U;// MAX_NR_OF_LIGHTS;//min(max(4, 0), MAX_NR_OF_LIGHTS);
 	for (int i = 0; i < lightBuffer.nrOfLights; i++)
 	{
-		lightBuffer.lights[i].position = Vector3f((1 - i % 2) * 100.0f, 10.0f, (1 - i / 2) * 100.0f);
+		lightBuffer.lights[i].position = Vector3f((1 - i % 2) * 100.0f, 10.0f, 0.0f);//(1 - i / 2) * 100.0f);
 		lightBuffer.lights[i].dropoff = -0.01f * (i + 1);
 	}
 
@@ -126,9 +126,18 @@ void SceneManagerV3::Render()
 	m_frameWorkManager->GetConstantBufferManager()->SetConstantBufferToPixelShader(m_lightBufferIndex, 0);
 
 	/*
-	Render second pass of deferred rendering
+	Render light pass
 	*/
+	m_frameWorkManager->GetShaderManager()->SetShaders(ShaderTypeV2::LIGHT_PASS);
+	m_frameWorkManager->SetLightPassRenderTarget();
 	m_frameWorkManager->RenderLightPass();
+
+	/*
+	Render final pass
+	*/
+	m_frameWorkManager->GetShaderManager()->SetShaders(ShaderTypeV2::FINAL_PASS);
+	m_frameWorkManager->SetFinalPassRenderTarget();
+	m_frameWorkManager->RenderFinalPass();
 }
 
 void SceneManagerV3::SetViewAndProjectionMatrices(const Matrix & view, const Matrix & projection)

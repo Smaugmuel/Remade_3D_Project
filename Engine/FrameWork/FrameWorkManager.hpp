@@ -11,6 +11,7 @@
 #include "SamplerManager.hpp"
 #include "DeferredRenderingManager.hpp"
 #include "ShadowMapRenderingManager.hpp"
+#include "OnScreenTarget.hpp"
 
 class FrameWorkManager final
 {
@@ -23,13 +24,16 @@ public:
 	void SetFirstPassRenderTargets();
 	void SetLightPassRenderTarget();
 	void SetShadowPassRenderTarget();
+	void SetFinalPassRenderTarget();
 
 	void ClearFirstPassRenderTargets(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
 	void ClearLightPassRenderTargets(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
 	void ClearShadowPassRenderTargets();
+	void ClearFinalPassRenderTarget(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
 	
 	void RenderWithCurrentSettings(int nrOfVertices);
 	void RenderLightPass();
+	void RenderFinalPass();
 	
 	void Present();
 
@@ -55,6 +59,7 @@ private:
 	SamplerManager m_samplerManager;
 	DeferredRenderingManager m_deferredRenderingManager;
 	ShadowMapRenderingManager m_shadowMapRenderingManager;
+	OnScreenTarget m_onScreenTarget;
 };
 
 #endif

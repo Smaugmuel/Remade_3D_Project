@@ -27,10 +27,11 @@ enum class ShaderTypeV2
 {
 	GEOMETRY_PASS,
 	LIGHT_PASS,
-	SHADOW_PASS
+	SHADOW_PASS,
+	FINAL_PASS
 };
 
-static const unsigned int NR_OF_SHADER_TYPES = static_cast<unsigned int>(ShaderTypeV2::SHADOW_PASS) + 1U;
+static const unsigned int NR_OF_SHADER_TYPES = static_cast<unsigned int>(ShaderTypeV2::FINAL_PASS) + 1U;
 
 class ShaderManagerV2 final
 {

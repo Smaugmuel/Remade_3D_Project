@@ -225,6 +225,9 @@
     <ClCompile Include="FrameWork\ShadowMapRenderingManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FrameWork\OnScreenTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Buffers\Buffers.hpp">
@@ -485,6 +488,9 @@
     <ClInclude Include="FrameWork\ShadowMapRenderingManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FrameWork\OnScreenTarget.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -494,8 +500,9 @@
     <FxCompile Include="Render\Shaders\HLSL\VS_Generic.hlsl" />
     <FxCompile Include="Render\Shaders\HLSL\VS_GenericV2.hlsl" />
     <FxCompile Include="FrameWork\HLSL\PS_LightPass.hlsl" />
-    <FxCompile Include="FrameWork\HLSL\VS_FirstPassMatrixBuffer.hlsl" />
     <FxCompile Include="FrameWork\HLSL\PS_GeometryPass.hlsl" />
     <FxCompile Include="FrameWork\HLSL\VS_Generic.hlsl" />
+    <FxCompile Include="FrameWork\HLSL\PS_ShadowPass.hlsl" />
+    <FxCompile Include="FrameWork\HLSL\PS_FinalPass.hlsl" />
   </ItemGroup>
 </Project>

@@ -24,7 +24,7 @@ bool ConstantBufferManager::Initialize(ID3D11Device* device, ID3D11DeviceContext
 	return true;
 }
 
-int ConstantBufferManager::CreateConstantBuffer(unsigned int bufferSize/*, void* initialData*/)
+int ConstantBufferManager::CreateConstantBuffer(unsigned int bufferSize, void* initialData)
 {
 	/*
 	Simple "solution" for now
@@ -46,11 +46,11 @@ int ConstantBufferManager::CreateConstantBuffer(unsigned int bufferSize/*, void*
 	desc.MiscFlags = 0;
 	desc.StructureByteStride = 0;
 
-	data.pSysMem = nullptr;//initialData;
+	data.pSysMem = initialData;
 	data.SysMemPitch = 0;
 	data.SysMemSlicePitch = 0;
 	
-	HRESULT result = m_device->CreateBuffer(&desc, nullptr/*&data*/, &buffer.buffer);
+	HRESULT result = m_device->CreateBuffer(&desc, initialData ? &data : nullptr, &buffer.buffer);
 	if (FAILED(result))
 		return -1;
 	
@@ -64,6 +64,8 @@ bool ConstantBufferManager::MapDataToBuffer(int index, void * bufferData)
 {
 	if (index < 0 || index >= static_cast<int>(m_nrOfBuffers/*m_buffers.size()*/))
 		return false;
+
+	const int x = D3D11_PS_CS_UAV_REGISTER_COUNT;
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 

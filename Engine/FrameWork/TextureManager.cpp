@@ -32,6 +32,8 @@ int TextureManager::LoadTexture(const std::string & fileName)
 		return m_nameToIndexLinker.at(fileName);
 	}
 
+	m_textures.data();
+
 	/*
 	Convert to wide string
 	*/

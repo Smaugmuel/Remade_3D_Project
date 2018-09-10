@@ -55,6 +55,13 @@ void CameraV3::MoveRight(float amount)
 	target = position + dir;
 }
 
+void CameraV3::MoveUp(float amount)
+{
+	Vector3f dir = TargetDirection();
+	position += up * amount;
+	target = position + dir;
+}
+
 void CameraV3::RotateUp(float amount)
 {
 

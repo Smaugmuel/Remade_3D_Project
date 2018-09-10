@@ -14,7 +14,7 @@ public:
 
 	bool Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext);
 
-	int CreateConstantBuffer(unsigned int bufferSize/*, void* initialData = nullptr*/);
+	int CreateConstantBuffer(unsigned int bufferSize, void* initialData = nullptr);
 
 	bool MapDataToBuffer(int index, void* bufferData);
 

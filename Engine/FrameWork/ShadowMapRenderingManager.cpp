@@ -48,19 +48,13 @@ bool ShadowMapRenderingManager::Initialize(ID3D11Device * device, ID3D11DeviceCo
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
 	if (FAILED(m_device->CreateTexture2D(&depthBufferDesc, nullptr, &m_depthStencilBuffer)))
-	{
 		return false;
-	}
 
 	if (FAILED(m_device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView)))
-	{
 		return false;
-	}
 
 	if (FAILED(m_device->CreateShaderResourceView(m_depthStencilBuffer, &shaderResourceViewDesc, &m_shaderResourceView)))
-	{
 		return false;
-	}
 
 	m_viewport = new D3D11_VIEWPORT;
 	m_viewport->Width = (float)windowDimensions.x;

@@ -63,8 +63,11 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	const unsigned int nPSDefines2 = sizeof(psDefines2) / sizeof(ShaderDefine);
 	const unsigned int nVSElements1 = sizeof(vsElements1) / sizeof(InputElement);
 	const unsigned int nVSElements2 = sizeof(vsElements2) / sizeof(InputElement);
+
 	const unsigned int gPassIndex = static_cast<unsigned int>(ShaderTypeV2::GEOMETRY_PASS);
 	const unsigned int lPassIndex = static_cast<unsigned int>(ShaderTypeV2::LIGHT_PASS);
+	const unsigned int sPassIndex = static_cast<unsigned int>(ShaderTypeV2::SHADOW_PASS);
+	const unsigned int fPassIndex = static_cast<unsigned int>(ShaderTypeV2::FINAL_PASS);
 
 	/*
 	Initialize creator members
@@ -74,8 +77,10 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	if (!m_inputLayoutCreator.Initialize(device))
 		return false;
 
+	/* =============================== Geometry pass =============================================== */
+
 	/*
-	Create the vertex shader and input layout for the geometry pass
+	Create the vertex shader and input layout
 	*/
 	vsData = m_shaderCreator.CompileAndCreateVertexShader(nVSDefines1, vsDefines1);
 	if (!vsData.blob || !vsData.vs)
@@ -85,9 +90,23 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	if (!m_inputLayouts[gPassIndex])
 		return false;
 	vsData.blob->Release();
+	
+	/*
+	Disable geometry shader
+	*/
+	m_geometryShaders[static_cast<unsigned int>(ShaderTypeV2::GEOMETRY_PASS)] = nullptr;
 
 	/*
-	Create the vertex shader and input layout for the light pass
+	Create the pixel shader
+	*/
+	m_pixelShaders[gPassIndex] = m_shaderCreator.CompileAndCreatePixelShaderFromFile("PS_GeometryPass.hlsl");
+	if (!m_pixelShaders[gPassIndex])
+		return false;
+
+	/* =============================== Light pass =============================================== */
+
+	/*
+	Create the vertex shader and input layout
 	*/
 	vsData = m_shaderCreator.CompileAndCreateVertexShader(nVSDefines2, vsDefines2);
 	if (!vsData.blob || !vsData.vs)
@@ -99,14 +118,12 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	vsData.blob->Release();
 
 	/*
-	Create the pixel shader for the geometry pass
+	Disable geometry shader
 	*/
-	m_pixelShaders[gPassIndex] = m_shaderCreator.CompileAndCreatePixelShaderFromFile("PS_GeometryPass.hlsl");
-	if (!m_pixelShaders[gPassIndex])
-		return false;
+	m_geometryShaders[static_cast<unsigned int>(ShaderTypeV2::LIGHT_PASS)] = nullptr;
 
 	/*
-	Create the pixel shader for the light pass
+	Create the pixel shader, with or without lights
 	*/
 	if (maxNrOfLights > 0)
 		m_pixelShaders[lPassIndex] = m_shaderCreator.CompileAndCreatePixelShaderFromFile("PS_LightPass.hlsl", nPSDefines2, psDefines2);
@@ -115,11 +132,48 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	if (!m_pixelShaders[lPassIndex])
 		return false;
 
+	/* =============================== Shadow pass =============================================== */
+
 	/*
-	Disable geometry shaders for these passes
+	Create the vertex shader and input layout
 	*/
-	m_geometryShaders[static_cast<unsigned int>(ShaderTypeV2::GEOMETRY_PASS)] = nullptr;
-	m_geometryShaders[static_cast<unsigned int>(ShaderTypeV2::LIGHT_PASS)] = nullptr;
+	m_vertexShaders[sPassIndex] = m_vertexShaders[lPassIndex];
+	m_inputLayouts[sPassIndex] = m_inputLayouts[lPassIndex];
+
+	/*
+	Disable geometry shader
+	*/
+	m_geometryShaders[static_cast<unsigned int>(ShaderTypeV2::SHADOW_PASS)] = nullptr;
+
+	/*
+	Create the pixel shader, with or without lights
+	*/
+	if (maxNrOfLights > 0)
+		m_pixelShaders[sPassIndex] = m_shaderCreator.CompileAndCreatePixelShaderFromFile("PS_ShadowPass.hlsl", nPSDefines2, psDefines2);
+	else
+		m_pixelShaders[sPassIndex] = m_shaderCreator.CompileAndCreatePixelShaderFromFile("PS_ShadowPass.hlsl");
+	if (!m_pixelShaders[sPassIndex])
+		return false;
+
+	/* =============================== Final pass =============================================== */
+
+	/*
+	Create the vertex shader and input layout
+	*/
+	m_vertexShaders[fPassIndex] = m_vertexShaders[lPassIndex];
+	m_inputLayouts[fPassIndex] = m_inputLayouts[lPassIndex];
+
+	/*
+	Disable geometry shader
+	*/
+	m_geometryShaders[static_cast<unsigned int>(ShaderTypeV2::FINAL_PASS)] = nullptr;
+
+	/*
+	Create the pixel shader
+	*/
+	m_pixelShaders[fPassIndex] = m_shaderCreator.CompileAndCreatePixelShaderFromFile("PS_FinalPass.hlsl");
+	if (!m_pixelShaders[fPassIndex])
+		return false;
 
 	return true;
 }

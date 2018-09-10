@@ -15,6 +15,7 @@ struct CameraV3
 
 	void MoveForward(float amount);
 	void MoveRight(float amount);
+	void MoveUp(float amount);
 	void RotateUp(float amount);
 	void RotateDown(float amount);
 

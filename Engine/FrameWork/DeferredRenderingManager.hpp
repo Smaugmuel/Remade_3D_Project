@@ -1,7 +1,6 @@
 #ifndef DEFERRED_RENDERING_MANAGER_HPP
 #define DEFERRED_RENDERING_MANAGER_HPP
 #include "../Math/Vector2.hpp"
-#include "../Math/Vector3.hpp"
 
 //#define VARYING_TEXTURE_PIXEL_SIZES
 
@@ -11,9 +10,6 @@ struct ID3D11RenderTargetView;
 struct ID3D11ShaderResourceView;
 struct ID3D11DepthStencilView;
 //struct D3D11_VIEWPORT;
-
-class ShaderManagerV2;
-class VertexBufferManager;
 
 enum class DeferredBufferTypes
 {
@@ -30,41 +26,36 @@ public:
 	DeferredRenderingManager();
 	~DeferredRenderingManager();
 
-	bool Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const Vector2i& windowDimensions, VertexBufferManager* vertexBufferManager, ShaderManagerV2* shaderManager);
+	bool Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, const Vector2i& windowDimensions);
 
 	void RenderLightPass();
 
-	void ClearRenderTargets(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
-	void SetRenderTargets();
+	void ClearGeometryRenderTargets(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
+	void ClearLightRenderTarget(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
 
-	ID3D11ShaderResourceView** GetShaderResourceViews();
+	void SetGeometryRenderTargets();
+	void SetLightRenderTarget();
+
+	ID3D11ShaderResourceView** GetGeometryPassShaderResourceViews();
+	ID3D11ShaderResourceView* GetLightPassShaderResourceView();
 
 private:
-	struct Vertex
-	{
-		Vector3f position;
-		Vector2f uv;
-	};
-
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_deviceContext;
 
 	/*
-	Resources for first pass
+	Resources for geometry pass
 	*/
-	ID3D11RenderTargetView* m_renderTargetViews[NR_OF_DEFERRED_OUTPUT_BUFFERS];
-	ID3D11ShaderResourceView* m_shaderResourceViews[NR_OF_DEFERRED_OUTPUT_BUFFERS];
-	ID3D11DepthStencilView* m_depthStencilView;
-
-	//D3D11_VIEWPORT* m_viewPort;
+	ID3D11RenderTargetView* m_gPassRTVs[NR_OF_DEFERRED_OUTPUT_BUFFERS];
+	ID3D11ShaderResourceView* m_gPassSRVs[NR_OF_DEFERRED_OUTPUT_BUFFERS];
+	ID3D11DepthStencilView* m_gPassDSV;
 
 	/*
 	Resources for light pass
 	*/
-	Vertex m_vertices[3];
-	int m_vertexBufferID;
-	ShaderManagerV2* m_shaderManager;
-	VertexBufferManager* m_vertexBufferManager;
+	ID3D11RenderTargetView* m_lPassRTV;
+	ID3D11ShaderResourceView* m_lPassSRV;
+	ID3D11DepthStencilView* m_lPassDSV;
 };
 
 #endif

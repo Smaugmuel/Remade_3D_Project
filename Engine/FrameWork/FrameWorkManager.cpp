@@ -1,4 +1,5 @@
 #include "FrameWorkManager.hpp"
+#include <d3d11.h>
 
 FrameWorkManager::FrameWorkManager()
 {
@@ -28,9 +29,11 @@ bool FrameWorkManager::Initialize(Vector2i windowSize, int maxNrOfLights)
 		return false;
 	if (!m_samplerManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext()))
 		return false;
-	if (!m_deferredRenderingManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext(), m_window.GetDimensions(), &m_vertexBufferManager, &m_shaderManager))
+	if (!m_deferredRenderingManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext(), m_window.GetDimensions()))
 		return false;
 	if (!m_shadowMapRenderingManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext(), m_window.GetDimensions()))
+		return false;
+	if (!m_onScreenTarget.Initialize(&m_vertexBufferManager))
 		return false;
 
 	return true;
@@ -38,27 +41,35 @@ bool FrameWorkManager::Initialize(Vector2i windowSize, int maxNrOfLights)
 
 void FrameWorkManager::SetFirstPassRenderTargets()
 {
-	m_deferredRenderingManager.SetRenderTargets();
+	m_deferredRenderingManager.SetGeometryRenderTargets();
 }
 
 void FrameWorkManager::SetLightPassRenderTarget()
 {
-	m_d3d.SetDefaultTarget();
+	m_onScreenTarget.SetAsTarget();
+	m_deferredRenderingManager.SetLightRenderTarget();
 }
 
 void FrameWorkManager::SetShadowPassRenderTarget()
 {
+	m_onScreenTarget.SetAsTarget();
 	m_shadowMapRenderingManager.SetRenderTarget();
+}
+
+void FrameWorkManager::SetFinalPassRenderTarget()
+{
+	m_onScreenTarget.SetAsTarget();
+	m_d3d.SetFinalTarget();
 }
 
 void FrameWorkManager::ClearFirstPassRenderTargets(float r, float g, float b, float a)
 {
-	m_deferredRenderingManager.ClearRenderTargets(r, g, b, a);
+	m_deferredRenderingManager.ClearGeometryRenderTargets(r, g, b, a);
 }
 
 void FrameWorkManager::ClearLightPassRenderTargets(float r, float g, float b, float a)
 {
-	m_d3d.ClearDefaultTarget(r, g, b, a);
+	m_deferredRenderingManager.ClearLightRenderTarget(r, g, b, a);
 }
 
 void FrameWorkManager::ClearShadowPassRenderTargets()
@@ -66,16 +77,30 @@ void FrameWorkManager::ClearShadowPassRenderTargets()
 	m_shadowMapRenderingManager.ClearDepthStencilView();
 }
 
+void FrameWorkManager::ClearFinalPassRenderTarget(float r, float g, float b, float a)
+{
+	m_d3d.ClearFinalTarget(r, g, b, a);
+}
+
 void FrameWorkManager::RenderWithCurrentSettings(int nrOfVertices)
 {
-	m_d3d.GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_d3d.GetDeviceContext()->Draw(nrOfVertices, 0);
+	ID3D11DeviceContext* deviceContext = m_d3d.GetDeviceContext();
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	deviceContext->Draw(nrOfVertices, 0);
 }
 
 void FrameWorkManager::RenderLightPass()
 {
-	m_d3d.SetDefaultTarget();
+	m_deferredRenderingManager.SetLightRenderTarget();
 	m_deferredRenderingManager.RenderLightPass();
+}
+
+void FrameWorkManager::RenderFinalPass()
+{
+	ID3D11ShaderResourceView* srv = m_deferredRenderingManager.GetLightPassShaderResourceView();
+	m_d3d.GetDeviceContext()->PSSetShaderResources(0, 1, &srv);
+	m_d3d.GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_d3d.GetDeviceContext()->Draw(3, 0);
 }
 
 void FrameWorkManager::Present()
