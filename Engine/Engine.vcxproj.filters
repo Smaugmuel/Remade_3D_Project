@@ -216,16 +216,16 @@
     <ClCompile Include="FrameWork\WorldMatrixStorage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FrameWork\Shaders\InputLayoutCreator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameWork\Shaders\ShaderCreatorV2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FrameWork\ShadowMapRenderingManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FrameWork\OnScreenTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameWork\ShaderCreation\InputLayoutCreator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameWork\ShaderCreation\ShaderCreatorV2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -479,16 +479,16 @@
     <ClInclude Include="FrameWork\WorldMatrixStorage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FrameWork\Shaders\InputLayoutCreator.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameWork\Shaders\ShaderCreatorV2.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FrameWork\ShadowMapRenderingManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FrameWork\OnScreenTarget.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\ShaderCreation\InputLayoutCreator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameWork\ShaderCreation\ShaderCreatorV2.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -43,8 +43,8 @@
     <ClCompile Include="Core\MaterialManager.cpp" />
     <ClCompile Include="Core\ModelManager.cpp" />
     <ClCompile Include="FrameWork\OnScreenTarget.cpp" />
-    <ClCompile Include="FrameWork\Shaders\InputLayoutCreator.cpp" />
-    <ClCompile Include="FrameWork\Shaders\ShaderCreatorV2.cpp" />
+    <ClCompile Include="FrameWork\ShaderCreation\InputLayoutCreator.cpp" />
+    <ClCompile Include="FrameWork\ShaderCreation\ShaderCreatorV2.cpp" />
     <ClCompile Include="FrameWork\ShadowMapRenderingManager.cpp" />
     <ClCompile Include="FrameWork\WorldMatrixStorage.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -202,8 +202,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="FrameWork\OnScreenTarget.hpp" />
-    <ClInclude Include="FrameWork\Shaders\InputLayoutCreator.hpp" />
-    <ClInclude Include="FrameWork\Shaders\ShaderCreatorV2.hpp" />
+    <ClInclude Include="FrameWork\ShaderCreation\InputLayoutCreator.hpp" />
+    <ClInclude Include="FrameWork\ShaderCreation\ShaderCreatorV2.hpp" />
     <ClInclude Include="FrameWork\ShadowMapRenderingManager.hpp" />
     <ClInclude Include="FrameWork\WorldMatrixStorage.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

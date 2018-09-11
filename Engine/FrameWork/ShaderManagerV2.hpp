@@ -2,8 +2,8 @@
 #define SHADER_MANAGER_HPP
 #include <vector>
 #include <string>
-#include "Shaders/InputLayoutCreator.hpp"
-#include "Shaders/ShaderCreatorV2.hpp"
+#include "ShaderCreation/InputLayoutCreator.hpp"
+#include "ShaderCreation/ShaderCreatorV2.hpp"
 
 #pragma comment (lib, "d3dcompiler.lib")
 

@@ -4,8 +4,6 @@
 
 #include "../Events/EventDispatcher.hpp"
 
-//Engine* Singleton<Engine>::s_instance = nullptr;
-
 Engine::Engine()
 {
 }

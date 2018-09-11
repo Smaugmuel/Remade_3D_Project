@@ -1,11 +1,5 @@
 #include "Game.hpp"
 
-//#include "../Engine/Render/RenderManager.hpp"
-
-//#include "../Engine/Objects/Models/ModelStorageV2.hpp"
-//#include "../Engine/Objects/Materials/MaterialStorageV2.hpp"
-//#include "../Engine/Objects/Textures/TextureStorageV2.hpp"
-
 //#include "../Engine/Lights/PointLightManager.hpp"
 #include "../Engine/Math/Collision.hpp"
 #include "../Engine/Events/EventDispatcher.hpp"
@@ -15,17 +9,6 @@
 //#include "SceneStorage.hpp"
 //#include "SceneEditorState.hpp"
 
-// These were added / changed when engine was reworked
-//#include "../Engine/GUI/GUIManager.hpp"
-//#include "../Engine/Render/SceneManager.hpp"
-//#include "../Engine/Core/Engine.hpp"
-//#include "../Engine/Camera/PlayerCameraManager.hpp"
-//#include "../Engine/FrameWork/FrameWork.hpp"
-//#include "../Engine/Camera/Camera.hpp"
-//#include "../Engine/Input/Input.hpp"
-//#include <Windows.h>
-
-//Game* Singleton<Game>::s_instance = nullptr;
 
 Game::Game() : m_cameraIndex(-1), m_GUIhelloWorldIndex(-1)
 {
@@ -38,19 +21,12 @@ Game::~Game()
 	EventDispatcher::Get()->Unsubscribe(EventType::POP_GAMESTATE, this);
 	EventDispatcher::Get()->Unsubscribe(EventType::FAILED_TO_INITIALIZE, this);
 
-	//RenderManager::Delete();
-	
 	/*SceneStorage::Delete();*/
 
 	EventDispatcher::Delete();
 
 	//PointLightManager::Delete();
 	Collision::Delete();
-
-	// Added when engine was reworked
-	//Engine::Delete();
-	//GUIManager::Delete();
-	//SceneManager::Delete();
 }
 
 bool Game::Initialize()
@@ -92,34 +68,8 @@ bool Game::Initialize()
 	cam->UpdateProjectionMatrix();
 	m_engine.GetSceneManager()->SetViewAndProjectionMatrices(cam->viewMatrix, cam->projectionMatrix);
 
-	/*cam->SetPosition(0, 0, -10);
-	cam->SetTarget(0, 0, 0);
-	cam->Update();*/
-
-	/*ObjectV3* obj = Engine::Get()->GetSceneManager()->GetObjectV3(Engine::Get()->GetSceneManager()->CreateObject());
-	if (!obj)
-		return false;
-	obj->modelIndex = Engine::Get()->GetModelManager()->LoadModel("SimpleCharacter.obj");
-	if (obj->modelIndex == -1)
-		return false;
-	obj->position = Vector3f(0.0f, 0.0f, 0.0f);
-	obj->rotation = Vector3f(0.0f, 0.0f, 0.0f);
-	obj->scale = Vector3f(1.0f, 1.0f, 1.0f);
-	
-	Matrix trans;
-	trans.SetTranslation(obj->position);
-	Matrix rot;
-	rot.SetRotationAroundAxis(Vector3f(0, 1, 0), 0);
-	Matrix scale;
-	scale.SetScale(obj->scale);
-	obj->worldMatrix = trans; //* rot * scale;*/
-
-	/* Testing matrices, can be removed without consequences
-	Matrix m(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
-	Matrix m2 = m.GetTranspose();*/
-
-	const unsigned int nObjX = std::sqrt(MAX_NR_OF_OBJECTS);
-	const unsigned int nObjZ = MAX_NR_OF_OBJECTS / nObjX;
+	const unsigned int nObjX = 100;
+	const unsigned int nObjZ = 100;
 	Vector3f startPos = Vector3f(static_cast<float>(nObjX), 0, static_cast<float>(nObjZ)) * -1.0f;
 	Vector3f offset(4, 0, 4);
 
@@ -133,16 +83,11 @@ bool Game::Initialize()
 
 			ObjectV3* obj = m_engine.GetSceneManager()->GetObjectV3(index);
 			obj->modelIndex = m_engine.GetModelManager()->LoadModel("SimpleCharacter.obj");
-			//obj->modelIndex = Engine::Get()->GetModelManager()->LoadModel("cube_uv.obj");
 			if (obj->modelIndex == -1)
 				return false;
 
 			obj->position = startPos + Vector3f(offset.x * i, offset.y * 0, offset.z * j);
 			obj->worldMatrix.SetTranslation(obj->position);
-
-			//int obj1 = SceneManager::Get()->AddObject("SimpleCharacter.obj", Vector3f(-100 + 2 * i, -10, j * 2));
-			//if (obj1 == -1)
-			//	return false;
 		}
 	}
 
@@ -201,8 +146,6 @@ void Game::Run()
 
 		m_engine.Clear(0, 0, 0, 1);
 		m_engine.Render();
-		/*sceneManager->Render();
-		guiManager->Render();*/
 		m_engine.Present();
 	}
 }
