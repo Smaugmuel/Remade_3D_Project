@@ -67,7 +67,7 @@ void SceneManagerV3::Render()
 	/*
 	Set up first deferred pass
 	*/
-	m_frameWorkManager->SetFirstPassRenderTargets();
+	m_frameWorkManager->SetGeometryPassRenderTargets();
 
 	/*
 	Set up sampler state
@@ -116,7 +116,7 @@ void SceneManagerV3::Render()
 		/*
 		Render object
 		*/
-		m_frameWorkManager->RenderWithCurrentSettings(model->nrOfVertices);
+		m_frameWorkManager->RenderGeometryPassWithCurrentSettings(model->nrOfVertices);
 	}
 
 
@@ -142,7 +142,6 @@ void SceneManagerV3::Render()
 
 void SceneManagerV3::SetViewAndProjectionMatrices(const Matrix & view, const Matrix & projection)
 {
-	//ViewProjectionMatrices vp(view.GetTranspose(), projection.GetTranspose());
 	Matrix vp = projection.GetTranspose() * view.GetTranspose();
 
 	m_frameWorkManager->GetConstantBufferManager()->MapDataToBuffer(m_viewProjBufferIndex, static_cast<void*>(&vp));

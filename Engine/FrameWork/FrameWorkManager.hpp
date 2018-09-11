@@ -21,17 +21,17 @@ public:
 
 	bool Initialize(Vector2i windowSize, int maxNrOfLights);
 
-	void SetFirstPassRenderTargets();
+	void SetGeometryPassRenderTargets();
 	void SetLightPassRenderTarget();
 	void SetShadowPassRenderTarget();
 	void SetFinalPassRenderTarget();
 
-	void ClearFirstPassRenderTargets(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
+	void ClearGeometryPassRenderTargets(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
 	void ClearLightPassRenderTargets(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
 	void ClearShadowPassRenderTargets();
 	void ClearFinalPassRenderTarget(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f);
 	
-	void RenderWithCurrentSettings(int nrOfVertices);
+	void RenderGeometryPassWithCurrentSettings(int nrOfVertices);
 	void RenderLightPass();
 	void RenderFinalPass();
 	

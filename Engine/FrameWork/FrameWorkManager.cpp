@@ -39,7 +39,7 @@ bool FrameWorkManager::Initialize(Vector2i windowSize, int maxNrOfLights)
 	return true;
 }
 
-void FrameWorkManager::SetFirstPassRenderTargets()
+void FrameWorkManager::SetGeometryPassRenderTargets()
 {
 	m_deferredRenderingManager.SetGeometryRenderTargets();
 }
@@ -62,7 +62,7 @@ void FrameWorkManager::SetFinalPassRenderTarget()
 	m_d3d.SetFinalTarget();
 }
 
-void FrameWorkManager::ClearFirstPassRenderTargets(float r, float g, float b, float a)
+void FrameWorkManager::ClearGeometryPassRenderTargets(float r, float g, float b, float a)
 {
 	m_deferredRenderingManager.ClearGeometryRenderTargets(r, g, b, a);
 }
@@ -82,7 +82,7 @@ void FrameWorkManager::ClearFinalPassRenderTarget(float r, float g, float b, flo
 	m_d3d.ClearFinalTarget(r, g, b, a);
 }
 
-void FrameWorkManager::RenderWithCurrentSettings(int nrOfVertices)
+void FrameWorkManager::RenderGeometryPassWithCurrentSettings(int nrOfVertices)
 {
 	ID3D11DeviceContext* deviceContext = m_d3d.GetDeviceContext();
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -98,9 +98,10 @@ void FrameWorkManager::RenderLightPass()
 void FrameWorkManager::RenderFinalPass()
 {
 	ID3D11ShaderResourceView* srv = m_deferredRenderingManager.GetLightPassShaderResourceView();
-	m_d3d.GetDeviceContext()->PSSetShaderResources(0, 1, &srv);
-	m_d3d.GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_d3d.GetDeviceContext()->Draw(3, 0);
+	ID3D11DeviceContext* deviceContext = m_d3d.GetDeviceContext();
+	deviceContext->PSSetShaderResources(0, 1, &srv);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	deviceContext->Draw(3, 0);
 }
 
 void FrameWorkManager::Present()

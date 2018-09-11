@@ -107,7 +107,7 @@ bool Engine::Update()
 
 void Engine::Clear(float r, float g, float b, float a)
 {
-	m_frameWorkManager.ClearFirstPassRenderTargets(r, g, b, a);
+	m_frameWorkManager.ClearGeometryPassRenderTargets(r, g, b, a);
 	m_frameWorkManager.ClearLightPassRenderTargets(r, g, b, a);
 	m_frameWorkManager.ClearFinalPassRenderTarget(r, g, b, a);
 }
