@@ -8,6 +8,8 @@ struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct ID3D11Buffer;
 
+static const unsigned int MAX_NR_OF_VERTEX_BUFFERS = 16U;
+
 class VertexBufferManager final
 {
 public:
@@ -28,7 +30,8 @@ private:
 
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_deviceContext;
-	std::vector<Buffer> m_buffers;
+	Buffer m_buffers[MAX_NR_OF_VERTEX_BUFFERS];
+	unsigned int m_nrOfBuffers;
 };
 
 #endif

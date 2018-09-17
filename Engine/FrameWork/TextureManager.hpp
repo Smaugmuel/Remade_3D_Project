@@ -8,6 +8,8 @@ struct ID3D11ShaderResourceView;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 
+static const unsigned int MAX_NR_OF_TEXTURES = 16U;
+
 class TextureManager final
 {
 public:
@@ -24,11 +26,12 @@ public:
 	ID3D11ShaderResourceView* GetTexture(int id);
 
 private:
-	std::map<std::string, int> m_nameToIndexLinker;
-	std::vector<ID3D11ShaderResourceView*> m_textures;
-
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_deviceContext;
+
+	std::map<std::string, int> m_nameToIndexLinker;
+	ID3D11ShaderResourceView* m_textures[MAX_NR_OF_TEXTURES];
+	unsigned int m_nrOfTextures;
 };
 
 #endif

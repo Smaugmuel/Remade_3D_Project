@@ -1,39 +1,34 @@
 #ifndef SCENE_MANAGER_V3_HPP
 #define SCENE_MANAGER_V3_HPP
-#include "../Math/Matrix.hpp"
+#include "DataStorage.hpp"
 
-//#define USING_INSTANCING
+// The constant buffer size limit is 4096 float4's, which means 1024 float4x4's
+#define NR_OF_MATRICES_IN_BUFFER 1024
+
+// Because of the light buffer, "only" 2047 lights can exist
+// 2048 lights could be stored, but that would leave no room for the ambient color and light counter
+static const unsigned int MAX_NR_OF_LIGHTS = 100U;
+static const unsigned int MAX_NR_OF_OBJECTS = MAX_NR_OF_DATA_INSTANCES;
+
+//#define SORTABLE_OBJECTS
 
 class ModelManager;
 class MaterialManager;
 class FrameWorkManager;
 
-// Because of the light buffer, "only" 4095 lights can exist, since the remaining 32 bytes are occupied by the four ints
-static const unsigned int MAX_NR_OF_LIGHTS = 4095U;
-static const unsigned int MAX_NR_OF_OBJECTS = 16384U;
-
-struct ObjectV3
-{
-	Vector3f position;
-	Vector3f rotation;
-	Vector3f scale;
-
-	Matrix worldMatrix;
-
-	int modelIndex = -1;
-};
-
-struct Light
-{
-	Vector3f position;
-	float dropoff = -0.01f;
-};
-
 struct LightBuffer
 {
+	struct Light
+	{
+		Vector3f position;
+		float dropoff = -0.01f;
+		Vector3f diffuseColor;
+		float padding = 0.0f;
+	};
+
 	Light lights[MAX_NR_OF_LIGHTS];
+	Vector3f ambientColor;
 	int nrOfLights;
-	int padding[3];
 };
 
 class SceneManagerV3 final
@@ -48,32 +43,34 @@ public:
 
 	void SetViewAndProjectionMatrices(const Matrix& view, const Matrix& projection);
 
-	int CreateObject();
-	ObjectV3* GetObjectV3(int index);
+	Object* CreateObject();
+	//int CreateObject();
+	DataStorage* GetObjectData();
 
-	unsigned int GetNrOfObjects() const;
+
+#ifdef SORTABLE_OBJECTS
+	void SortObjectInArray(int objectIndex);
+	void SortObjectArray();
+#endif
 
 private:
 	int m_viewProjBufferIndex;
-	int m_worldBufferIndex;
 	int m_lightBufferIndex;
-
-#ifdef USING_INSTANCING
-	struct MatrixBuffer
-	{
-		Matrix matrices[MAX_NR_OF_FLOAT4S_IN_BUFFER / 4];
-	};
-	struct InstanceBuffer
-	{
-		int instanceID;
-		int padding[3];
-	};
 	int m_matrixBufferIndex;
-	int m_instanceBufferIndex;
-#endif
+	int m_indexBufferIndex;
 
-	ObjectV3* m_objects;
-	unsigned int m_nrOfObjects;
+	DataStorage m_dataStorage;
+
+#ifdef SORTABLE_OBJECTS
+	struct ObjectType
+	{
+		int textureIndex = -1;
+		int modelIndex = -1;
+		int orderInArray = -1;
+		unsigned int nrOfThisType = 0U;
+	};
+	std::vector<ObjectType> m_objectTypes;
+#endif
 
 	ModelManager* m_modelManager;
 	MaterialManager* m_materialManager;

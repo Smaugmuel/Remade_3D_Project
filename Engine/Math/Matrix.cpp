@@ -4,13 +4,22 @@
 
 Matrix::Matrix()
 {
-	for (unsigned int i = 0; i < 4; i++)
-	{
-		for (unsigned int j = 0; j < 4; j++)
-		{
-			rows[i][j] = 0.0f;
-		}
-	}
+	rows[0][0] = 1.0f;
+	rows[0][1] = 0.0f;
+	rows[0][2] = 0.0f;
+	rows[0][3] = 0.0f;
+	rows[1][0] = 0.0f;
+	rows[1][1] = 1.0f;
+	rows[1][2] = 0.0f;
+	rows[1][3] = 0.0f;
+	rows[2][0] = 0.0f;
+	rows[2][1] = 0.0f;
+	rows[2][2] = 1.0f;
+	rows[2][3] = 0.0f;
+	rows[3][0] = 0.0f;
+	rows[3][1] = 0.0f;
+	rows[3][2] = 0.0f;
+	rows[3][3] = 1.0f;
 }
 Matrix::Matrix(const Matrix & other)
 {
@@ -39,132 +48,184 @@ Matrix::~Matrix()
 {
 }
 
-Matrix & Matrix::operator=(const Matrix & right)
+Matrix& Matrix::operator=(const Matrix & right)
 {
 	memcpy(rows, right.rows, 64U);
 	return *this;
 }
 Matrix& Matrix::operator+=(const Matrix & right)
 {
-	for (unsigned int i = 0; i < 4; i++)
-	{
-		for (unsigned int j = 0; j < 4; j++)
-		{
-			rows[i][j] += right.rows[i][j];
-		}
-	}
-
-	return *this;
+	return *this = *this + right;
 }
 Matrix& Matrix::operator-=(const Matrix & right)
 {
-	for (unsigned int i = 0; i < 4; i++)
-	{
-		for (unsigned int j = 0; j < 4; j++)
-		{
-			rows[i][j] -= right.rows[i][j];
-		}
-	}
-
-	return *this;
+	return *this = *this + right;
 }
 Matrix& Matrix::operator*=(const Matrix & right)
 {
-	SetFromXMMATRIX(ToXMMATRIX() * right.ToXMMATRIX());
-
-	return *this;
+	return *this = *this * right;
 }
 Matrix& Matrix::operator*=(float f)
 {
-	for (unsigned int i = 0; i < 4; i++)
-	{
-		for (unsigned int j = 0; j < 4; j++)
-		{
-			rows[i][j] *= f;
-		}
-	}
-
-	return *this;
+	return *this = *this * f;
 }
 Matrix& Matrix::operator/=(float f)
 {
-	*this *= (1.0f / f);
-
-	return *this;
+	return *this = *this / f;
 }
 
 Matrix Matrix::operator+(const Matrix & right) const
 {
 	Matrix m = *this;
-	m += right;
+
+	m.rows[0][0] += right.rows[0][0];
+	m.rows[0][1] += right.rows[0][1];
+	m.rows[0][2] += right.rows[0][2];
+	m.rows[0][3] += right.rows[0][3];
+	m.rows[1][0] += right.rows[1][0];
+	m.rows[1][1] += right.rows[1][1];
+	m.rows[1][2] += right.rows[1][2];
+	m.rows[1][3] += right.rows[1][3];
+	m.rows[2][0] += right.rows[2][0];
+	m.rows[2][1] += right.rows[2][1];
+	m.rows[2][2] += right.rows[2][2];
+	m.rows[2][3] += right.rows[2][3];
+	m.rows[3][0] += right.rows[3][0];
+	m.rows[3][1] += right.rows[3][1];
+	m.rows[3][2] += right.rows[3][2];
+	m.rows[3][3] += right.rows[3][3];
+
 	return m;
 }
 Matrix Matrix::operator-(const Matrix & right) const
 {
 	Matrix m = *this;
-	m -= right;
+
+	m.rows[0][0] -= right.rows[0][0];
+	m.rows[0][1] -= right.rows[0][1];
+	m.rows[0][2] -= right.rows[0][2];
+	m.rows[0][3] -= right.rows[0][3];
+	m.rows[1][0] -= right.rows[1][0];
+	m.rows[1][1] -= right.rows[1][1];
+	m.rows[1][2] -= right.rows[1][2];
+	m.rows[1][3] -= right.rows[1][3];
+	m.rows[2][0] -= right.rows[2][0];
+	m.rows[2][1] -= right.rows[2][1];
+	m.rows[2][2] -= right.rows[2][2];
+	m.rows[2][3] -= right.rows[2][3];
+	m.rows[3][0] -= right.rows[3][0];
+	m.rows[3][1] -= right.rows[3][1];
+	m.rows[3][2] -= right.rows[3][2];
+	m.rows[3][3] -= right.rows[3][3];
+
 	return m;
 }
 Matrix Matrix::operator*(const Matrix & right) const
 {
-	Matrix m = *this;
-	m *= right;
+	DirectX::XMMATRIX xm;
+	DirectX::XMMATRIX xmr;
+
+	std::memcpy(xm.r, rows, 64U);
+	std::memcpy(xmr.r, right.rows, 64U);
+	
+	DirectX::XMMATRIX xmResult = DirectX::XMMatrixMultiply(xm, xmr);
+	//DirectX::XMMATRIX xmResult = xm * xmr;
+	Matrix m;
+	std::memcpy(m.rows, xmResult.r, 64U);
+
 	return m;
 }
 Matrix Matrix::operator*(float f) const
 {
 	Matrix m = *this;
-	m *= f;
+	
+	m.rows[0][0] *= f;
+	m.rows[0][1] *= f;
+	m.rows[0][2] *= f;
+	m.rows[0][3] *= f;
+	m.rows[1][0] *= f;
+	m.rows[1][1] *= f;
+	m.rows[1][2] *= f;
+	m.rows[1][3] *= f;
+	m.rows[2][0] *= f;
+	m.rows[2][1] *= f;
+	m.rows[2][2] *= f;
+	m.rows[2][3] *= f;
+	m.rows[3][0] *= f;
+	m.rows[3][1] *= f;
+	m.rows[3][2] *= f;
+	m.rows[3][3] *= f;
+
 	return m;
 }
 Matrix Matrix::operator/(float f) const
 {
 	Matrix m = *this;
-	m *= (1.0f / f);
+	float fDiv = 1.0f / f;
+
+	m.rows[0][0] *= fDiv;
+	m.rows[0][1] *= fDiv;
+	m.rows[0][2] *= fDiv;
+	m.rows[0][3] *= fDiv;
+	m.rows[1][0] *= fDiv;
+	m.rows[1][1] *= fDiv;
+	m.rows[1][2] *= fDiv;
+	m.rows[1][3] *= fDiv;
+	m.rows[2][0] *= fDiv;
+	m.rows[2][1] *= fDiv;
+	m.rows[2][2] *= fDiv;
+	m.rows[2][3] *= fDiv;
+	m.rows[3][0] *= fDiv;
+	m.rows[3][1] *= fDiv;
+	m.rows[3][2] *= fDiv;
+	m.rows[3][3] *= fDiv;
+
 	return m;
 }
 
 bool Matrix::operator==(const Matrix & right) const
 {
-	for (unsigned int i = 0; i < 4; i++)
-	{
-		for (unsigned int j = 0; j < 4; j++)
-		{
-			if (rows[i][j] != right.rows[i][j])
-			{
-				return false;
-			}
-		}
-	}
+	if (rows[0][0] != right.rows[0][0]) return false;
+	if (rows[0][1] != right.rows[0][1]) return false;
+	if (rows[0][2] != right.rows[0][2]) return false;
+	if (rows[0][3] != right.rows[0][3]) return false;
+	if (rows[1][0] != right.rows[1][0]) return false;
+	if (rows[1][1] != right.rows[1][1]) return false;
+	if (rows[1][2] != right.rows[1][2]) return false;
+	if (rows[1][3] != right.rows[1][3]) return false;
+	if (rows[2][0] != right.rows[2][0]) return false;
+	if (rows[2][1] != right.rows[2][1]) return false;
+	if (rows[2][2] != right.rows[2][2]) return false;
+	if (rows[2][3] != right.rows[2][3]) return false;
+	if (rows[3][0] != right.rows[3][0]) return false;
+	if (rows[3][1] != right.rows[3][1]) return false;
+	if (rows[3][2] != right.rows[3][2]) return false;
+	if (rows[3][3] != right.rows[3][3]) return false;
+	
 	return true;
 }
 
-Matrix & Matrix::SetTranslation(const Vector3f & translation)
+void Matrix::SetTranslation(const Vector3f & translation)
 {
 	SetFromXMMATRIX(DirectX::XMMatrixTranslation(translation.x, translation.y, translation.z));
-	return *this;
 }
-Matrix & Matrix::SetScale(const Vector3f & scale)
+void Matrix::SetScale(const Vector3f & scale)
 {
 	SetFromXMMATRIX(DirectX::XMMatrixScaling(scale.x, scale.y, scale.z));
-	return *this;
 }
-Matrix & Matrix::SetView(const Vector3f & position, const Vector3f & target, const Vector3f & up)
+void Matrix::SetView(const Vector3f & position, const Vector3f & target, const Vector3f & up)
 {
-	SetFromXMMATRIX(DirectX::XMMatrixLookAtLH(position.XMV(), target.XMV(), up.XMV()));
-	return *this;
+	SetFromXMMATRIX(DirectX::XMMatrixLookAtLH({ position.x, position.y, position.z }, { target.x, target.y, target.z }, { up.x, up.y, up.z }));
 }
-Matrix & Matrix::SetProjection(float fov, float aspectRatio, float nearPlane, float farPlane)
+void Matrix::SetProjection(float fov, float aspectRatio, float nearPlane, float farPlane)
 {
 	SetFromXMMATRIX(DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlane, farPlane));
-	return *this;
 }
-Matrix & Matrix::SetRotationAroundAxis(const Vector3f & axis, float angle)
+void Matrix::SetRotationAroundAxis(const Vector3f & axis, float angle)
 {
-	SetFromXMMATRIX(DirectX::XMMatrixRotationAxis(axis.XMV(), angle));
-	return *this;
+	SetFromXMMATRIX(DirectX::XMMatrixRotationAxis({ axis.x, axis.y, axis.z }, angle));
 }
-Matrix & Matrix::SetTranspose()
+void Matrix::SetTranspose()
 {
 	std::swap(rows[0][1], rows[1][0]);
 	std::swap(rows[0][2], rows[2][0]);
@@ -172,7 +233,10 @@ Matrix & Matrix::SetTranspose()
 	std::swap(rows[1][2], rows[2][1]);
 	std::swap(rows[1][3], rows[3][1]);
 	std::swap(rows[2][3], rows[3][2]);
-	return *this;
+}
+void Matrix::SetIdentity()
+{
+	SetFromXMMATRIX(DirectX::XMMatrixIdentity());
 }
 
 Matrix Matrix::GetTranspose() const
@@ -187,56 +251,57 @@ Matrix Matrix::GetTranspose() const
 
 Matrix Matrix::Translation(const Vector3f & translation)
 {
-	return Matrix(DirectX::XMMatrixTranslation(translation.x, translation.y, translation.z));
+	return FromXMMATRIX(DirectX::XMMatrixTranslation(translation.x, translation.y, translation.z));
 }
-
 Matrix Matrix::Rotation(const Vector3f & axis, float angle)
 {
-	return Matrix(DirectX::XMMatrixRotationAxis({ axis.x, axis.y, axis.z }, angle));
+	return FromXMMATRIX(DirectX::XMMatrixRotationAxis({ axis.x, axis.y, axis.z }, angle));
 }
-
 Matrix Matrix::Scale(const Vector3f & scale)
 {
-	return Matrix(DirectX::XMMatrixScaling(scale.x, scale.y, scale.z));
+	return FromXMMATRIX(DirectX::XMMatrixScaling(scale.x, scale.y, scale.z));
 }
+Matrix Matrix::World(const Vector3f & position, const Matrix & rotation, const Vector3f & scale)
+{
+	Matrix m = rotation;
+	
+	m.rows[0][0] *= scale.x;
+	m.rows[1][1] *= scale.y;
+	m.rows[2][2] *= scale.z;
 
+	m.rows[3][0] = position.x;
+	m.rows[3][1] = position.y;
+	m.rows[3][2] = position.z;
+
+	//return std::move(m);
+	return m;
+}
 Matrix Matrix::View(const Vector3f & position, const Vector3f & target, const Vector3f & up)
 {
-	return Matrix(DirectX::XMMatrixLookAtLH({ position.x, position.y, position.z }, { target.x, target.y, target.z }, { up.x, up.y, up.z }));
+	return FromXMMATRIX(DirectX::XMMatrixLookAtLH({ position.x, position.y, position.z }, { target.x, target.y, target.z }, { up.x, up.y, up.z }));
 }
-
 Matrix Matrix::Projection(float fov, float aspectRatio, float nearPlane, float farPlane)
 {
-	return Matrix(DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlane, farPlane));
+	return FromXMMATRIX(DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearPlane, farPlane));
 }
-
 Matrix Matrix::Transpose(const Matrix & matrix)
 {
 	return matrix.GetTranspose();
 }
 
-Matrix::Matrix(const DirectX::XMMATRIX & m)
+Matrix Matrix::FromXMMATRIX(const DirectX::XMMATRIX & xm)
 {
-	std::memcpy(rows, m.r, 64U);
+	Matrix m;
+	std::memcpy(m.rows, xm.r, 64U);
+	return m;
 }
-
-Matrix & Matrix::SetFromXMMATRIX(const DirectX::XMMATRIX & m)
+void Matrix::SetFromXMMATRIX(const DirectX::XMMATRIX & xm)
 {
-	std::memcpy(rows, m.r, 64U);
-	return *this;
+	std::memcpy(rows, xm.r, 64U);
 }
-Matrix Matrix::FromXMMATRIX(const DirectX::XMMATRIX & m) const
+DirectX::XMMATRIX Matrix::ToXMMATRIX(const Matrix & m)
 {
-	Matrix _m;
-	_m.SetFromXMMATRIX(m);
-	return _m;
-}
-DirectX::XMMATRIX Matrix::ToXMMATRIX() const
-{
-	return DirectX::XMMATRIX(
-		rows[0][0], rows[0][1], rows[0][2], rows[0][3],
-		rows[1][0], rows[1][1], rows[1][2], rows[1][3],
-		rows[2][0], rows[2][1], rows[2][2], rows[2][3],
-		rows[3][0], rows[3][1], rows[3][2], rows[3][3]
-	);
+	DirectX::XMMATRIX xm;
+	std::memcpy(xm.r, m.rows, 64U);
+	return xm;
 }

@@ -33,7 +33,7 @@ PS_OUTPUT_DATA main(PS_INPUT_DATA input)
 	*/
 
 	output.worldPosition = float4(input.worldPosition, 1.0f);
-	output.normal = float4(input.normal, 1.0f);
+	output.normal = float4(input.normal, 0.0f);
 	output.color = tex.Sample(samplerState, input.uv);
 
 	return output;

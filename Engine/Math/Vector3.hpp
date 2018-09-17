@@ -1,202 +1,119 @@
 #ifndef VECTOR3_HPP
 #define VECTOR3_HPP
-#include <DirectXMath.h>
+#include <math.h>
 
-template<typename Type>
-struct Vector3 final
+struct Vector3f final
 {
-	Type x;
-	Type y;
-	Type z;
+	float x = 0.0f;
+	float y = 0.0f;
+	float z = 0.0f;
 
-	Vector3() : x(0), y(0), z(0)
+	Vector3f() : x(0.0f), y(0.0f), z(0.0f)
 	{
 	}
-	Vector3(const Type& pX, const Type& pY, const Type& pZ) : x(pX), y(pY), z(pZ)
+	Vector3f(float pX, float pY, float pZ) : x(pX), y(pY), z(pZ)
 	{
 	}
-	Vector3(const Vector3<Type>& right) : x(right.x), y(right.y), z(right.z)
+	Vector3f(const Vector3f& right) : x(right.x), y(right.y), z(right.z)
 	{
 	}
-	Vector3(const DirectX::XMFLOAT3& right) : x(right.x), y(right.y), z(right.z)
-	{
-	}
-	Vector3(const DirectX::XMVECTOR& right)
-	{
-		DirectX::XMFLOAT3 v;
-		DirectX::XMStoreFloat3(&v, right);
-	
-		*this = v;
-	}
-	~Vector3()
+	~Vector3f()
 	{
 	}
 
-	const Vector3<Type> operator=(const Vector3<Type>& right)
+	Vector3f& operator=(const Vector3f& right)
 	{
 		x = right.x;
 		y = right.y;
 		z = right.z;
-
 		return *this;
 	}
-	const Vector3<Type> operator=(const DirectX::XMFLOAT3& right)
+	Vector3f& operator+=(const Vector3f& right)
 	{
-		return *this = Vector3<Type>(right);
+		return *this = *this + right;
 	}
-	const Vector3<Type> operator+=(const Vector3<Type>& right)
+	Vector3f& operator-=(const Vector3f& right)
 	{
-		x += right.x;
-		y += right.y;
-		z += right.z;
-
-		return *this;
+		return *this = *this - right;
 	}
-	const Vector3<Type> operator+=(const DirectX::XMFLOAT3& right)
+	Vector3f& operator*=(float coefficient)
 	{
-		return *this += Vector3<Type>(right);
+		return *this = *this * coefficient;
 	}
-	const Vector3<Type> operator-=(const Vector3<Type>& right)
+	Vector3f& operator/=(float coefficient)
 	{
-		x -= right.x;
-		y -= right.y;
-		z -= right.z;
-
-		return *this;
-	}
-	const Vector3<Type> operator-=(const DirectX::XMFLOAT3& right)
-	{
-		return *this -= Vector3<Type>(right);
-	}
-	const Vector3<Type> operator*=(const Type& coefficient)
-	{
-		x *= coefficient;
-		y *= coefficient;
-		z *= coefficient;
-
-		return *this;
+		return *this = *this / coefficient;
 	}
 
-	const Vector3<Type> operator+(const Vector3<Type>& right) const
+	Vector3f operator+(const Vector3f& right) const
 	{
-		return Vector3<Type>(x + right.x, y + right.y, z + right.z);
+		return Vector3f(x + right.x, y + right.y, z + right.z);
 	}
-	const Vector3<Type> operator+(const DirectX::XMFLOAT3& right) const
+	Vector3f operator-(const Vector3f& right) const
 	{
-		return *this + Vector3<Type>(right);
+		return Vector3f(x - right.x, y - right.y, z - right.z);
 	}
-	const Vector3<Type> operator-(const Vector3<Type>& right) const
+	Vector3f operator*(float coefficient) const
 	{
-		return Vector3<Type>(x - right.x, y - right.y, z - right.z);
+		return Vector3f(x * coefficient, y * coefficient, z * coefficient);
 	}
-	const Vector3<Type> operator-(const DirectX::XMFLOAT3& right) const
+	Vector3f operator/(float coefficient) const
 	{
-		return *this - Vector3<Type>(right);
-	}
-	const Vector3<Type> operator*(const Type& coefficient) const
-	{
-		return Vector3<Type>(x * coefficient, y * coefficient, z * coefficient);
+		return coefficient == 0.0f ? *this : *this * (1.0f / coefficient);
 	}
 
-	bool operator==(const Vector3<Type>& right) const
+	bool operator==(const Vector3f& right) const
 	{
 		return x == right.x && y == right.y && z == right.z;
 	}
-	bool operator==(const DirectX::XMFLOAT3& right) const
-	{
-		return *this == Vector3<Type>(right);
-	}
 
+	Vector3f normalized() const
+	{
+		return *this / length();
+	}
 	void normalize()
 	{
-		Type len = length();
-
-		if (len == 0.0f)
-			return;
-
-		Type lenDiv = 1 / len;
-		x *= lenDiv;
-		y *= lenDiv;
-		z *= lenDiv;
+		*this = normalized();
 	}
-	const Vector3<Type> normalized() const
+	void setLength(float length)
 	{
-		Vector3<Type> v = *this;
-		v.normalize();
-		return v;
-	}
-	void setLength(const Type& _length)
-	{
-		normalize();
-		this->operator*=(_length);
+		*this = normalized() * length;
 	}
 
-	const Type lengthSquared() const
+	float lengthSquared() const
 	{
 		return (x*x + y*y + z*z);
 	}
-	const Type length() const
+	float length() const
 	{
+
 		return sqrtf(lengthSquared());
 	}
 
-	const Type dot(const Vector3<Type>& right) const
+	float dot(const Vector3f& right) const
 	{
-		return x*right.x + y*right.y + z*right.z;
+		return x * right.x + y * right.y + z * right.z;
 	}
-	const Type dot(const DirectX::XMFLOAT3& right) const
+	Vector3f crossRH(const Vector3f& vec) const
 	{
-		return dot(Vector3<Type>(right));
+		return Vector3f(y*vec.z - z*vec.y, z*vec.x - x*vec.z, x*vec.y - y*vec.x);
 	}
-	const Vector3<Type> crossRH(const Vector3<Type>& vec) const
+	Vector3f crossLH(const Vector3f& vec) const
 	{
-		return Vector3<Type>(y*vec.z - z*vec.y, z*vec.x - x*vec.z, x*vec.y - y*vec.x);
+		return Vector3f(z*vec.y - y*vec.z, x*vec.z - z*vec.x, y*vec.x - x*vec.y);
 	}
-	const Vector3<Type> crossRH(const DirectX::XMFLOAT3& vec) const
+	Vector3f reflectThisAround(const Vector3f& vec) const
 	{
-		return cross(Vector3<Type>(right));
+		return (vec * (2 * dot(vec) / vec.lengthSquared()) - *this);
 	}
-	const Vector3<Type> crossLH(const Vector3<Type>& vec) const
+	Vector3f reflectThisOn(const Vector3f& mirror) const
 	{
-		return Vector3<Type>(z*vec.y - y*vec.z, x*vec.z - z*vec.x, y*vec.x - x*vec.y);
+		return (*this - mirror * (2 * dot(mirror) / mirror.lengthSquared()));
 	}
-	const Vector3<Type> crossLH(const DirectX::XMFLOAT3& vec) const
+	float ProjectPointOnThis(const Vector3f& point) const
 	{
-		return cross(Vector3<Type>(right));
-	}
-	const Vector3<Type> reflectThisAround(const Vector3<Type>& vec) const
-	{
-		return (vec * (2 * this->dot(vec) / vec.lengthSquared()) - *this);
-	}
-	const Vector3<Type> reflectThisAround(const DirectX::XMFLOAT3& vec) const
-	{
-		return reflectThisAround(Vector3<Type>(right));
-	}
-	const Vector3<Type> reflectThisOn(const Vector3<Type>& mirror) const
-	{
-		return (*this - mirror * (2 * this->dot(mirror) / mirror.lengthSquared()));
-	}
-	const Vector3<Type> reflectThisOn(const DirectX::XMFLOAT3& mirror) const
-	{
-		return reflectThisOn(Vector3<Type>(mirror));
-	}
-	const Type ProjectPointOnThis(const Vector3<Type>& point) const
-	{
-		return this->dot(point);
-	}
-
-	const DirectX::XMFLOAT3 XMF() const
-	{
-		return DirectX::XMFLOAT3(x, y, z);
-	}
-	const DirectX::XMVECTOR XMV() const
-	{
-		DirectX::XMFLOAT3 vec = XMF();
-		return DirectX::XMLoadFloat3(&vec);
+		return dot(point);
 	}
 };
-
-typedef Vector3<float> Vector3f;
-typedef Vector3<int> Vector3i;
 
 #endif

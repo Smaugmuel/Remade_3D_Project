@@ -15,7 +15,7 @@ ShaderManagerV2::~ShaderManagerV2()
 {
 }
 
-bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * deviceContext, int maxNrOfLights)
+bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * deviceContext, int maxNrOfLights, int nrOfWorldMatricesInBuffer)
 {
 	m_device = device;
 	m_deviceContext = deviceContext;
@@ -25,22 +25,25 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	/*
 	Define shader defines
 	*/
+	std::string nMatsStr = std::to_string(nrOfWorldMatricesInBuffer);
+	const char* nMatsCh = nMatsStr.c_str();
+
 	ShaderDefine vsDefines1[] =
 	{
-		{ "CBUFFER_HAS_VIEW_PROJECTION_MATRIX", nullptr },
-		{ "CBUFFER_HAS_WORLD_MATRIX", nullptr },
-		{ "VBUFFER_HAS_NORMAL", nullptr },
-		{ "VBUFFER_HAS_UV", nullptr },
+		{ "CBUFFER_VIEW_PROJECTION_MATRIX", nullptr },
+		{ "CBUFFER_NR_OF_MATRICES_PER_BUFFER", nMatsCh },
+		{ "VBUFFER_NORMAL", nullptr },
+		{ "VBUFFER_UV", nullptr },
 		{ "VBUFFER_PASS_WPOS", nullptr }
 	};
 	ShaderDefine vsDefines2[] =
 	{
-		{ "VBUFFER_HAS_UV", nullptr }
+		{ "VBUFFER_UV", nullptr }
 	};
 	std::string nLightsStr = std::to_string(maxNrOfLights);
 	ShaderDefine psDefines2[] =
 	{
-		{ "MAX_NR_OF_LIGHTS", nLightsStr.c_str() }
+		{ "CBUFFER_MAX_NR_OF_LIGHTS", nLightsStr.c_str() }
 	};
 
 	/*
@@ -260,106 +263,4 @@ bool ShaderManagerV2::SetShaders(ShaderTypeV2 shaderType)
 
 
 	return 0;
-}
-
-int ShaderManagerV2::CreateVertexShader(const std::string & fileName)
-{
-	ID3D10Blob* blob;
-	ID3D11VertexShader* shader;
-	HRESULT result;
-
-	std::optional<std::wstring> wstr = StringConverter::ToWideString("../Render/Shaders/HLSL/" + fileName);
-	if (!wstr)
-		return -1;
-
-	result = D3DCompileFromFile(wstr.value().c_str(), nullptr, nullptr, "main", "vs_5_0", 0, 0, &blob, nullptr);
-	if (FAILED(result))
-		return -1;
-
-	result = m_device->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &shader);
-	if (FAILED(result))
-		return -1;
-
-	m_vertexShaders.push_back(shader);
-	return m_vertexShaders.size() - 1;
-}
-int ShaderManagerV2::CreateGeometryShader(const std::string & fileName)
-{
-	ID3D10Blob* blob;
-	ID3D11GeometryShader* shader;
-	HRESULT result;
-
-	std::optional<std::wstring> wstr = StringConverter::ToWideString("../Render/Shaders/HLSL/" + fileName);
-	if (!wstr)
-		return -1;
-
-	result = D3DCompileFromFile(wstr.value().c_str(), nullptr, nullptr, "main", "gs_5_0", 0, 0, &blob, nullptr);
-	if (FAILED(result))
-		return -1;
-
-	result = m_device->CreateGeometryShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &shader);
-	if (FAILED(result))
-		return -1;
-
-	m_geometryShaders.push_back(shader);
-	return m_geometryShaders.size() - 1;
-}
-int ShaderManagerV2::CreatePixelShader(const std::string & fileName)
-{
-	ID3D10Blob* blob;
-	ID3D11PixelShader* shader;
-	HRESULT result;
-
-	std::optional<std::wstring> wstr = StringConverter::ToWideString("../Render/Shaders/HLSL/" + fileName);
-	if (!wstr)
-		return -1;
-
-	result = D3DCompileFromFile(wstr.value().c_str(), nullptr, nullptr, "main", "ps_5_0", 0, 0, &blob, nullptr);
-	if (FAILED(result))
-		return -1;
-
-	result = m_device->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &shader);
-	if (FAILED(result))
-		return -1;
-
-	m_pixelShaders.push_back(shader);
-	return m_pixelShaders.size() - 1;
 }*/
-
-//bool ShaderManagerV2::SetVertexShaderToPipeline(int id)
-//{
-//	if (!ValidVSID(id))
-//		return false;
-//
-//	m_deviceContext->VSSetShader(m_vertexShaders[id], nullptr, 0);
-//	return true;
-//}
-//bool ShaderManagerV2::SetGeometryShaderToPipeline(int id)
-//{
-//	if (!ValidGSID(id))
-//		return false;
-//
-//	m_deviceContext->GSSetShader(m_geometryShaders[id], nullptr, 0);
-//	return true;
-//}
-//bool ShaderManagerV2::SetPixelShaderToPipeline(int id)
-//{
-//	if (!ValidPSID(id))
-//		return false;
-//
-//	m_deviceContext->PSSetShader(m_pixelShaders[id], nullptr, 0);
-//	return true;
-//}
-//
-//bool ShaderManagerV2::ValidVSID(int id)
-//{
-//	return id >= 0 && id < static_cast<int>(m_vertexShaders.size());
-//}
-//bool ShaderManagerV2::ValidGSID(int id)
-//{
-//	return id >= 0 && id < static_cast<int>(m_geometryShaders.size());
-//}
-//bool ShaderManagerV2::ValidPSID(int id)
-//{
-//	return id >= 0 && id < static_cast<int>(m_pixelShaders.size());
-//}

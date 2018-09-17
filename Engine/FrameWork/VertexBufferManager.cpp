@@ -1,13 +1,13 @@
 #include "VertexBufferManager.hpp"
 #include <d3d11.h>
 
-VertexBufferManager::VertexBufferManager() : m_device(nullptr), m_deviceContext(nullptr)
+VertexBufferManager::VertexBufferManager() : m_device(nullptr), m_deviceContext(nullptr), m_nrOfBuffers(0)
 {
 }
 
 VertexBufferManager::~VertexBufferManager()
 {
-	for (unsigned int i = 0; i < m_buffers.size(); i++)
+	for (unsigned int i = 0; i < m_nrOfBuffers; i++)
 	{
 		if (m_buffers[i].buffer)
 		{
@@ -29,6 +29,11 @@ int VertexBufferManager::CreateBuffer(unsigned int bufferSize, unsigned int vert
 	D3D11_SUBRESOURCE_DATA data;
 	Buffer buffer;
 
+	if (m_nrOfBuffers == MAX_NR_OF_VERTEX_BUFFERS)
+	{
+		return -1;
+	}
+
 	memset(&desc, 0, sizeof(desc));
 	desc.Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT;
 	desc.ByteWidth = bufferSize;
@@ -46,13 +51,13 @@ int VertexBufferManager::CreateBuffer(unsigned int bufferSize, unsigned int vert
 
 	buffer.vertexSize = vertexSize;
 
-	m_buffers.push_back(buffer);
-	return m_buffers.size() - 1;
+	m_buffers[m_nrOfBuffers++] = buffer;
+	return m_nrOfBuffers - 1;
 }
 
 bool VertexBufferManager::SetBufferToInputAssembler(int index, int slotInShader)
 {
-	if (index < 0 || index >= static_cast<int>(m_buffers.size()))
+	if (index < 0 || index >= static_cast<int>(m_nrOfBuffers))
 		return false;
 
 	unsigned int offset = 0;

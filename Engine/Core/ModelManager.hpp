@@ -1,8 +1,8 @@
 #ifndef MODEL_MANAGER_HPP
 #define MODEL_MANAGER_HPP
 #include <map>
-#include <vector>
 #include <string>
+#include <memory>
 #include "../Math/Vector3.hpp"
 #include "../Math/Vector2.hpp"
 
@@ -17,11 +17,14 @@ struct TexturedModelVertex
 };
 struct TexturedModel
 {
-	TexturedModelVertex* vertices = nullptr;
+	std::unique_ptr<TexturedModelVertex[]> vertices = nullptr;
 	unsigned int nrOfVertices = 0;
 	int vertexBufferIndex = -1;
 	int materialIndex = -1;
 };
+
+static const unsigned int MAX_NR_OF_MODELS = 16U;
+
 
 class ModelManager final
 {
@@ -35,11 +38,12 @@ public:
 	TexturedModel* GetModel(int index);
 
 private:
-	std::map<std::string, int> m_nameToIndexLinker;
-	std::vector<TexturedModel> m_models;
-
 	VertexBufferManager * m_vertexBufferManager;
 	MaterialManager* m_materialManager;
+
+	std::map<std::string, int> m_nameToIndexLinker;
+	TexturedModel m_models[MAX_NR_OF_MODELS];
+	unsigned int m_nrOfModels;
 };
 
 #endif

@@ -1,5 +1,6 @@
 #include "InputLayoutCreator.hpp"
 #include <d3d11.h>
+#include <memory>
 
 InputLayoutCreator::InputLayoutCreator() : m_device(nullptr)
 {
@@ -18,7 +19,7 @@ bool InputLayoutCreator::Initialize(ID3D11Device * device)
 ID3D11InputLayout * InputLayoutCreator::CreateInputLayout(ID3D10Blob * vsBlob, int nrOfElements, InputElement * elements)
 {
 	ID3D11InputLayout* layout = nullptr;
-	D3D11_INPUT_ELEMENT_DESC* elems = nullptr;
+	std::unique_ptr<D3D11_INPUT_ELEMENT_DESC[]> elems = nullptr;
 
 	/*
 	Ensure valid parameter values
@@ -31,7 +32,7 @@ ID3D11InputLayout * InputLayoutCreator::CreateInputLayout(ID3D10Blob * vsBlob, i
 	/*
 	Allocate descriptions
 	*/
-	elems = new D3D11_INPUT_ELEMENT_DESC[nrOfElements];
+	elems = std::make_unique<D3D11_INPUT_ELEMENT_DESC[]>(nrOfElements);
 
 	/*
 	Copy description data
@@ -58,7 +59,6 @@ ID3D11InputLayout * InputLayoutCreator::CreateInputLayout(ID3D10Blob * vsBlob, i
 		case ElementFormat::FLOAT3: elems[i].Format = DXGI_FORMAT::DXGI_FORMAT_R32G32B32_FLOAT; break;
 		case ElementFormat::FLOAT4: elems[i].Format = DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT; break;
 		default:
-			delete[] elems;
 			return nullptr;
 		}
 	}
@@ -66,16 +66,10 @@ ID3D11InputLayout * InputLayoutCreator::CreateInputLayout(ID3D10Blob * vsBlob, i
 	/*
 	Create layout
 	*/
-	if (FAILED(m_device->CreateInputLayout(elems, nrOfElements, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &layout)))
+	if (FAILED(m_device->CreateInputLayout(elems.get(), nrOfElements, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &layout)))
 	{
-		delete[] elems;
 		return nullptr;
 	}
-
-	/*
-	Deallocate descriptions
-	*/
-	delete[] elems;
 
 	return layout;
 }

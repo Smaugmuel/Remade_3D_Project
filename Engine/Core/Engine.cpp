@@ -14,7 +14,7 @@ Engine::~Engine()
 
 bool Engine::Initialize(Vector2i windowSize)
 {
-	if (!m_frameWorkManager.Initialize(windowSize, MAX_NR_OF_LIGHTS))
+	if (!m_frameWorkManager.Initialize(windowSize, MAX_NR_OF_LIGHTS, NR_OF_MATRICES_IN_BUFFER))
 		return false;
 	if (!m_materialManager.Initialize(m_frameWorkManager.GetTextureManager()))
 		return false;
@@ -188,18 +188,6 @@ void Engine::HideFPSCounter()
 {
 	m_fps.Hide();
 }
-
-//void Engine::EnableDepthTests()
-//{
-//	m_frameWorkManager.GetDirect3D()->EnableZBuffer();
-//	//Direct3D::Get()->EnableZBuffer();
-//}
-//
-//void Engine::DisableDepthTests()
-//{
-//	m_frameWorkManager.GetDirect3D()->DisableZBuffer();
-//	//Direct3D::Get()->DisableZBuffer();
-//}
 
 GUIManager * Engine::GetGUIManager()
 {

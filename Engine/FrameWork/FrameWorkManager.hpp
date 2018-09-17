@@ -19,7 +19,11 @@ public:
 	FrameWorkManager();
 	~FrameWorkManager();
 
+#ifdef USES_MATRIX_BUFFER
+	bool Initialize(Vector2i windowSize, int maxNrOfLights, int nrOfWorldMatricesInBuffer);
+#else
 	bool Initialize(Vector2i windowSize, int maxNrOfLights);
+#endif
 
 	void SetGeometryPassRenderTargets();
 	void SetLightPassRenderTarget();

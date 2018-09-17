@@ -64,12 +64,13 @@ struct Matrix
 	/*
 	Assignment functions
 	*/
-	Matrix& SetTranslation(const Vector3f& translation);
-	Matrix& SetScale(const Vector3f& scale);
-	Matrix& SetView(const Vector3f& position, const Vector3f& target, const Vector3f& up);
-	Matrix& SetProjection(float fov, float aspectRatio, float nearPlane, float farPlane);
-	Matrix& SetRotationAroundAxis(const Vector3f& axis, float angle);
-	Matrix& SetTranspose();
+	void SetTranslation(const Vector3f& translation);
+	void SetScale(const Vector3f& scale);
+	void SetView(const Vector3f& position, const Vector3f& target, const Vector3f& up);
+	void SetProjection(float fov, float aspectRatio, float nearPlane, float farPlane);
+	void SetRotationAroundAxis(const Vector3f& axis, float angle);
+	void SetTranspose();
+	void SetIdentity();
 
 	/*
 	Unaltering functions
@@ -82,6 +83,7 @@ struct Matrix
 	static Matrix Translation(const Vector3f& translation);
 	static Matrix Rotation(const Vector3f& axis, float angle);
 	static Matrix Scale(const Vector3f& scale);
+	static Matrix World(const Vector3f& position, const Matrix& rotation, const Vector3f& scale);
 	static Matrix View(const Vector3f& position, const Vector3f& target, const Vector3f& up);
 	static Matrix Projection(float fov, float aspectRatio, float nearPlane, float farPlane);
 	static Matrix Transpose(const Matrix& matrix);
@@ -95,10 +97,10 @@ private:
 	/*
 	DirectX conversions
 	*/
-	Matrix(const DirectX::XMMATRIX& m);
-	Matrix& SetFromXMMATRIX(const DirectX::XMMATRIX& m);
-	Matrix FromXMMATRIX(const DirectX::XMMATRIX& m) const;
-	DirectX::XMMATRIX ToXMMATRIX() const;
+
+	static Matrix FromXMMATRIX(const DirectX::XMMATRIX& xm);
+	static DirectX::XMMATRIX ToXMMATRIX(const Matrix& m);
+	void SetFromXMMATRIX(const DirectX::XMMATRIX& xm);
 };
 
 #endif

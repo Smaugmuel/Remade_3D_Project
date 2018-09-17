@@ -1,6 +1,5 @@
 #ifndef GAME_HPP
 #define GAME_HPP
-//#include "../Engine/Misc/Singleton.hpp"
 #include "../Engine/Core/Engine.hpp"
 #include "../Engine/Misc/StateMachines/StateMachineV2.hpp"
 #include "../Engine/Events/EventReceiver.hpp"
@@ -33,10 +32,8 @@
 //	ORTHOGONAL_ON
 //};
 
-class Game final :/* public Singleton<Game>,*/ public EventReceiver
+class Game final : public EventReceiver
 {
-	//friend class Singleton<Game>;
-
 public:
 	Game();
 	~Game();
@@ -70,6 +67,8 @@ private:
 	int m_cameraIndex;
 	
 	int m_GUIhelloWorldIndex;
+
+	std::vector<Object*> m_objects;
 
 	/*RenderMode m_renderMode;
 	HUDMode m_HUDMode;

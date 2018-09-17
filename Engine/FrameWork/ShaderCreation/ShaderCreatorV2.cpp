@@ -1,6 +1,7 @@
 #include "ShaderCreatorV2.hpp"
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#include <memory>
 #include "../../Misc/StringConverter.hpp"
 
 ShaderCreatorV2::ShaderCreatorV2()
@@ -19,8 +20,9 @@ bool ShaderCreatorV2::Initialize(ID3D11Device * device)
 
 VertexShaderData ShaderCreatorV2::CompileAndCreateVertexShader(int nrOfDefines, ShaderDefine* defines)
 {
-	D3D_SHADER_MACRO* macros = nullptr;
-	HRESULT result;
+	const wchar_t* wPath = L"../Engine/FrameWork/HLSL/VS_Generic.hlsl";
+	std::unique_ptr<_D3D_SHADER_MACRO[]> macros = nullptr;
+	_D3D_SHADER_MACRO* macrosRaw = nullptr;
 	VertexShaderData shaderData;
 
 	if (nrOfDefines > 0)
@@ -28,63 +30,41 @@ VertexShaderData ShaderCreatorV2::CompileAndCreateVertexShader(int nrOfDefines, 
 		/*
 		Allocate one extra macro to null-terminate it
 		*/
-		macros = new D3D_SHADER_MACRO[nrOfDefines + 1];
+		macros = std::make_unique<_D3D_SHADER_MACRO[]>(nrOfDefines + 1U);
+		macrosRaw = macros.get();
 
 		/*
 		Copy data
 		*/
 		for (int i = 0; i < nrOfDefines; i++)
 		{
-			macros[i].Name = defines[i].name;
-			macros[i].Definition = defines[i].value;
+			macrosRaw[i].Name = defines[i].name;
+			macrosRaw[i].Definition = defines[i].value;
 		}
 
 		/*
 		The last macro must be null-terminated
 		*/
-		macros[nrOfDefines].Name = nullptr;
-		macros[nrOfDefines].Definition = nullptr;
+		macrosRaw[nrOfDefines].Name = nullptr;
+		macrosRaw[nrOfDefines].Definition = nullptr;
 	}
 
 	/*
 	Compile shader
 	*/
-	result = D3DCompileFromFile(
-		L"../Engine/FrameWork/HLSL/VS_Generic.hlsl",
-		macros,
-		nullptr,
-		"main",
-		"vs_5_0",
-		0,
-		0,
-		&shaderData.blob,
-		nullptr
-	);
-	if (FAILED(result))
+	if (FAILED(D3DCompileFromFile(wPath, macrosRaw, nullptr, "main", "vs_5_0", 0, 0, &shaderData.blob, nullptr)))
 	{
-		if (macros)
-			delete[] macros;
 		return shaderData;
 	}
 
 	/*
 	Create shader
 	*/
-	result = m_device->CreateVertexShader(
-		shaderData.blob->GetBufferPointer(),
-		shaderData.blob->GetBufferSize(),
-		nullptr,
-		&shaderData.vs
-	);
-	if (FAILED(result))
+	if (FAILED(m_device->CreateVertexShader(shaderData.blob->GetBufferPointer(), shaderData.blob->GetBufferSize(), nullptr, &shaderData.vs)))
 	{
-		if (macros)
-			delete[] macros;
 		return shaderData;
 	}
 
-	if (macros)
-		delete[] macros;
 	return shaderData;
 }
 
@@ -95,80 +75,66 @@ ID3D11PixelShader * ShaderCreatorV2::CompileAndCreatePixelShader(int nrOfDefines
 
 ID3D11PixelShader * ShaderCreatorV2::CompileAndCreatePixelShaderFromFile(const char* fileName, int nrOfDefines, ShaderDefine * defines)
 {
-	HRESULT result;
-	D3D_SHADER_MACRO* macros = nullptr;
+	std::unique_ptr<_D3D_SHADER_MACRO[]> macros = nullptr;
+	_D3D_SHADER_MACRO* macrosRaw = nullptr;
 	ID3D10Blob* blob = nullptr;
 	ID3D11PixelShader* shader = nullptr;
 
+	/*
+	Convert file name
+	*/
 	std::optional<std::wstring> wName = StringConverter::ToWideString(fileName);
 	if (!wName)
 		return nullptr;
 
-	std::wstring fullName = L"../Engine/FrameWork/HLSL/" + wName.value();
+	/*
+	Add path to file name
+	*/
+	wName = L"../Engine/FrameWork/HLSL/" + wName.value();
+	const wchar_t* wPath = wName->c_str();
 
 	if (nrOfDefines > 0)
 	{
 		/*
 		Allocate one extra macro to null-terminate it
 		*/
-		macros = new D3D_SHADER_MACRO[nrOfDefines + 1];
+		macros = std::make_unique<_D3D_SHADER_MACRO[]>(nrOfDefines + 1U);
+		macrosRaw = macros.get();
 
 		/*
 		Copy data
 		*/
 		for (int i = 0; i < nrOfDefines; i++)
 		{
-			macros[i].Name = defines[i].name;
-			macros[i].Definition = defines[i].value;
+			macrosRaw[i].Name = defines[i].name;
+			macrosRaw[i].Definition = defines[i].value;
 		}
+
 
 		/*
 		The last macro must be null-terminated
 		*/
-		macros[nrOfDefines].Name = nullptr;
-		macros[nrOfDefines].Definition = nullptr;
+		macrosRaw[nrOfDefines].Name = nullptr;
+		macrosRaw[nrOfDefines].Definition = nullptr;
 	}
 
 	/*
 	Compile shader
 	*/
-	result = D3DCompileFromFile(
-		fullName.c_str(),
-		macros,
-		nullptr,
-		"main",
-		"ps_5_0",
-		0,
-		0,
-		&blob,
-		nullptr
-	);
-	if (FAILED(result))
+	if (FAILED(D3DCompileFromFile(wPath, macrosRaw, nullptr, "main", "ps_5_0", 0, 0, &blob, nullptr)))
 	{
-		if (macros)
-			delete[] macros;
 		return nullptr;
 	}
 
 	/*
 	Create shader
 	*/
-	result = m_device->CreatePixelShader(
-		blob->GetBufferPointer(),
-		blob->GetBufferSize(),
-		nullptr,
-		&shader
-	);
-	if (FAILED(result))
+	if (FAILED(m_device->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &shader)))
 	{
-		if (macros)
-			delete[] macros;
 		return nullptr;
 	}
 	blob->Release();
 
-	if (macros)
-		delete[] macros;
 	return shader;
 }
 

@@ -1,19 +1,17 @@
 #include "ShadowMapRenderingManager.hpp"
 #include <d3d11.h>
 
+D3D11_VIEWPORT gViewPort;
+
 ShadowMapRenderingManager::ShadowMapRenderingManager() :
 	m_device(nullptr), m_deviceContext(nullptr),
 	m_depthStencilBuffer(nullptr), m_depthStencilView(nullptr),
-	m_shaderResourceView(nullptr), m_viewport(nullptr)
+	m_shaderResourceView(nullptr)
 {
 }
 
 ShadowMapRenderingManager::~ShadowMapRenderingManager()
 {
-	if (m_viewport)
-	{
-		delete m_viewport;
-	}
 }
 
 bool ShadowMapRenderingManager::Initialize(ID3D11Device * device, ID3D11DeviceContext * deviceContext, const Vector2i& windowDimensions)
@@ -56,13 +54,12 @@ bool ShadowMapRenderingManager::Initialize(ID3D11Device * device, ID3D11DeviceCo
 	if (FAILED(m_device->CreateShaderResourceView(m_depthStencilBuffer, &shaderResourceViewDesc, &m_shaderResourceView)))
 		return false;
 
-	m_viewport = new D3D11_VIEWPORT;
-	m_viewport->Width = (float)windowDimensions.x;
-	m_viewport->Height = (float)windowDimensions.y;
-	m_viewport->MinDepth = 0.0f;
-	m_viewport->MaxDepth = 1.0f;
-	m_viewport->TopLeftX = 0.0f;
-	m_viewport->TopLeftY = 0.0f;
+	gViewPort.Width = (float)windowDimensions.x;
+	gViewPort.Height = (float)windowDimensions.y;
+	gViewPort.MinDepth = 0.0f;
+	gViewPort.MaxDepth = 1.0f;
+	gViewPort.TopLeftX = 0.0f;
+	gViewPort.TopLeftY = 0.0f;
 
 	return true;
 }
@@ -75,7 +72,7 @@ void ShadowMapRenderingManager::ClearDepthStencilView()
 void ShadowMapRenderingManager::SetRenderTarget()
 {
 	m_deviceContext->OMSetRenderTargets(0, nullptr, m_depthStencilView);
-	m_deviceContext->RSSetViewports(1, m_viewport);
+	m_deviceContext->RSSetViewports(1, &gViewPort);
 }
 
 ID3D11ShaderResourceView * ShadowMapRenderingManager::GetShaderResourceView()

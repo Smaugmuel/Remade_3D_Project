@@ -16,7 +16,7 @@ public:
 	bool IsKeyDown(unsigned int key) const;
 	bool IsKeyPressed(unsigned int key) const;
 	const Vector2i& MousePosition() const;
-	const Vector2i MouseMovement() const;
+	Vector2i MouseMovement() const;
 
 private:
 	//friend class Singleton<Input>;

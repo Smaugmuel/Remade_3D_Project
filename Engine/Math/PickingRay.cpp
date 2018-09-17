@@ -18,7 +18,7 @@ Ray HF::CreatePickingRay(Camera* camera, Vector2i mousePosition)
 	//FrustumCorners(camera->GetViewMatrix(), camera->GetProjectionMatrix(), corners);
 
 	// Mouse coordinates in percent, in range [(0, 0), (1, 1)]
-	Vector2f mousePercentage = mousePosition;
+	Vector2f mousePercentage(static_cast<float>(mousePosition.x), static_cast<float>(mousePosition.y));
 	mousePercentage.x /= WNDW;
 	mousePercentage.y /= WNDH;
 	mousePercentage.y = 1 - mousePercentage.y;

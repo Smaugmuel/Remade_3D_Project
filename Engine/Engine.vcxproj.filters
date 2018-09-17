@@ -228,6 +228,9 @@
     <ClCompile Include="FrameWork\ShaderCreation\ShaderCreatorV2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Core\ObjectV3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Buffers\Buffers.hpp">
@@ -489,6 +492,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FrameWork\ShaderCreation\ShaderCreatorV2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\ObjectV3.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\DataStorage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

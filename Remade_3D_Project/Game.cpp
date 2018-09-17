@@ -57,7 +57,7 @@ bool Game::Initialize()
 	m_engine.EnableFirstPersonControls();
 	CameraV3* cam = m_engine.GetCameraManager()->GetCamera(m_cameraIndex);
 	
-	cam->position = Vector3f(0, 20, -128);
+	cam->position = Vector3f(0, 20, -32);
 	cam->target = Vector3f(0, 0, 0);
 	cam->up = Vector3f(0, 1, 0);
 	cam->UpdateViewMatrix();
@@ -68,34 +68,70 @@ bool Game::Initialize()
 	cam->UpdateProjectionMatrix();
 	m_engine.GetSceneManager()->SetViewAndProjectionMatrices(cam->viewMatrix, cam->projectionMatrix);
 
-	const unsigned int nObjX = 100;
-	const unsigned int nObjZ = 100;
+	const unsigned int nObjX = 128;
+	const unsigned int nObjZ = 64;
 	Vector3f startPos = Vector3f(static_cast<float>(nObjX), 0, static_cast<float>(nObjZ)) * -1.0f;
 	Vector3f offset(4, 0, 4);
+
+	SceneManagerV3* sceneManager = m_engine.GetSceneManager();
+	MaterialManager* materialManager = m_engine.GetMaterialManager();
+	ModelManager* modelManager = m_engine.GetModelManager();
+
+	int turretIndex = modelManager->LoadModel("turret.obj");
+	int characterIndex = modelManager->LoadModel("SimpleCharacter.obj");
+	int cubeIndex = modelManager->LoadModel("cube_uv.obj");
+
+	int turretTextureIndex = materialManager->GetMaterial(modelManager->GetModel(turretIndex)->materialIndex)->textureIndex;
+	int characterTextureIndex = materialManager->GetMaterial(modelManager->GetModel(characterIndex)->materialIndex)->textureIndex;
+	int cubeTextureIndex = materialManager->GetMaterial(modelManager->GetModel(cubeIndex)->materialIndex)->textureIndex;
+
+
+	DataStorage* dataStorage = sceneManager->GetObjectData();
+	Vector3f* positions = dataStorage->GetPositions();
+	Vector3f* scales = dataStorage->GetScales();
+	Matrix* rotationMatrices = dataStorage->GetRotationMatrices();
+	Matrix* worldMatrices = dataStorage->GetWorldMatrices();
+	int* modelIndices = dataStorage->GetModelIndices();
+	int* textureIndices = dataStorage->GetTextureIndices();
+
 
 	for (int i = 0; i < nObjX; i++)
 	{
 		for (int j = 0; j < nObjZ; j++)
 		{
-			int index = m_engine.GetSceneManager()->CreateObject();
-			if (index == -1)
-				return false;
+			int modelIndex = j % 2 == 0 ? turretIndex : characterIndex;
+			int textureIndex = j % 2 == 0 ? turretTextureIndex : characterTextureIndex;
 
-			ObjectV3* obj = m_engine.GetSceneManager()->GetObjectV3(index);
-			obj->modelIndex = m_engine.GetModelManager()->LoadModel("SimpleCharacter.obj");
-			if (obj->modelIndex == -1)
+			Object* object = sceneManager->CreateObject();
+			if (!object)
 				return false;
-
-			obj->position = startPos + Vector3f(offset.x * i, offset.y * 0, offset.z * j);
-			obj->worldMatrix.SetTranslation(obj->position);
+			m_objects.push_back(object);
+			
+			*object->positionPtr = startPos + Vector3f(offset.x * i, offset.y * 0, offset.z * j);
+			*object->scalePtr = Vector3f(1, 1, 1);
+			*object->worldMatrixPtr = Matrix::World(*object->positionPtr, *object->rotationMatrixPtr, *object->scalePtr);
+			*object->modelIndexPtr = modelIndex;
+			*object->textureIndexPtr = textureIndex;
 		}
 	}
+
+	//sceneManager->SortObjectArray();
+
+	/*int objIndex = sceneManager->CreateObject();
+	if (objIndex == -1)
+		return false;
+	ObjectV3* obj = sceneManager->GetObjectV3(objIndex);
+	obj->SetModel(cubeIndex);
+	obj->SetTexture(cubeTextureIndex);
+
+	obj->SetPosition(Vector3f(0, -10, 0));
+	obj->SetScale(Vector3f(100.0f, 0.01f, 100.0f));*/
+
+
 
 	m_GUIhelloWorldIndex = m_engine.GetGUIManager()->CreateText("hello world", Vector2i(0, 100), Fonts::COMIC_SANS_MS_16);
 	if (m_GUIhelloWorldIndex == -1)
 		return false;
-
-	//SceneManager::Get()->SetRenderMode(RenderModes::NORMAL);
 
 	m_engine.ShowFPSCounter();
 
@@ -105,10 +141,7 @@ bool Game::Initialize()
 void Game::Run()
 {
 	SceneManagerV3* sceneManager = m_engine.GetSceneManager();
-	//SceneManager* sceneManager = SceneManager::Get();
-
-	Matrix rotMatrix = Matrix::Rotation(Vector3f(0, 1, 0), 0.01f);
-
+	DataStorage* dataStorage = sceneManager->GetObjectData();
 
 	while (true)
 	{
@@ -134,11 +167,19 @@ void Game::Run()
 			sceneManager->SetObjectModel(5000, "generator.obj");
 		}*/
 
-		unsigned int n = sceneManager->GetNrOfObjects();
+		unsigned int n = m_objects.size();
+
+		Matrix rotationMatrix = Matrix::Rotation(Vector3f(0, 1, 0), 0.01f);
+
+		Vector3f* positions = dataStorage->GetPositions();
+		Matrix* rotationMatrices = dataStorage->GetRotationMatrices();
+		Vector3f* scales = dataStorage->GetScales();
+		Matrix* worldMatrices = dataStorage->GetWorldMatrices();
+
 		for (unsigned int i = 0; i < n; i++)
 		{
-			ObjectV3* obj = sceneManager->GetObjectV3(i);
-			obj->worldMatrix = rotMatrix * obj->worldMatrix;
+			rotationMatrices[i] = rotationMatrix * rotationMatrices[i];
+			worldMatrices[i] = Matrix::World(positions[i], rotationMatrices[i], scales[i]).GetTranspose();
 		}
 
 		if (!m_engine.Update())

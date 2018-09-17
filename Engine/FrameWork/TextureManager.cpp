@@ -3,15 +3,18 @@
 #include "../Misc/StringConverter.hpp"
 #include <d3d11.h>
 
-TextureManager::TextureManager() : m_device(nullptr), m_deviceContext(nullptr)
+TextureManager::TextureManager() : m_device(nullptr), m_deviceContext(nullptr), m_nrOfTextures(0)
 {
 }
 
 TextureManager::~TextureManager()
 {
-	for (unsigned int i = 0; i < m_textures.size(); i++)
+	for (unsigned int i = 0; i < m_nrOfTextures; i++)
 	{
-		m_textures[i]->Release();
+		if (m_textures[i])
+		{
+			m_textures[i]->Release();
+		}
 	}
 }
 
@@ -19,6 +22,11 @@ bool TextureManager::Initialize(ID3D11Device * device, ID3D11DeviceContext* devi
 {
 	m_device = device;
 	m_deviceContext = deviceContext;
+
+	for (unsigned int i = 0; i < MAX_NR_OF_TEXTURES; i++)
+	{
+		m_textures[i] = nullptr;
+	}
 	return true;
 }
 
@@ -31,8 +39,6 @@ int TextureManager::LoadTexture(const std::string & fileName)
 	{
 		return m_nameToIndexLinker.at(fileName);
 	}
-
-	m_textures.data();
 
 	/*
 	Convert to wide string
@@ -51,8 +57,8 @@ int TextureManager::LoadTexture(const std::string & fileName)
 	/*
 	Link the file name to the index
 	*/
-	m_textures.push_back(resource);
-	int index = m_textures.size() - 1;
+	m_textures[m_nrOfTextures++] = resource;
+	int index = m_nrOfTextures - 1;
 	m_nameToIndexLinker[fileName] = index;
 
 	return index;
@@ -60,7 +66,7 @@ int TextureManager::LoadTexture(const std::string & fileName)
 
 bool TextureManager::SetTextureToPixelShader(int id, int slot)
 {
-	if (id < 0 || id >= static_cast<int>(m_textures.size()))
+	if (id < 0 || id >= static_cast<int>(m_nrOfTextures))
 		return false;
 	
 	m_deviceContext->PSSetShaderResources(slot, 1, &m_textures[id]);
@@ -78,5 +84,5 @@ int TextureManager::GetTextureIndex(const std::string & fileName)
 
 ID3D11ShaderResourceView * TextureManager::GetTexture(int id)
 {
-	return id >= 0 && id < static_cast<int>(m_textures.size()) ? m_textures[id] : nullptr;
+	return id >= 0 && id < static_cast<int>(m_nrOfTextures) ? m_textures[id] : nullptr;
 }

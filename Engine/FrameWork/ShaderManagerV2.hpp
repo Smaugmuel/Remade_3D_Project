@@ -7,6 +7,8 @@
 
 #pragma comment (lib, "d3dcompiler.lib")
 
+#define USES_MATRIX_BUFFER
+
 struct ID3D11VertexShader;
 struct ID3D11GeometryShader;
 struct ID3D11PixelShader;
@@ -39,7 +41,8 @@ public:
 	ShaderManagerV2();
 	~ShaderManagerV2();
 
-	bool Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, int maxNrOfLights = 1);
+	bool Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, int maxNrOfLights, int nrOfWorldMatricesInBuffer);
+
 
 	/*int CreateVertexShader(unsigned int flags);
 	//int CreateVertexShader(const std::string& fileName);

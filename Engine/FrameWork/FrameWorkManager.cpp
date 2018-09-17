@@ -9,7 +9,11 @@ FrameWorkManager::~FrameWorkManager()
 {
 }
 
+#ifdef USES_MATRIX_BUFFER
+bool FrameWorkManager::Initialize(Vector2i windowSize, int maxNrOfLights, int nrOfWorldMatricesInBuffer)
+#else
 bool FrameWorkManager::Initialize(Vector2i windowSize, int maxNrOfLights)
+#endif
 {
 	if (!m_window.Initialize(windowSize))
 		return false;
@@ -21,7 +25,11 @@ bool FrameWorkManager::Initialize(Vector2i windowSize, int maxNrOfLights)
 		return false;
 	if (!m_vertexBufferManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext()))
 		return false;
+#ifdef USES_MATRIX_BUFFER
+	if (!m_shaderManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext(), maxNrOfLights, nrOfWorldMatricesInBuffer))
+#else
 	if (!m_shaderManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext(), maxNrOfLights))
+#endif
 		return false;
 	if (!m_textureManager.Initialize(m_d3d.GetDevice(), m_d3d.GetDeviceContext()))
 		return false;

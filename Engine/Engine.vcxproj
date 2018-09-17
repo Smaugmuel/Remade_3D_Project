@@ -34,6 +34,9 @@
     <ClCompile Include="Core\CameraManagerV2.cpp" />
     <ClCompile Include="Core\CameraV3.cpp" />
     <ClCompile Include="Core\Engine.cpp" />
+    <ClCompile Include="Core\ObjectV3.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Core\SceneManagerV3.cpp" />
     <ClCompile Include="Events\EventDispatcher.cpp" />
     <ClCompile Include="FrameWork\ConstantBufferManager.cpp" />
@@ -183,7 +186,13 @@
     </ClInclude>
     <ClInclude Include="Core\CameraManagerV2.hpp" />
     <ClInclude Include="Core\CameraV3.hpp" />
+    <ClInclude Include="Core\DataStorage.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Core\Engine.hpp" />
+    <ClInclude Include="Core\ObjectV3.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Core\SceneManagerV3.hpp" />
     <ClInclude Include="Events\Event.hpp" />
     <ClInclude Include="Events\EventDispatcher.hpp" />

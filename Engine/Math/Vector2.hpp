@@ -1,127 +1,198 @@
 #ifndef VECTOR2_HPP
 #define VECTOR2_HPP
-#include <DirectXMath.h>
+#include <math.h>
 
-template<typename Type>
-struct Vector2 final
+struct Vector2i final
 {
-	Type x;
-	Type y;
+	int x = 0;
+	int y = 0;
 
-	Vector2() : x(0), y(0)
+	Vector2i() : x(0), y(0)
+	{
+
+	}
+	Vector2i(int pX, int pY) : x(pX), y(pY)
 	{
 	}
-	Vector2(const Type& pX, const Type& pY) : x(pX), y(pY)
+	Vector2i(const Vector2i& right) : x(right.x), y(right.y)
 	{
 	}
-	Vector2(const Vector2<int>& right) : x((Type)right.x), y((Type)right.y)
-	{
-	}
-	Vector2(const Vector2<float>& right) : x((Type)right.x), y((Type)right.y)
-	{
-	}
-	Vector2(const DirectX::XMFLOAT2& right) : x(right.x), y(right.y)
-	{
-	}
-	~Vector2()
+	~Vector2i()
 	{
 	}
 
-	Vector2<Type>& operator=(const Vector2<Type>& right)
+	Vector2i& operator=(const Vector2i& right)
 	{
 		x = right.x;
 		y = right.y;
 
 		return *this;
 	}
-	Vector2<Type> operator+=(const Vector2<Type>& right)
+	Vector2i& operator+=(const Vector2i& right)
 	{
-		x += right.x;
-		y += right.y;
-
-		return *this;
+		return *this = *this + right;
 	}
-	Vector2<Type> operator-=(const Vector2<Type>& right)
+	Vector2i& operator-=(const Vector2i& right)
 	{
-		x -= right.x;
-		y -= right.y;
-
-		return *this;
+		return *this = *this - right;
 	}
-	Vector2<Type> operator*=(const Type& coefficient)
+	Vector2i& operator*=(float coefficient)
 	{
-		x *= coefficient;
-		y *= coefficient;
-
-		return *this;
+		return *this = *this * coefficient;
 	}
 
-	Vector2<Type> operator+(const Vector2<Type>& right) const
+	Vector2i operator+(const Vector2i& right) const
 	{
-		return Vector2<Type>(x + right.x, y + right.y);
+		return Vector2i(x + right.x, y + right.y);
 	}
-	Vector2<Type> operator-(const Vector2<Type>& right) const
+	Vector2i operator-(const Vector2i& right) const
 	{
-		return Vector2<Type>(x - right.x, y - right.y);
+		return Vector2i(x - right.x, y - right.y);
 	}
-	Vector2<Type> operator*(double coefficient) const
+	Vector2i operator*(float coefficient) const
 	{
-		return Vector2<Type>(static_cast<Type>(x * coefficient), static_cast<Type>(y * coefficient));
+		return Vector2i(static_cast<int>(x * coefficient), static_cast<int>(y * coefficient));
 	}
-	bool operator==(const Vector2<Type>& right) const
+	Vector2i operator/(float coefficient) const
+	{
+		return coefficient == 0.0f ? *this : *this * (1.0f / coefficient);
+	}
+	bool operator==(const Vector2i& right) const
 	{
 		return right.x == x && right.y == y;
 	}
-	bool operator!=(const Vector2<Type>& right) const
+	bool operator!=(const Vector2i& right) const
 	{
 		return !(*this == right);
 	}
 
-	Vector2<Type> reflectAround(const Vector2<Type>& vec) const
+	float dot(const Vector2i& right) const
 	{
-		return (vec * (2 * this->dot(vec) / vec.lengthSquared()) - *this);
+		return static_cast<float>(x * right.x + y * right.y);
 	}
-	Vector2<Type> reflectOn(const Vector2<Type>& mirror) const
+	Vector2i cross() const
 	{
-		return (*this - mirror * (2 * this->dot(mirror) / mirror.lengthSquared()));
+		return Vector2i(-y, x);
 	}
 
-	float dot(const Vector2<Type>& right) const
+	float lengthSquared() const
+	{
+		return static_cast<float>(x*x + y * y);
+	}
+	float length() const
+	{
+		return sqrtf(lengthSquared());
+	}
+};
+
+struct Vector2f final
+{
+	float x = 0.0f;
+	float y = 0.0f;
+
+	Vector2f() : x(0.0f), y(0.0f)
+	{
+	}
+	Vector2f(float pX, float pY) : x(pX), y(pY)
+	{
+	}
+	Vector2f(const Vector2f& right) : x(right.x), y(right.y)
+	{
+	}
+	~Vector2f()
+	{
+	}
+
+	Vector2f& operator=(const Vector2f& right)
+	{
+		x = right.x;
+		y = right.y;
+
+		return *this;
+	}
+	Vector2f& operator+=(const Vector2f& right)
+	{
+		return *this = *this + right;
+	}
+	Vector2f& operator-=(const Vector2f& right)
+	{
+		return *this = *this - right;
+	}
+	Vector2f& operator*=(float coefficient)
+	{
+		return *this = *this * coefficient;
+	}
+	Vector2f& operator/=(float coefficient)
+	{
+		return *this = *this / coefficient;
+	}
+
+	Vector2f operator+(const Vector2f& right) const
+	{
+		return Vector2f(x + right.x, y + right.y);
+	}
+	Vector2f operator-(const Vector2f& right) const
+	{
+		return Vector2f(x - right.x, y - right.y);
+	}
+	Vector2f operator*(float coefficient) const
+	{
+		return Vector2f(x * coefficient, y * coefficient);
+	}
+	Vector2f operator/(float coefficient) const
+	{
+		return coefficient == 0.0f ? *this : *this * (1.0f / coefficient);
+	}
+	bool operator==(const Vector2f& right) const
+	{
+		return right.x == x && right.y == y;
+	}
+	bool operator!=(const Vector2f& right) const
+	{
+		return !(*this == right);
+	}
+
+	Vector2f reflectAround(const Vector2f& vec) const
+	{
+		return (vec * (2 * dot(vec) / vec.lengthSquared()) - *this);
+	}
+	Vector2f reflectOn(const Vector2f& mirror) const
+	{
+		return (*this - mirror * (2 * dot(mirror) / mirror.lengthSquared()));
+	}
+
+	float dot(const Vector2f& right) const
 	{
 		return x*right.x + y*right.y;
 	}
-	Vector2<Type> cross() const
+	Vector2f cross() const
 	{
-		return Vector2<Type>(-y, x);
+		return Vector2f(-y, x);
 	}
-	void normalize()
-	{
-		Type len = length();
-
-		if (len == 0.0f)
-			return;
-
-		Type lenDiv = 1 / len;
-		x *= lenDiv;
-		y *= lenDiv;
-	}
-
-	float length() const
-	{
-		return std::sqrtf(lengthSquared());
-	}
+	
 	float lengthSquared() const
 	{
 		return (x*x + y*y);
 	}
-	void setLength(const Type& _length)
+	float length() const
+	{
+		return sqrtf(lengthSquared());
+	}
+
+	Vector2f normalized() const
+	{
+		return *this / length();
+	}
+	void normalize()
+	{
+		*this = normalized();
+	}
+
+	void setLength(float _length)
 	{
 		normalize();
 		this->operator*=(_length);
 	}
 };
-
-typedef Vector2<float> Vector2f;
-typedef Vector2<int> Vector2i;
 
 #endif

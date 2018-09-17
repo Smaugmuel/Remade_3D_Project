@@ -5,22 +5,19 @@
 #include <sstream>
 #include <fstream>
 
-ModelManager::ModelManager() : m_vertexBufferManager(nullptr), m_materialManager(nullptr)
+ModelManager::ModelManager() : m_vertexBufferManager(nullptr), m_materialManager(nullptr), m_nrOfModels(0)
 {
 }
 
 ModelManager::~ModelManager()
 {
-	for (unsigned int i = 0; i < m_models.size(); i++)
-	{
-		delete[] m_models[i].vertices;
-	}
 }
 
 bool ModelManager::Initialize(VertexBufferManager * vertexBufferManager, MaterialManager* materialManager)
 {
 	m_vertexBufferManager = vertexBufferManager;
 	m_materialManager = materialManager;
+
 	return true;
 }
 
@@ -42,9 +39,9 @@ int ModelManager::LoadModel(const std::string & fileName)
 		return -1;
 
 	std::string line, type;
-	std::vector<DirectX::XMFLOAT3> ps;
-	std::vector<DirectX::XMFLOAT3> ns;
-	std::vector<DirectX::XMFLOAT2> uvs;
+	std::vector<Vector3f> ps;
+	std::vector<Vector3f> ns;
+	std::vector<Vector2f> uvs;
 	std::vector<TexturedModelVertex> vertices;
 	TexturedModel model;
 
@@ -72,19 +69,19 @@ int ModelManager::LoadModel(const std::string & fileName)
 		{
 			float a, b, c;
 			iss >> a >> b >> c;
-			ps.push_back(DirectX::XMFLOAT3(a, b, c));
+			ps.push_back(Vector3f(a, b, c));
 		}
 		else if (type == "vn")
 		{
 			float a, b, c;
 			iss >> a >> b >> c;
-			ns.push_back(DirectX::XMFLOAT3(a, b, c));
+			ns.push_back(Vector3f(a, b, c));
 		}
 		else if (type == "vt")
 		{
 			float a, b;
 			iss >> a >> b;
-			uvs.push_back(DirectX::XMFLOAT2(a, b));
+			uvs.push_back(Vector2f(a, b));
 		}
 		else if (type == "f")
 		{
@@ -129,7 +126,7 @@ int ModelManager::LoadModel(const std::string & fileName)
 	Copy data from temporary vector to an array
 	*/
 	model.nrOfVertices = vertices.size();
-	model.vertices = new TexturedModelVertex[model.nrOfVertices];
+	model.vertices = std::make_unique<TexturedModelVertex[]>(model.nrOfVertices);
 
 	for (unsigned int i = 0; i < model.nrOfVertices; i++)
 	{
@@ -142,13 +139,13 @@ int ModelManager::LoadModel(const std::string & fileName)
 	But an index is stored just in case
 	*/
 	unsigned int vertexSize = sizeof(TexturedModelVertex);
-	model.vertexBufferIndex = m_vertexBufferManager->CreateBuffer(model.nrOfVertices * vertexSize, vertexSize, static_cast<void*>(model.vertices));
+	model.vertexBufferIndex = m_vertexBufferManager->CreateBuffer(model.nrOfVertices * vertexSize, vertexSize, static_cast<void*>(model.vertices.get()));
 
 	/*
 	Link the file name to the index
 	*/
-	m_models.push_back(model);
-	int index = m_models.size() - 1;
+	m_models[m_nrOfModels++] = std::move(model);
+	int index = m_nrOfModels - 1;
 	m_nameToIndexLinker[fileName] = index;
 
 	return index;
@@ -156,5 +153,5 @@ int ModelManager::LoadModel(const std::string & fileName)
 
 TexturedModel * ModelManager::GetModel(int index)
 {
-	return index >= 0 && index < static_cast<int>(m_models.size()) ? &m_models[index] : nullptr;
+	return index >= 0 && index < static_cast<int>(m_nrOfModels) ? &m_models[index] : nullptr;
 }

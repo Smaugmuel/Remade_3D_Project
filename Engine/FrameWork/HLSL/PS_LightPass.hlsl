@@ -3,12 +3,19 @@ Texture2D normalTexture : register(t1);
 Texture2D colorTexture : register(t2);
 SamplerState samplerState : register(s0);
 
-#ifdef MAX_NR_OF_LIGHTS
+#ifdef CBUFFER_MAX_NR_OF_LIGHTS
+struct Light
+{
+	float3 position;
+	float dropoff;
+	float3 diffuseColor;
+	float padding;
+};
 cbuffer LightBuffer : register(b0)
 {
-	float4 lights[MAX_NR_OF_LIGHTS];	// Contains position and linear dropoff
+	Light lights[CBUFFER_MAX_NR_OF_LIGHTS];	// Contains position and linear dropoff
+	float3 ambientColor;
 	int nrOfLights;
-	int3 padding;
 };
 #endif
 
@@ -23,27 +30,34 @@ float4 main(PS_INPUT_DATA input) : SV_TARGET
 	float4 wpos = worldPosTexture.Load(int3(input.position.xy, 0));
 	float4 normal = normalTexture.Load(int3(input.position.xy, 0));
 	float4 color = colorTexture.Load(int3(input.position.xy, 0));
-	float totalLightInfluence = 0.0f;
+	
+	/*
+	Default colors with no lights
+	*/
+	float3 ambientInfluence = float3(0.1, 0.1, 0.1);
+	float3 diffuseInfluence = float3(0, 0, 0);
 
-#ifdef MAX_NR_OF_LIGHTS
-	float3 toLight, lightPosition;
-	float lightInfluence, lightDropoff;
+#ifdef CBUFFER_MAX_NR_OF_LIGHTS
+	float3 toLight;
+	float influence;
+
 	for (unsigned int i = 0; i < nrOfLights; i++)
 	{
-		lightPosition = lights[i].xyz;
-		lightDropoff = lights[i].w;
-
-		toLight = lightPosition - wpos.xyz;
-		lightInfluence = length(toLight) * lightDropoff + 1;
+		toLight = lights[i].position - wpos.xyz;
+		influence = length(toLight) * lights[i].dropoff + 1;
 		
-		if (lightInfluence > 0)
+		if (influence > 0)
 		{
-			totalLightInfluence += saturate(dot(toLight, normal.xyz)) * lightInfluence;
+			float diffuseFactor = saturate(dot(normalize(toLight), normal.xyz));
+			diffuseInfluence += lights[i].diffuseColor * diffuseFactor * influence;
 		}
 	}
-#else
-	totalLightInfluence = 1.0f;
+
+	/*
+	Ambient color
+	*/
+	ambientInfluence = ambientColor;
 #endif
 
-	return color * saturate(totalLightInfluence);
+	return color * float4(saturate(ambientInfluence + diffuseInfluence), 1);
 }

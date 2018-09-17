@@ -60,7 +60,7 @@ const Vector2i& Input::MousePosition() const
 	return m_mousePos;
 }
 
-const Vector2i Input::MouseMovement() const
+Vector2i Input::MouseMovement() const
 {
 	return m_mousePos - m_mousePosPrev;
 }
