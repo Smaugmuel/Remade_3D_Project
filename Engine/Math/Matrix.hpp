@@ -1,7 +1,7 @@
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 #include "Vector3.hpp"
-#include <DirectXMath.h>
+//#include <DirectXMath.h>
 
 /*
 ===============================================================================================================================
@@ -29,78 +29,70 @@ proj = DirectX::XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(fov, ar, np,
 
 */
 
-
-struct Matrix
+namespace Math
 {
-	Matrix();
-	Matrix(const Matrix& other);
-	Matrix(float p00, float p01, float p02, float p03, float p10, float p11, float p12, float p13, float p20, float p21, float p22, float p23, float p30, float p31, float p32, float p33);
-	~Matrix();
+	struct Matrix
+	{
+		Matrix();
+		Matrix(const Matrix& other);
+		Matrix(float p00, float p01, float p02, float p03, float p10, float p11, float p12, float p13, float p20, float p21, float p22, float p23, float p30, float p31, float p32, float p33);
+		~Matrix();
 
-	/*
-	Assignment operators
-	*/
-	Matrix& operator=(const Matrix& right);
-	Matrix& operator+=(const Matrix& right);
-	Matrix& operator-=(const Matrix& right);
-	Matrix& operator*=(const Matrix& right);
-	Matrix& operator*=(float f);
-	Matrix& operator/=(float f);
+		/*
+		Assignment operators
+		*/
+		Matrix& operator=(const Matrix& right);
+		Matrix& operator+=(const Matrix& right);
+		Matrix& operator-=(const Matrix& right);
+		Matrix& operator*=(const Matrix& right);
+		Matrix& operator*=(float f);
+		Matrix& operator/=(float f);
 
-	/*
-	Unaltering operators
-	*/
-	Matrix operator+(const Matrix& right) const;
-	Matrix operator-(const Matrix& right) const;
-	Matrix operator*(const Matrix& right) const;
-	Matrix operator*(float f) const;
-	Matrix operator/(float f) const;
-	
-	/*
-	Comparison operators
-	*/
-	bool operator==(const Matrix& right) const;
+		/*
+		Unaltering operators
+		*/
+		Matrix operator+(const Matrix& right) const;
+		Matrix operator-(const Matrix& right) const;
+		Matrix operator*(const Matrix& right) const;
+		Matrix operator*(float f) const;
+		Matrix operator/(float f) const;
 
-	/*
-	Assignment functions
-	*/
-	void SetTranslation(const Vector3f& translation);
-	void SetScale(const Vector3f& scale);
-	void SetView(const Vector3f& position, const Vector3f& target, const Vector3f& up);
-	void SetProjection(float fov, float aspectRatio, float nearPlane, float farPlane);
-	void SetRotationAroundAxis(const Vector3f& axis, float angle);
-	void SetTranspose();
-	void SetIdentity();
+		/*
+		Comparison operators
+		*/
+		bool operator==(const Matrix& right) const;
 
-	/*
-	Unaltering functions
-	*/
-	Matrix GetTranspose() const;
+		/*
+		Assignment functions
+		*/
+		void SetTranslation(const Vector3f& translation);
+		void SetScale(const Vector3f& scale);
+		void SetView(const Vector3f& position, const Vector3f& target, const Vector3f& up);
+		void SetProjection(float fov, float aspectRatio, float nearPlane, float farPlane);
+		void SetRotationAroundAxis(const Vector3f& axis, float angle);
+		void SetTranspose();
+		void SetIdentity();
 
-	/*
-	Static creation
-	*/
-	static Matrix Translation(const Vector3f& translation);
-	static Matrix Rotation(const Vector3f& axis, float angle);
-	static Matrix Scale(const Vector3f& scale);
-	static Matrix World(const Vector3f& position, const Matrix& rotation, const Vector3f& scale);
-	static Matrix View(const Vector3f& position, const Vector3f& target, const Vector3f& up);
-	static Matrix Projection(float fov, float aspectRatio, float nearPlane, float farPlane);
-	static Matrix Transpose(const Matrix& matrix);
+		/*
+		Unaltering functions
+		*/
+		Matrix GetTranspose() const;
 
-	/*
-	Data
-	*/
-	float rows[4][4];
+		/*
+		Static creation
+		*/
+		static Matrix Translation(const Vector3f& translation);
+		static Matrix Rotation(const Vector3f& axis, float angle);
+		static Matrix Scale(const Vector3f& scale);
+		static Matrix World(const Vector3f& position, const Matrix& rotation, const Vector3f& scale);
+		static Matrix View(const Vector3f& position, const Vector3f& target, const Vector3f& up);
+		static Matrix Projection(float fov, float aspectRatio, float nearPlane, float farPlane);
 
-private:
-	/*
-	DirectX conversions
-	*/
-
-	static Matrix FromXMMATRIX(const DirectX::XMMATRIX& xm);
-	static DirectX::XMMATRIX ToXMMATRIX(const Matrix& m);
-	void SetFromXMMATRIX(const DirectX::XMMATRIX& xm);
-};
+		/*
+		Data
+		*/
+		float rows[4][4];
+	};
+}
 
 #endif

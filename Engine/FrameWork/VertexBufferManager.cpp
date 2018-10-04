@@ -9,9 +9,9 @@ VertexBufferManager::~VertexBufferManager()
 {
 	for (unsigned int i = 0; i < m_nrOfBuffers; i++)
 	{
-		if (m_buffers[i].buffer)
+		if (m_buffers[i])
 		{
-			m_buffers[i].buffer->Release();
+			m_buffers[i]->Release();
 		}
 	}
 }
@@ -27,7 +27,6 @@ int VertexBufferManager::CreateBuffer(unsigned int bufferSize, unsigned int vert
 {
 	D3D11_BUFFER_DESC desc;
 	D3D11_SUBRESOURCE_DATA data;
-	Buffer buffer;
 
 	if (m_nrOfBuffers == MAX_NR_OF_VERTEX_BUFFERS)
 	{
@@ -46,13 +45,12 @@ int VertexBufferManager::CreateBuffer(unsigned int bufferSize, unsigned int vert
 	data.SysMemPitch = 0;
 	data.SysMemSlicePitch = 0;
 
-	if (FAILED(m_device->CreateBuffer(&desc, &data, &buffer.buffer)))
+	if (FAILED(m_device->CreateBuffer(&desc, &data, &m_buffers[m_nrOfBuffers])))
 		return -1;
 
-	buffer.vertexSize = vertexSize;
+	m_vertexSizes[m_nrOfBuffers] = vertexSize;
 
-	m_buffers[m_nrOfBuffers++] = buffer;
-	return m_nrOfBuffers - 1;
+	return m_nrOfBuffers++;
 }
 
 bool VertexBufferManager::SetBufferToInputAssembler(int index, int slotInShader)
@@ -62,7 +60,7 @@ bool VertexBufferManager::SetBufferToInputAssembler(int index, int slotInShader)
 
 	unsigned int offset = 0;
 	
-	m_deviceContext->IASetVertexBuffers(slotInShader, 1, &m_buffers[index].buffer, &m_buffers[index].vertexSize, &offset);
+	m_deviceContext->IASetVertexBuffers(slotInShader, 1, &m_buffers[index], &m_vertexSizes[index], &offset);
 	
 	return true;
 }

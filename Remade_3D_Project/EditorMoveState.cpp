@@ -1,9 +1,9 @@
 #include "EditorMoveState.hpp"
 
-#include "../Engine/Input/Input.hpp"
+#include "../Engine/Framework/Input.hpp"
 #include "../Engine/Render/RenderManager.hpp"
 //#include "../Engine/Camera/PlayerCameraManager.hpp"
-#include "../Engine/FrameWork/FrameWork.hpp"
+//#include "../Engine/FrameWork/FrameWork.hpp"
 #include "../Engine/Camera/Camera.hpp"
 #include "../Engine/Objects/Objects/TextureObject.hpp"
 #include "../Engine/Math/Frustum.hpp"
@@ -32,7 +32,7 @@ bool EditorMoveState::Initialize()
 
 void EditorMoveState::ProcessInput()
 {
-	Input* input = Input::Get();
+	/*Input* input = Input::Get();
 	
 	if (input->IsKeyDown(VK_LBUTTON))
 	{
@@ -92,7 +92,7 @@ void EditorMoveState::ProcessInput()
 				m_selectedObject->Move(movement * m_distanceMultiplier);
 			}
 		}
-	}
+	}*/
 }
 
 void EditorMoveState::Update(float dt)

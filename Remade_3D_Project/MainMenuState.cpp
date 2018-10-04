@@ -44,13 +44,13 @@ MainMenuState::~MainMenuState()
 void MainMenuState::OnEntry()
 {
 	m_buttonManager->EnableRendering();
-	Engine::Get()->HideFPSCounter();
+	//Engine::Get()->HideFPSCounter();
 }
 
 void MainMenuState::OnExit()
 {
 	m_buttonManager->DisableRendering();
-	Engine::Get()->ShowFPSCounter();
+	//Engine::Get()->ShowFPSCounter();
 }
 
 bool MainMenuState::Initialize()

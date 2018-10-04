@@ -74,12 +74,12 @@ void Camera::Update()
 }
 void Camera::UpdateViewMatrix()
 {
-	DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(
+	/*DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(
 		m_position.XMV(),
 		m_target.XMV(),
 		m_up.XMV());
 
-	DirectX::XMStoreFloat4x4(&m_view, view);
+	DirectX::XMStoreFloat4x4(&m_view, view);*/
 }
 void Camera::UpdateProjectionMatrix()
 {
@@ -120,7 +120,7 @@ void Camera::MoveUp(float amount)
 }
 void Camera::Rotate(const Vector3f& axis, float angle)
 {
-	DirectX::XMVECTOR axisVector = axis.XMV();
+	/*DirectX::XMVECTOR axisVector = axis.XMV();
 
 	// Zero vector, or no rotation
 	if (DirectX::XMVector3Equal(axisVector, DirectX::XMVectorZero()) || angle == 0.0f)
@@ -138,7 +138,7 @@ void Camera::Rotate(const Vector3f& axis, float angle)
 	DirectX::XMStoreFloat3(&temp, DirectX::XMVectorAdd(m_position.XMV(), newTargetDirection));
 	m_target = temp;
 
-	m_update_flag_view = true;
+	m_update_flag_view = true;*/
 }
 
 void Camera::RotateUp(float angle)

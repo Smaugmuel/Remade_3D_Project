@@ -1,7 +1,7 @@
 #include "DeferredLightSplitScreenShaderGroup.hpp"
 #include <d3d11.h>
 
-#include "../../SamplerStorage.hpp"
+//#include "../../SamplerStorage.hpp"
 
 DeferredLightSplitScreenShaderGroup::DeferredLightSplitScreenShaderGroup()
 {
@@ -45,8 +45,8 @@ void DeferredLightSplitScreenShaderGroup::SetupShaders(ID3D11DeviceContext * dev
 {
 	ShaderGroup::SetupShaders(deviceContext);
 
-	ID3D11SamplerState* sampler = SamplerStorage::Get()->GetSampler(m_samplerName);
-	deviceContext->PSSetSamplers(0, 1, &sampler);
+	/*ID3D11SamplerState* sampler = SamplerStorage::Get()->GetSampler(m_samplerName);
+	deviceContext->PSSetSamplers(0, 1, &sampler);*/
 }
 
 void DeferredLightSplitScreenShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView ** resources, ID3D11ShaderResourceView * depthTexture/*, Vector3f lightPosition, const DirectX::XMMATRIX & lightViewMatrix, const DirectX::XMMATRIX & lightProjectionMatrix, float lightIntensity*/)

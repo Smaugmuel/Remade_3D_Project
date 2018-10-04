@@ -68,9 +68,69 @@ VertexShaderData ShaderCreatorV2::CompileAndCreateVertexShader(int nrOfDefines, 
 	return shaderData;
 }
 
-ID3D11PixelShader * ShaderCreatorV2::CompileAndCreatePixelShader(int nrOfDefines, ShaderDefine* defines)
+ID3D11GeometryShader * ShaderCreatorV2::CompileAndCreateGeometryShader(const char* fileName, int nrOfDefines, ShaderDefine * defines)
 {
-	return nullptr;
+	std::unique_ptr<_D3D_SHADER_MACRO[]> macros = nullptr;
+	_D3D_SHADER_MACRO* macrosRaw = nullptr;
+	ID3D10Blob* blob = nullptr;
+	ID3D11GeometryShader* shader = nullptr;
+
+	/*
+	Convert file name
+	*/
+	std::optional<std::wstring> wName = StringConverter::ToWideString(fileName);
+	if (!wName)
+		return nullptr;
+
+	/*
+	Add path to file name
+	*/
+	wName = L"../Engine/FrameWork/HLSL/" + wName.value();
+	const wchar_t* wPath = wName->c_str();
+
+	if (nrOfDefines > 0)
+	{
+		/*
+		Allocate one extra macro to null-terminate it
+		*/
+		macros = std::make_unique<_D3D_SHADER_MACRO[]>(nrOfDefines + 1U);
+		macrosRaw = macros.get();
+
+		/*
+		Copy data
+		*/
+		for (int i = 0; i < nrOfDefines; i++)
+		{
+			macrosRaw[i].Name = defines[i].name;
+			macrosRaw[i].Definition = defines[i].value;
+		}
+
+
+		/*
+		The last macro must be null-terminated
+		*/
+		macrosRaw[nrOfDefines].Name = nullptr;
+		macrosRaw[nrOfDefines].Definition = nullptr;
+	}
+
+	/*
+	Compile shader
+	*/
+	if (FAILED(D3DCompileFromFile(wPath, macrosRaw, nullptr, "main", "gs_5_0", 0, 0, &blob, nullptr)))
+	{
+		return nullptr;
+	}
+
+	/*
+	Create shader
+	*/
+	if (FAILED(m_device->CreateGeometryShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &shader)))
+	{
+		return nullptr;
+	}
+	blob->Release();
+
+	return shader;
 }
 
 ID3D11PixelShader * ShaderCreatorV2::CompileAndCreatePixelShaderFromFile(const char* fileName, int nrOfDefines, ShaderDefine * defines)

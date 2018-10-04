@@ -27,10 +27,13 @@ struct PS_INPUT_DATA
 
 float4 main(PS_INPUT_DATA input) : SV_TARGET
 {
-	float4 wpos = worldPosTexture.Load(int3(input.position.xy, 0));
+	float4 wpos = worldPosTexture.Sample(samplerState, input.uv);
+	float4 normal = normalTexture.Sample(samplerState, input.uv);
+	float4 color = colorTexture.Sample(samplerState, input.uv);
+	/*float4 wpos = worldPosTexture.Load(int3(input.position.xy, 0));
 	float4 normal = normalTexture.Load(int3(input.position.xy, 0));
-	float4 color = colorTexture.Load(int3(input.position.xy, 0));
-	
+	float4 color = colorTexture.Load(int3(input.position.xy, 0));*/
+
 	/*
 	Default colors with no lights
 	*/
@@ -45,7 +48,7 @@ float4 main(PS_INPUT_DATA input) : SV_TARGET
 	{
 		toLight = lights[i].position - wpos.xyz;
 		influence = length(toLight) * lights[i].dropoff + 1;
-		
+
 		if (influence > 0)
 		{
 			float diffuseFactor = saturate(dot(normalize(toLight), normal.xyz));

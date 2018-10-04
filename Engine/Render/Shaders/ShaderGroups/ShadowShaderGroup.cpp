@@ -273,7 +273,7 @@ void ShadowShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext,
 	}
 
 	frameDataVS2 = (VS_PerFrame2*)mappedResource.pData;
-	frameDataVS2->lightPosition = lightCamera->GetPosition().XMF();
+	//frameDataVS2->lightPosition = lightCamera->GetPosition().XMF();
 	frameDataVS2->padding = 0.0f;
 
 	deviceContext->Unmap(m_vsPerFrameBuffer2, 0);

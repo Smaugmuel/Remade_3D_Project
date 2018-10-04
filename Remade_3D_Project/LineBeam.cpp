@@ -3,7 +3,7 @@
 #include "../Engine/Render/Shaders/ShaderManager.hpp"
 #include "../Engine/FrameWork/Direct3D.hpp"
 #include "../Engine/Objects/Models/LineModel.hpp"
-#include "../Engine/Objects/Models/ModelStorage.hpp"
+//#include "../Engine/Objects/Models/ModelStorage.hpp"
 #include "../Engine/Objects/Objects/LineObject.hpp"
 #include "../Engine/Buffers/ConstantBufferStorage.hpp"
 

@@ -1,8 +1,8 @@
 #include "EditorRotateState.hpp"
 
-#include "../Engine/Input/Input.hpp"
+#include "../Engine/Framework/Input.hpp"
 //#include "../Engine/Camera/PlayerCameraManager.hpp"
-#include "../Engine/FrameWork/FrameWork.hpp"
+//#include "../Engine/FrameWork/FrameWork.hpp"
 #include "../Engine/Camera/Camera.hpp"
 #include "../Engine/Math/Frustum.hpp"
 #include "../Engine/Objects/Objects/TextureObject.hpp"
@@ -30,7 +30,7 @@ bool EditorRotateState::Initialize()
 
 void EditorRotateState::ProcessInput()
 {
-	Input* input = Input::Get();
+	/*Input* input = Input::Get();
 
 	if (input->IsKeyDown(VK_LBUTTON))
 	{
@@ -80,7 +80,7 @@ void EditorRotateState::ProcessInput()
 				}
 			}
 		}
-	}
+	}*/
 }
 
 void EditorRotateState::Update(float dt)

@@ -1,6 +1,6 @@
 #ifndef CAMERA_V3_HPP
 #define CAMERA_V3_HPP
-#include "../Math/Matrix.hpp"
+#include "../Math/Math.hpp"
 
 struct CameraV3
 {
@@ -16,8 +16,12 @@ struct CameraV3
 	void MoveForward(float amount);
 	void MoveRight(float amount);
 	void MoveUp(float amount);
-	void RotateUp(float amount);
-	void RotateDown(float amount);
+	void RotateUp(float angle);
+	void RotateRight(float angle);
+
+	Vector3f TargetDirection() const;
+	Vector3f Right() const;
+	Vector3f Forward() const;
 
 	Vector3f position;
 	Vector3f target;
@@ -27,13 +31,8 @@ struct CameraV3
 	float nearPlane;
 	float farPlane;
 
-	Matrix viewMatrix;
-	Matrix projectionMatrix;
-
-private:
-	Vector3f TargetDirection() const;
-	Vector3f Right() const;
-	Vector3f Forward() const;
+	Math::Matrix viewMatrix;
+	Math::Matrix projectionMatrix;
 };
 
 #endif

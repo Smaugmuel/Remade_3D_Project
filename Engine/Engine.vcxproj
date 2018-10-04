@@ -49,13 +49,7 @@
     <ClCompile Include="FrameWork\ShaderCreation\InputLayoutCreator.cpp" />
     <ClCompile Include="FrameWork\ShaderCreation\ShaderCreatorV2.cpp" />
     <ClCompile Include="FrameWork\ShadowMapRenderingManager.cpp" />
-    <ClCompile Include="FrameWork\WorldMatrixStorage.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="FrameWork\SamplerManager.cpp" />
-    <ClCompile Include="FrameWork\ShaderCreator.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="FrameWork\ShaderManagerV2.cpp" />
     <ClCompile Include="FrameWork\TextureManager.cpp" />
     <ClCompile Include="FrameWork\VertexBufferManager.cpp" />
@@ -76,13 +70,19 @@
     </ClCompile>
     <ClCompile Include="Math\AABA.cpp" />
     <ClCompile Include="Math\AABB.cpp" />
-    <ClCompile Include="Math\Collision.cpp" />
+    <ClCompile Include="Math\Collision.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Math\Frustum.cpp" />
+    <ClCompile Include="Math\Math.cpp" />
     <ClCompile Include="Math\Matrix.cpp" />
     <ClCompile Include="Math\MatrixEulerConversion.cpp" />
-    <ClCompile Include="Math\PickingRay.cpp" />
-    <ClCompile Include="Math\Plane.cpp" />
-    <ClCompile Include="Math\Sphere.cpp" />
+    <ClCompile Include="Math\PickingRay.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Math\Plane.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="GUI\FPS_CounterV2.cpp" />
     <ClCompile Include="Misc\HelperFunctions.cpp" />
     <ClCompile Include="Misc\StringConverter.cpp" />
@@ -207,20 +207,11 @@
     <ClInclude Include="Core\ReusableStorage.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="FrameWork\LightManager.hpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="FrameWork\OnScreenTarget.hpp" />
     <ClInclude Include="FrameWork\ShaderCreation\InputLayoutCreator.hpp" />
     <ClInclude Include="FrameWork\ShaderCreation\ShaderCreatorV2.hpp" />
     <ClInclude Include="FrameWork\ShadowMapRenderingManager.hpp" />
-    <ClInclude Include="FrameWork\WorldMatrixStorage.hpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="FrameWork\SamplerManager.hpp" />
-    <ClInclude Include="FrameWork\ShaderCreator.hpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="FrameWork\ShaderManagerV2.hpp" />
     <ClInclude Include="FrameWork\TextureManager.hpp" />
     <ClInclude Include="FrameWork\VertexBufferManager.hpp" />
@@ -248,15 +239,28 @@
     </ClInclude>
     <ClInclude Include="Math\AABA.hpp" />
     <ClInclude Include="Math\AABB.hpp" />
-    <ClInclude Include="Math\Collision.hpp" />
+    <ClInclude Include="Math\Collision.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Math\Frustum.hpp" />
+    <ClInclude Include="Math\Math.hpp" />
     <ClInclude Include="Math\Matrix.hpp" />
     <ClInclude Include="Math\MatrixEulerConversion.hpp" />
-    <ClInclude Include="Math\OBB.hpp" />
-    <ClInclude Include="Math\PickingRay.hpp" />
-    <ClInclude Include="Math\Plane.hpp" />
-    <ClInclude Include="Math\Ray.hpp" />
-    <ClInclude Include="Math\Sphere.hpp" />
+    <ClInclude Include="Math\OBB.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Math\PickingRay.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Math\Plane.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Math\Ray.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Math\Sphere.hpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Math\Vector2.hpp" />
     <ClInclude Include="Math\Vector3.hpp" />
     <ClInclude Include="GUI\FPS_CounterV2.hpp" />
@@ -355,6 +359,16 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="FrameWork\HLSL\GS_Instancing.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="FrameWork\HLSL\PS_FinalPass.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -370,9 +384,9 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="FrameWork\HLSL\PS_LightPass.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
     </FxCompile>
@@ -381,6 +395,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
     </FxCompile>
     <FxCompile Include="FrameWork\HLSL\VS_Generic.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>

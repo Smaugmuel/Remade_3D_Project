@@ -1,7 +1,7 @@
 #include "EditorSaveState.hpp"
 
 // For input
-#include "../Engine/Input/Input.hpp"
+#include "../Engine/Framework/Input.hpp"
 #include <Windows.h>
 
 // For the scene
@@ -28,7 +28,7 @@ bool EditorSaveState::Initialize()
 
 void EditorSaveState::ProcessInput()
 {
-	Input* input = Input::Get();
+	/*Input* input = Input::Get();
 
 	if (input->IsKeyDown(VK_CONTROL))
 	{
@@ -37,7 +37,7 @@ void EditorSaveState::ProcessInput()
 		{
 			m_scene->SaveToFile(m_scene->GetName());
 		}
-	}
+	}*/
 }
 
 void EditorSaveState::Update(float dt)

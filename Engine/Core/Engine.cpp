@@ -14,7 +14,7 @@ Engine::~Engine()
 
 bool Engine::Initialize(Vector2i windowSize)
 {
-	if (!m_frameWorkManager.Initialize(windowSize, MAX_NR_OF_LIGHTS, NR_OF_MATRICES_IN_BUFFER))
+	if (!m_frameWorkManager.Initialize(windowSize, MAX_NR_OF_LIGHT_INSTANCES, NR_OF_MATRICES_IN_BUFFER))
 		return false;
 	if (!m_materialManager.Initialize(m_frameWorkManager.GetTextureManager()))
 		return false;
@@ -69,6 +69,7 @@ bool Engine::Update()
 	/*
 	Update fps counter
 	*/
+	m_sceneManager.Update(dt);
 	m_fps.Update(dt);
 
 
@@ -138,40 +139,64 @@ void Engine::ControlCamera(float dt)
 
 	bool isChanged = false;
 
-	float speed = 10.0f;
+	float movementSpeed = 10.0f;
+	float rotationSpeed = 1.0f;
+
 	if (input->IsKeyDown('B'))
-		speed *= 10.0f;
+		movementSpeed *= 10.0f;
 
 	if (input->IsKeyDown('D'))
 	{
-		cam->MoveRight(speed * dt);
+		cam->MoveRight(movementSpeed * dt);
 		isChanged = true;
 	}
 	if (input->IsKeyDown('A'))
 	{
-		cam->MoveRight(-speed * dt);
+		cam->MoveRight(-movementSpeed * dt);
 		isChanged = true;
 	}
 	if (input->IsKeyDown('W'))
 	{
-		cam->MoveForward(speed * dt);
+		cam->MoveForward(movementSpeed * dt);
 		isChanged = true;
 	}
 	if (input->IsKeyDown('S'))
 	{
-		cam->MoveForward(-speed * dt);
+		cam->MoveForward(-movementSpeed * dt);
 		isChanged = true;
 	}
 	if (input->IsKeyDown(VK_SPACE))
 	{
-		cam->MoveUp(speed * dt);
+		cam->MoveUp(movementSpeed * dt);
 		isChanged = true;
 	}
 	if (input->IsKeyDown(VK_SHIFT))
 	{
-		cam->MoveUp(-speed * dt);
+		cam->MoveUp(-movementSpeed * dt);
 		isChanged = true;
 	}
+
+	if (input->IsKeyDown(VK_UP))
+	{
+		cam->RotateUp(-rotationSpeed * dt);
+		isChanged = true;
+	}
+	if (input->IsKeyDown(VK_DOWN))
+	{
+		cam->RotateUp(rotationSpeed * dt);
+		isChanged = true;
+	}
+	if (input->IsKeyDown(VK_RIGHT))
+	{
+		cam->RotateRight(-rotationSpeed * dt);
+		isChanged = true;
+	}
+	if (input->IsKeyDown(VK_LEFT))
+	{
+		cam->RotateRight(rotationSpeed * dt);
+		isChanged = true;
+	}
+
 
 	if (isChanged)
 	{

@@ -86,7 +86,7 @@ public:
 
 	void SetPosition(const Vector2i& position)
 	{
-		m_aaba.center = position;
+		//m_aaba.center = position;
 		m_guiManager->SetTextPosition(m_id, position);
 	}
 	const std::wstring& GetText() const

@@ -91,13 +91,13 @@ void Object::Rotate(float x, float y, float z)
 
 void Object::RotateLocal(const Vector3f & vec, float angle)
 {
-	DirectX::XMStoreFloat4x4(
+	/*DirectX::XMStoreFloat4x4(
 		&m_rotationMatrix,
 		DirectX::XMMatrixMultiply(
 			DirectX::XMMatrixRotationAxis(vec.XMV(), -angle),
 			DirectX::XMLoadFloat4x4(&m_rotationMatrix)
 		)
-	);
+	);*/
 
 	m_update_rotation_from_matrix_flag = true;
 	//m_update_world_flag = true;
@@ -111,13 +111,13 @@ void Object::RotateLocal(float x, float y, float z, float angle)
 
 void Object::RotateGlobal(const Vector3f & vec, float angle)
 {
-	DirectX::XMStoreFloat4x4(
-		&m_rotationMatrix,
-		DirectX::XMMatrixMultiply(
-			DirectX::XMLoadFloat4x4(&m_rotationMatrix),
-			DirectX::XMMatrixRotationAxis(vec.XMV(), -angle)		// Negative just because
-		)
-	);
+	//DirectX::XMStoreFloat4x4(
+	//	&m_rotationMatrix,
+	//	DirectX::XMMatrixMultiply(
+	//		DirectX::XMLoadFloat4x4(&m_rotationMatrix),
+	//		DirectX::XMMatrixRotationAxis(vec.XMV(), -angle)		// Negative just because
+	//	)
+	//);
 
 	m_update_rotation_from_matrix_flag = true;
 	//m_update_world_flag = true;

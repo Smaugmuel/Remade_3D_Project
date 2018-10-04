@@ -22,16 +22,13 @@ public:
 	bool SetBufferToInputAssembler(int index, int slotInShader);
 
 private:
-	struct Buffer
-	{
-		ID3D11Buffer* buffer = nullptr;
-		unsigned int vertexSize = 0;
-	};
+	ID3D11Buffer * m_buffers[MAX_NR_OF_VERTEX_BUFFERS] = { nullptr };
+	unsigned int m_vertexSizes[MAX_NR_OF_VERTEX_BUFFERS] = { 0U };
+
+	unsigned int m_nrOfBuffers;
 
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_deviceContext;
-	Buffer m_buffers[MAX_NR_OF_VERTEX_BUFFERS];
-	unsigned int m_nrOfBuffers;
 };
 
 #endif

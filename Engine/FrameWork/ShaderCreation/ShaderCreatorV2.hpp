@@ -30,7 +30,7 @@ public:
 	bool Initialize(ID3D11Device* device);
 
 	VertexShaderData CompileAndCreateVertexShader(int nrOfDefines = 0, ShaderDefine* defines = nullptr);
-	ID3D11PixelShader* CompileAndCreatePixelShader(int nrOfDefines = 0, ShaderDefine* defines = nullptr);
+	ID3D11GeometryShader* CompileAndCreateGeometryShader(const char* fileName, int nrOfDefines = 0, ShaderDefine* defines = nullptr);
 	ID3D11PixelShader* CompileAndCreatePixelShaderFromFile(const char* fileName, int nrOfDefines = 0, ShaderDefine* defines = nullptr);
 
 private:

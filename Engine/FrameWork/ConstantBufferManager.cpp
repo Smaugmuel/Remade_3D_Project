@@ -69,7 +69,7 @@ bool ConstantBufferManager::MapDataToBuffer(int index, void * bufferData)
 
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-	if (FAILED(m_deviceContext->Map(m_buffers[index].buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
+	if (FAILED(m_deviceContext->Map(m_buffers[index].buffer, 0, D3D11_MAP::D3D11_MAP_WRITE_DISCARD, 0, &mappedResource)))
 		return false;
 
 	memcpy(mappedResource.pData, bufferData, m_buffers[index].bufferSize);

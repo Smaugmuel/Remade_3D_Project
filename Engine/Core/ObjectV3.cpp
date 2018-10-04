@@ -29,22 +29,22 @@ void ObjectV3::SetScale(Vector3f scale)
 void ObjectV3::SetModel(int modelIndex)
 {
 	m_modelIndex = modelIndex;
-	m_sceneManager->SortObjectInArray(m_index);
+	//m_sceneManager->SortObjectInArray(m_index);
 }
 
 void ObjectV3::SetTexture(int textureIndex)
 {
 	m_textureIndex = textureIndex;
-	m_sceneManager->SortObjectInArray(m_index);
+	//m_sceneManager->SortObjectInArray(m_index);
 }
 
 void ObjectV3::Rotate(Vector3f axis, float angle)
 {
-	m_rotationMatrix = Matrix::Rotation(axis, angle) * m_rotationMatrix;
+	m_rotationMatrix = Math::Matrix::Rotation(axis, angle) * m_rotationMatrix;
 	m_isWorldMatrixUpdated = false;
 }
 
-void ObjectV3::Rotate(const Matrix & rotationMatrix)
+void ObjectV3::Rotate(const Math::Matrix & rotationMatrix)
 {
 	m_rotationMatrix = rotationMatrix * m_rotationMatrix;
 	m_isWorldMatrixUpdated = false;
@@ -75,7 +75,7 @@ int ObjectV3::GetTextureIndex() const noexcept
 	return m_textureIndex;
 }
 
-const Matrix & ObjectV3::GetWorldMatrix() const noexcept
+const Math::Matrix & ObjectV3::GetWorldMatrix() const noexcept
 {
 	if (!m_isWorldMatrixUpdated)
 	{

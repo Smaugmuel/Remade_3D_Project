@@ -1,7 +1,6 @@
 #ifndef TEXTURE_MANAGER_HPP
 #define TEXTURE_MANAGER_HPP
-#include <vector>
-#include <map>
+//#include <map>
 #include <string>
 
 struct ID3D11ShaderResourceView;
@@ -20,17 +19,18 @@ public:
 
 	int LoadTexture(const std::string& fileName);
 
-	bool SetTextureToPixelShader(int id, int slot);
+	bool SetTextureToPixelShader(int index, int slot);
 
 	int GetTextureIndex(const std::string& fileName);
-	ID3D11ShaderResourceView* GetTexture(int id);
+	ID3D11ShaderResourceView* GetTexture(int index);
 
 private:
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_deviceContext;
 
-	std::map<std::string, int> m_nameToIndexLinker;
 	ID3D11ShaderResourceView* m_textures[MAX_NR_OF_TEXTURES];
+	std::string m_textureNames[MAX_NR_OF_TEXTURES];
+	
 	unsigned int m_nrOfTextures;
 };
 

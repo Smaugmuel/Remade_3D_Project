@@ -63,9 +63,6 @@
     <ClCompile Include="Math\Plane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Math\Sphere.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Misc\HelperFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -168,9 +165,6 @@
     <ClCompile Include="FrameWork\TextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FrameWork\ShaderCreator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FrameWork\GUIManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -213,9 +207,6 @@
     <ClCompile Include="FrameWork\DeferredRenderingManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FrameWork\WorldMatrixStorage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="FrameWork\ShadowMapRenderingManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -229,6 +220,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Core\ObjectV3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Math.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -428,9 +422,6 @@
     <ClInclude Include="FrameWork\TextureManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FrameWork\ShaderCreator.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FrameWork\GUIManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -476,12 +467,6 @@
     <ClInclude Include="FrameWork\DeferredRenderingManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FrameWork\LightManager.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameWork\WorldMatrixStorage.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FrameWork\ShadowMapRenderingManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -500,6 +485,9 @@
     <ClInclude Include="Core\DataStorage.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Math\Math.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -508,10 +496,11 @@
   <ItemGroup>
     <FxCompile Include="Render\Shaders\HLSL\VS_Generic.hlsl" />
     <FxCompile Include="Render\Shaders\HLSL\VS_GenericV2.hlsl" />
-    <FxCompile Include="FrameWork\HLSL\PS_LightPass.hlsl" />
     <FxCompile Include="FrameWork\HLSL\PS_GeometryPass.hlsl" />
     <FxCompile Include="FrameWork\HLSL\VS_Generic.hlsl" />
     <FxCompile Include="FrameWork\HLSL\PS_ShadowPass.hlsl" />
     <FxCompile Include="FrameWork\HLSL\PS_FinalPass.hlsl" />
+    <FxCompile Include="FrameWork\HLSL\PS_LightPass.hlsl" />
+    <FxCompile Include="FrameWork\HLSL\GS_Instancing.hlsl" />
   </ItemGroup>
 </Project>

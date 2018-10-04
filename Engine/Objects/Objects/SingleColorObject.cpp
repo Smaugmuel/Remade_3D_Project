@@ -2,7 +2,7 @@
 
 // Only for updating obb. Other solution would be preferred
 //#include "../Models/ModelStorage.hpp"
-#include "../Models/ModelStorageV2.hpp"
+//#include "../Models/ModelStorageV2.hpp"
 #include "../Models/SingleColorModel.hpp"
 
 SingleColorObject::SingleColorObject()
@@ -15,7 +15,7 @@ SingleColorObject::~SingleColorObject()
 
 bool SingleColorObject::Initialize(const std::string & modelName, const Vector3f & color)
 {
-	if (m_modelIndex = ModelStorageV2::Get()->LoadSingleColorModel(modelName); m_modelIndex == -1)
+	//if (m_modelIndex = ModelStorageV2::Get()->LoadSingleColorModel(modelName); m_modelIndex == -1)
 		return false;
 	
 	//SingleColorModel* model = modelStorage->GetSingleColorModelByName(modelName);//
@@ -31,7 +31,7 @@ bool SingleColorObject::Initialize(const std::string & modelName, const Vector3f
 
 void SingleColorObject::SetModel(const std::string & modelName)
 {
-	m_modelIndex = ModelStorageV2::Get()->GetSingleColorModelIndexFromName(modelName);
+	//m_modelIndex = ModelStorageV2::Get()->GetSingleColorModelIndexFromName(modelName);
 }
 
 void SingleColorObject::SetColor(const Vector3f & color)
@@ -51,7 +51,8 @@ int SingleColorObject::GetModelIndex() const
 
 const std::string & SingleColorObject::GetModelName() const
 {
-	return ModelStorageV2::Get()->GetSingleColorModelNameFromIndex(m_modelIndex);
+	return "";
+	//return ModelStorageV2::Get()->GetSingleColorModelNameFromIndex(m_modelIndex);
 }
 
 const Vector3f & SingleColorObject::GetColor() const
@@ -73,13 +74,13 @@ void SingleColorObject::UpdateOBB()
 	}
 
 	DirectX::XMMATRIX mat = GetRotationMatrix();
-	m_obb = ModelStorageV2::Get()->GetSingleColorModel(m_modelIndex)->GetOBB();
+	//m_obb = ModelStorageV2::Get()->GetSingleColorModel(m_modelIndex)->GetOBB();
 
 	m_obb.center += GetPosition();
 
-	m_obb.vectors[0] = DirectX::XMVector3Transform(m_obb.vectors[0].XMV(), mat);
+	/*m_obb.vectors[0] = DirectX::XMVector3Transform(m_obb.vectors[0].XMV(), mat);
 	m_obb.vectors[1] = DirectX::XMVector3Transform(m_obb.vectors[1].XMV(), mat);
-	m_obb.vectors[2] = DirectX::XMVector3Transform(m_obb.vectors[2].XMV(), mat);
+	m_obb.vectors[2] = DirectX::XMVector3Transform(m_obb.vectors[2].XMV(), mat);*/
 
 	m_obb.halfSides[0] = m_obb.defaultHalfSides[0] * GetScale().x;
 	m_obb.halfSides[1] = m_obb.defaultHalfSides[1] * GetScale().y;

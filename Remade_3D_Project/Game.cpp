@@ -1,8 +1,10 @@
 #include "Game.hpp"
 
-//#include "../Engine/Lights/PointLightManager.hpp"
-#include "../Engine/Math/Collision.hpp"
+//#include "../Engine/Math/Collision.hpp"
 #include "../Engine/Events/EventDispatcher.hpp"
+#include "../Engine/Math/Math.hpp"
+
+#include <algorithm>
 
 //#include "PlayState.hpp"
 //#include "MainMenuState.hpp"
@@ -24,9 +26,6 @@ Game::~Game()
 	/*SceneStorage::Delete();*/
 
 	EventDispatcher::Delete();
-
-	//PointLightManager::Delete();
-	Collision::Delete();
 }
 
 bool Game::Initialize()
@@ -68,11 +67,6 @@ bool Game::Initialize()
 	cam->UpdateProjectionMatrix();
 	m_engine.GetSceneManager()->SetViewAndProjectionMatrices(cam->viewMatrix, cam->projectionMatrix);
 
-	const unsigned int nObjX = 128;
-	const unsigned int nObjZ = 64;
-	Vector3f startPos = Vector3f(static_cast<float>(nObjX), 0, static_cast<float>(nObjZ)) * -1.0f;
-	Vector3f offset(4, 0, 4);
-
 	SceneManagerV3* sceneManager = m_engine.GetSceneManager();
 	MaterialManager* materialManager = m_engine.GetMaterialManager();
 	ModelManager* modelManager = m_engine.GetModelManager();
@@ -80,20 +74,29 @@ bool Game::Initialize()
 	int turretIndex = modelManager->LoadModel("turret.obj");
 	int characterIndex = modelManager->LoadModel("SimpleCharacter.obj");
 	int cubeIndex = modelManager->LoadModel("cube_uv.obj");
+	int sphereIndex = modelManager->LoadModel("Sphere.obj");
+	int cubeRedIndex = modelManager->LoadModel("cube_uv_red.obj");
 
 	int turretTextureIndex = materialManager->GetMaterial(modelManager->GetModel(turretIndex)->materialIndex)->textureIndex;
 	int characterTextureIndex = materialManager->GetMaterial(modelManager->GetModel(characterIndex)->materialIndex)->textureIndex;
 	int cubeTextureIndex = materialManager->GetMaterial(modelManager->GetModel(cubeIndex)->materialIndex)->textureIndex;
+	int sphereTextureIndex = materialManager->GetMaterial(modelManager->GetModel(sphereIndex)->materialIndex)->textureIndex;
+	int cubeRedTextureIndex = materialManager->GetMaterial(modelManager->GetModel(cubeRedIndex)->materialIndex)->textureIndex;
 
 
-	DataStorage* dataStorage = sceneManager->GetObjectData();
-	Vector3f* positions = dataStorage->GetPositions();
-	Vector3f* scales = dataStorage->GetScales();
-	Matrix* rotationMatrices = dataStorage->GetRotationMatrices();
-	Matrix* worldMatrices = dataStorage->GetWorldMatrices();
-	int* modelIndices = dataStorage->GetModelIndices();
-	int* textureIndices = dataStorage->GetTextureIndices();
+	ObjectData* objectData = sceneManager->GetData()->GetObjectData();
+	Vector3f* positions = objectData->positions;
+	Vector3f* scales = objectData->scales;
+	Math::Matrix* rotationMatrices = objectData->rotationMatrices;
+	Math::Matrix* worldMatrices = objectData->worldMatrices;
+	int* modelIndices = objectData->modelIndices;
+	int* textureIndices = objectData->textureIndices;
 
+
+	const unsigned int nObjX = 127;
+	const unsigned int nObjZ = 64;
+	Vector3f offset(4, 0, 4);
+	Vector3f startPos = Vector3f(static_cast<float>(nObjX) * offset.x, 0.0f, static_cast<float>(nObjZ) * offset.z) * -0.5f;
 
 	for (int i = 0; i < nObjX; i++)
 	{
@@ -101,33 +104,62 @@ bool Game::Initialize()
 		{
 			int modelIndex = j % 2 == 0 ? turretIndex : characterIndex;
 			int textureIndex = j % 2 == 0 ? turretTextureIndex : characterTextureIndex;
+			/*int modelIndex = sphereIndex;
+			int textureIndex = sphereTextureIndex;*/
 
-			Object* object = sceneManager->CreateObject();
+			ObjectV4* object = sceneManager->CreateObject();
 			if (!object)
 				return false;
 			m_objects.push_back(object);
 			
 			*object->positionPtr = startPos + Vector3f(offset.x * i, offset.y * 0, offset.z * j);
 			*object->scalePtr = Vector3f(1, 1, 1);
-			*object->worldMatrixPtr = Matrix::World(*object->positionPtr, *object->rotationMatrixPtr, *object->scalePtr);
+			*object->worldMatrixPtr = Math::Matrix::World(*object->positionPtr, *object->rotationMatrixPtr, *object->scalePtr);
 			*object->modelIndexPtr = modelIndex;
 			*object->textureIndexPtr = textureIndex;
+			*object->movementPtr = Vector3f(0, 0, 0);
+			*object->rotationAxisPtr = Vector3f(1, 0, 0);
+			*object->rotationSpeedPtr = 1.0f;
 		}
 	}
 
-	//sceneManager->SortObjectArray();
-
-	/*int objIndex = sceneManager->CreateObject();
-	if (objIndex == -1)
+	ObjectV4* object = sceneManager->CreateObject();
+	if (!object)
 		return false;
-	ObjectV3* obj = sceneManager->GetObjectV3(objIndex);
-	obj->SetModel(cubeIndex);
-	obj->SetTexture(cubeTextureIndex);
+	m_objects.push_back(object);
 
-	obj->SetPosition(Vector3f(0, -10, 0));
-	obj->SetScale(Vector3f(100.0f, 0.01f, 100.0f));*/
+	*object->positionPtr = Vector3f(0, -15, 0);
+	*object->scalePtr = Vector3f(nObjX * 2, 1, nObjZ * 2);
+	*object->worldMatrixPtr = Math::Matrix::World(*object->positionPtr, *object->rotationMatrixPtr, *object->scalePtr);
+	*object->modelIndexPtr = cubeRedIndex;
+	*object->textureIndexPtr = cubeRedTextureIndex;
+	*object->movementPtr = Vector3f(0, 0, 0);
+	*object->rotationAxisPtr = Vector3f(1, 0, 0);
+	*object->rotationSpeedPtr = 0.0f;
 
 
+
+
+
+
+	/*
+	Create lights
+	*/
+	LightData* lightData = sceneManager->GetData()->GetLightData();
+	lightData->ambientColor = Vector3f(0.05f, 0.05f, 0.05f);
+	//lightData->ambientColor = Vector3f(1.0f, 1.0f, 1.0f);
+
+	for (unsigned int i = 0; i < 3U; i++)
+	{
+		Light* light = sceneManager->GetData()->CreateLight();
+		if (!light)
+			return false;
+		*light->diffuseColorPtr = Vector3f(1, 1, 1);
+		*light->dropoffPtr = -0.01f;
+	}
+	lightData->positions[0] = Vector3f(-100, 0, 0);
+	lightData->positions[1] = Vector3f(0, 0, 0);
+	lightData->positions[2] = Vector3f(100, 0, 0);
 
 	m_GUIhelloWorldIndex = m_engine.GetGUIManager()->CreateText("hello world", Vector2i(0, 100), Fonts::COMIC_SANS_MS_16);
 	if (m_GUIhelloWorldIndex == -1)
@@ -141,7 +173,8 @@ bool Game::Initialize()
 void Game::Run()
 {
 	SceneManagerV3* sceneManager = m_engine.GetSceneManager();
-	DataStorage* dataStorage = sceneManager->GetObjectData();
+	DataStorage* dataStorage = sceneManager->GetData();
+	ObjectData* objectData = dataStorage->GetObjectData();
 
 	while (true)
 	{
@@ -167,23 +200,121 @@ void Game::Run()
 			sceneManager->SetObjectModel(5000, "generator.obj");
 		}*/
 
-		unsigned int n = m_objects.size();
-
-		Matrix rotationMatrix = Matrix::Rotation(Vector3f(0, 1, 0), 0.01f);
-
-		Vector3f* positions = dataStorage->GetPositions();
-		Matrix* rotationMatrices = dataStorage->GetRotationMatrices();
-		Vector3f* scales = dataStorage->GetScales();
-		Matrix* worldMatrices = dataStorage->GetWorldMatrices();
-
-		for (unsigned int i = 0; i < n; i++)
-		{
-			rotationMatrices[i] = rotationMatrix * rotationMatrices[i];
-			worldMatrices[i] = Matrix::World(positions[i], rotationMatrices[i], scales[i]).GetTranspose();
-		}
 
 		if (!m_engine.Update())
 			break;
+		
+		if (m_engine.GetInput()->IsKeyDown('E'))
+		{
+			CameraV3* camera = m_engine.GetCameraManager()->GetCamera(m_cameraIndex);
+			Math::Ray ray = Math::CalculatePickingRay(camera->viewMatrix, camera->projectionMatrix, m_engine.GetInput()->MousePosition(), m_engine.GetWindowSize());
+	
+			objectData->positions[0] = ray.origin + ray.direction * 10;
+
+			Math::Sphere sphere;
+			Math::OBB obb;
+			sphere.position = objectData->positions[0];
+			obb.center = objectData->positions[m_objects.size() - 1];
+			obb.halfSides[0] = objectData->scales[m_objects.size() - 1].x;
+			obb.halfSides[1] = objectData->scales[m_objects.size() - 1].y;
+			obb.halfSides[2] = objectData->scales[m_objects.size() - 1].z;
+			if (Math::Collision::SphereVsOBB(sphere, obb))
+			{
+				objectData->textureIndices[0] = 0;
+			}
+			else
+			{
+				objectData->textureIndices[0] = 1;
+			}
+		}
+		
+
+
+
+
+		if (m_engine.GetInput()->IsKeyPressed('G'))
+		{
+			for (unsigned int i = 0; i < 3; i++)
+			{
+				dataStorage->GetLightData()->positions[i] = Vector3f(0, 10, 0);
+			}
+			dataStorage->GetLightData()->diffuseColors[0] = Vector3f(1, 0, 0);
+			dataStorage->GetLightData()->diffuseColors[1] = Vector3f(0, 1, 0);
+			dataStorage->GetLightData()->diffuseColors[2] = Vector3f(0, 0, 1);
+		}
+
+		if (m_engine.GetInput()->IsKeyPressed('R'))
+		{
+			Vector3f* positions = objectData->positions;
+			Vector3f* movements = objectData->movements;
+			unsigned int nrOfObjects = dataStorage->GetNrOfObjects();
+			for (unsigned int i = 0; i < nrOfObjects; i++)
+			{
+				positions[i] = Vector3f(0, 0, 0);
+				movements[i] = Vector3f(0, 0, 0);
+			}
+		}
+		if (m_engine.GetInput()->IsKeyPressed('T'))
+		{
+			Vector3f* movements = objectData->movements;
+			Vector3f* rotationAxises = objectData->rotationAxises;
+
+			unsigned int nrOfObjects = dataStorage->GetNrOfObjects();
+			for (unsigned int i = 0; i < nrOfObjects; i++)
+			{
+				float randX = (static_cast<float>(rand() % 1000) * 0.002f) - 1.0f;
+				float randY = (static_cast<float>(rand() % 1000) * 0.002f) - 1.0f;
+				float randZ = (static_cast<float>(rand() % 1000) * 0.002f) - 1.0f;
+
+				movements[i] = Vector3f(randX, randY, randZ).normalized() * 10.0f;
+				rotationAxises[i] = movements[i].crossLH(Vector3f(0, 1, 0));
+			}
+		}
+
+		if (m_engine.GetInput()->IsKeyPressed(VK_LBUTTON))
+		{
+			unsigned int nrOfObjects = dataStorage->GetNrOfObjects();
+			if (nrOfObjects > 0)
+			{
+				CameraV3* camera = m_engine.GetCameraManager()->GetCamera(m_cameraIndex);
+				Math::Ray ray = Math::CalculatePickingRay(camera->viewMatrix, camera->projectionMatrix, m_engine.GetInput()->MousePosition(), m_engine.GetWindowSize());
+
+				Vector3f* positions = objectData->positions;
+				Vector3f* movements = objectData->movements;
+				Vector3f* rotationAxises = objectData->rotationAxises;
+				Math::Sphere sphere;
+
+				srand(time(NULL));
+
+				float minDistance = INFINITY;
+				int minDistanceIndex = -1;
+
+				// Find the closest intersection
+				for (unsigned int i = 0; i < nrOfObjects; i++)
+				{
+					sphere.position = positions[i];
+
+					Math::Collision::RayIntersection intersection = Math::Collision::RayVsSphere(ray, sphere);
+					if (intersection.collisionOccured)
+					{
+						if (intersection.distance < minDistance)
+						{
+							minDistance = intersection.distance;
+							minDistanceIndex = i;
+						}
+					}
+				}
+
+				// Change the movement of the closest intersection, if any
+				if (minDistanceIndex != -1)
+				{
+					float randX = (static_cast<float>(rand() % 1000) * 0.002f) - 1.0f;
+					float randY = (static_cast<float>(rand() % 1000) * 0.002f) - 1.0f;
+					float randZ = (static_cast<float>(rand() % 1000) * 0.002f) - 1.0f;
+					movements[minDistanceIndex] = Vector3f(randX, randY, randZ).normalized() * 10.0f;
+				}
+			}
+		}
 
 		m_engine.Clear(0, 0, 0, 1);
 		m_engine.Render();

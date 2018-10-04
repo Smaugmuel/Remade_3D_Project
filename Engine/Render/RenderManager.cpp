@@ -2,7 +2,7 @@
 
 //#include "../FrameWork/Direct3D.hpp"
 //#include "../Core/Engine.hpp"
-#include "../FrameWork/FrameWork.hpp"
+//#include "../FrameWork/FrameWork.hpp"
 
 #include "../Buffers/ConstantBufferStorage.hpp"
 #include "Shaders/ShaderStorage.hpp"
@@ -10,12 +10,12 @@
 
 #include "../Objects/Models/SingleColorModel.hpp"
 #include "../Objects/Models/TextureModel.hpp"
-#include "../Objects/Models/ModelStorage.hpp"
+//#include "../Objects/Models/ModelStorage.hpp"
 
 #include "../Objects/Objects/SingleColorObject.hpp"
 #include "../Objects/Objects/TextureObject.hpp"
 
-#include "../Objects/Textures/TextureStorage.hpp"
+//#include "../Objects/Textures/TextureStorage.hpp"
 
 #include <algorithm>
 
@@ -37,7 +37,7 @@ void RenderManager::Reset()
 
 void RenderManager::RenderTexturedObjects()
 {
-	ID3D11DeviceContext* deviceContext = FrameWork::Get()->GetDirect3D()->GetDeviceContext();
+	/*ID3D11DeviceContext* deviceContext = FrameWork::Get()->GetDirect3D()->GetDeviceContext();
 	//ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
 	TextureStorage* textureStorage = TextureStorage::Get();
 	ModelStorage* modelStorage = ModelStorage::Get();
@@ -64,11 +64,11 @@ void RenderManager::RenderTexturedObjects()
 				model->Render();
 			}
 		}
-	}
+	}*/
 }
 void RenderManager::RenderSingleColoredObjects()
 {
-	ID3D11DeviceContext* deviceContext = FrameWork::Get()->GetDirect3D()->GetDeviceContext();
+	/*ID3D11DeviceContext* deviceContext = FrameWork::Get()->GetDirect3D()->GetDeviceContext();
 	//ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
 	ModelStorage* modelStorage = ModelStorage::Get();
 	ConstantBufferStorage* bufferStorage = ConstantBufferStorage::Get();
@@ -88,7 +88,7 @@ void RenderManager::RenderSingleColoredObjects()
 			bufferStorage->SetVSColor(deviceContext, object->GetColor());
 			model->Render();
 		}
-	}
+	}*/
 }
 
 void RenderManager::AddTexturedObject(TextureObject * obj)

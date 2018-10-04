@@ -30,19 +30,32 @@ struct Vector3f final
 	}
 	Vector3f& operator+=(const Vector3f& right)
 	{
-		return *this = *this + right;
+		x += right.x;
+		y += right.y;
+		z += right.z;
+		return *this;
 	}
 	Vector3f& operator-=(const Vector3f& right)
 	{
-		return *this = *this - right;
+		x -= right.x;
+		y -= right.y;
+		z -= right.z;
+		return *this;
 	}
 	Vector3f& operator*=(float coefficient)
 	{
-		return *this = *this * coefficient;
+		x *= coefficient;
+		y *= coefficient;
+		z *= coefficient;
+		return *this;
 	}
 	Vector3f& operator/=(float coefficient)
 	{
-		return *this = *this / coefficient;
+		float temp = 1.0f / coefficient;
+		x *= temp;
+		y *= temp;
+		z *= temp;
+		return *this;
 	}
 
 	Vector3f operator+(const Vector3f& right) const
@@ -59,7 +72,8 @@ struct Vector3f final
 	}
 	Vector3f operator/(float coefficient) const
 	{
-		return coefficient == 0.0f ? *this : *this * (1.0f / coefficient);
+		float temp = 1.0f / coefficient;
+		return Vector3f(x * temp, y * temp, z * temp);
 	}
 
 	bool operator==(const Vector3f& right) const
@@ -69,15 +83,22 @@ struct Vector3f final
 
 	Vector3f normalized() const
 	{
-		return *this / length();
+		float temp = 1.0f / sqrtf(x * x + y * y + z * z);
+		return Vector3f(x * temp, y * temp, z * temp);
 	}
 	void normalize()
 	{
-		*this = normalized();
+		float temp = 1.0f / sqrtf(x * x + y * y + z * z);
+		x *= temp;
+		y *= temp;
+		z *= temp;
 	}
 	void setLength(float length)
 	{
-		*this = normalized() * length;
+		float temp = length / sqrtf(x * x + y * y + z * z);
+		x *= temp;
+		y *= temp;
+		z *= temp;
 	}
 
 	float lengthSquared() const
@@ -86,8 +107,7 @@ struct Vector3f final
 	}
 	float length() const
 	{
-
-		return sqrtf(lengthSquared());
+		return sqrtf(x*x + y * y + z * z);
 	}
 
 	float dot(const Vector3f& right) const

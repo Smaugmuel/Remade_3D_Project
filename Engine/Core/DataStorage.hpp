@@ -1,26 +1,65 @@
 #ifndef DATA_STORAGE_HPP
 #define DATA_STORAGE_HPP
-#include "../Math/Vector3.hpp"
-#include "../Math/Matrix.hpp"
+//#include "../Math/Vector3.hpp"
+//#include "../Math/Matrix.hpp"
+#include "../Math/Math.hpp"
 #include <memory>
 
-#define MAX_NR_OF_DATA_INSTANCES 8192U
+// Because of the light buffer, "only" 2047 lights can exist
+// 2048 lights could be stored, but that would leave no room for the ambient color and light counter
+#define MAX_NR_OF_LIGHT_INSTANCES 2047U
+#define MAX_NR_OF_OBJECT_INSTANCES 8192U
 
-struct Object
+struct ObjectV4
 {
 	int index = -1;
 	Vector3f* positionPtr = nullptr;
 	Vector3f* scalePtr = nullptr;
-	Matrix* rotationMatrixPtr = nullptr;
-	Matrix* worldMatrixPtr = nullptr;
+	Math::Matrix* rotationMatrixPtr = nullptr;
+	Math::Matrix* worldMatrixPtr = nullptr;
 	int* modelIndexPtr = nullptr;
 	int* textureIndexPtr = nullptr;
+
+	Vector3f* movementPtr = nullptr;
+	Vector3f* rotationAxisPtr = nullptr;
+	float* rotationSpeedPtr = nullptr;
+};
+struct Light
+{
+	int index = -1;
+	Vector3f* positionPtr = nullptr;
+	Vector3f* diffuseColorPtr = nullptr;
+	float* dropoffPtr = nullptr;
+};
+struct ObjectData
+{
+	Vector3f positions[MAX_NR_OF_OBJECT_INSTANCES];
+	Vector3f scales[MAX_NR_OF_OBJECT_INSTANCES];
+	Math::Matrix rotationMatrices[MAX_NR_OF_OBJECT_INSTANCES];
+	Math::Matrix worldMatrices[MAX_NR_OF_OBJECT_INSTANCES];
+	int modelIndices[MAX_NR_OF_OBJECT_INSTANCES];
+	int textureIndices[MAX_NR_OF_OBJECT_INSTANCES];
+
+	// Movements
+	Vector3f movements[MAX_NR_OF_OBJECT_INSTANCES];
+	Vector3f rotationAxises[MAX_NR_OF_OBJECT_INSTANCES];
+	float rotationSpeeds[MAX_NR_OF_OBJECT_INSTANCES];
+
+	ObjectV4 objects[MAX_NR_OF_OBJECT_INSTANCES];
+};
+struct LightData
+{
+	Vector3f positions[MAX_NR_OF_LIGHT_INSTANCES];
+	Vector3f diffuseColors[MAX_NR_OF_LIGHT_INSTANCES];
+	float dropoffs[MAX_NR_OF_LIGHT_INSTANCES];
+	Light lights[MAX_NR_OF_LIGHT_INSTANCES];
+	Vector3f ambientColor;
 };
 
 class DataStorage
 {
 public:
-	DataStorage() : m_nrOfObjects(0)
+	DataStorage()
 	{
 		m_data = std::make_unique<Data>();
 
@@ -29,111 +68,150 @@ public:
 	{
 	}
 
-	Object* CreateObject()
+	ObjectV4* CreateObject()
 	{
-		if (m_nrOfObjects == MAX_NR_OF_DATA_INSTANCES)
+		Data* data = m_data.get();
+		if (data->nrOfObjects == MAX_NR_OF_OBJECT_INSTANCES)
 		{
 			return nullptr;
 		}
 
-		Data* data = m_data.get();
-		Object* object = &data->objects[m_nrOfObjects];
-		object->index = m_nrOfObjects;
-		object->modelIndexPtr =		&data->modelIndices[m_nrOfObjects];
-		object->textureIndexPtr =	&data->textureIndices[m_nrOfObjects];
-		object->positionPtr =		&data->positions[m_nrOfObjects];
-		object->scalePtr =			&data->scales[m_nrOfObjects];
-		object->rotationMatrixPtr =	&data->rotationMatrices[m_nrOfObjects];
-		object->worldMatrixPtr =	&data->worldMatrices[m_nrOfObjects];
+		ObjectV4* object = &data->objectData.objects[data->nrOfObjects];
+		object->index = data->nrOfObjects;
+		object->positionPtr =		&data->objectData.positions[data->nrOfObjects];
+		object->scalePtr =			&data->objectData.scales[data->nrOfObjects];
+		object->rotationMatrixPtr =	&data->objectData.rotationMatrices[data->nrOfObjects];
+		object->worldMatrixPtr =	&data->objectData.worldMatrices[data->nrOfObjects];
+		object->modelIndexPtr =		&data->objectData.modelIndices[data->nrOfObjects];
+		object->textureIndexPtr =	&data->objectData.textureIndices[data->nrOfObjects];
 		
-		m_nrOfObjects++;
+		object->movementPtr = &data->objectData.movements[data->nrOfObjects];
+		object->rotationAxisPtr = &data->objectData.rotationAxises[data->nrOfObjects];
+		object->rotationSpeedPtr = &data->objectData.rotationSpeeds[data->nrOfObjects];
+
+		data->nrOfObjects++;
 
 		return object;
+	}
+	Light* CreateLight()
+	{
+		Data* data = m_data.get();
+		if (data->nrOfLights == MAX_NR_OF_LIGHT_INSTANCES)
+		{
+			return nullptr;
+		}
+
+		Light* light = &data->lightData.lights[data->nrOfLights];
+		light->index = data->nrOfLights;
+		light->positionPtr = &data->lightData.positions[data->nrOfLights];
+		light->diffuseColorPtr = &data->lightData.diffuseColors[data->nrOfLights];
+		light->dropoffPtr = &data->lightData.dropoffs[data->nrOfLights];
+
+		data->nrOfLights++;
+
+		return light;
 	}
 
 	bool RemoveObject(int index)
 	{
-		if (index < 0 || index >= static_cast<int>(m_nrOfObjects))
+		Data* data = m_data.get();
+		if (index < 0 || index >= static_cast<int>(data->nrOfObjects))
 			return false;
 
-
-		Data* data = m_data.get();
-		Object* objectToMove = &data->objects[m_nrOfObjects - 1];
+		ObjectV4* objectToMove = &data->objectData.objects[data->nrOfObjects - 1];
 
 		// Move data
-		data->positions[index] = data->positions[m_nrOfObjects - 1];
-		data->scales[index] = data->scales[m_nrOfObjects - 1];
-		data->rotationMatrices[index] = data->rotationMatrices[m_nrOfObjects - 1];
-		data->worldMatrices[index] = data->worldMatrices[m_nrOfObjects - 1];
-		data->modelIndices[index] = data->modelIndices[m_nrOfObjects - 1];
-		data->textureIndices[index] = data->textureIndices[m_nrOfObjects - 1];
+		data->objectData.positions[index] = data->objectData.positions[data->nrOfObjects - 1];
+		data->objectData.scales[index] = data->objectData.scales[data->nrOfObjects - 1];
+		data->objectData.rotationMatrices[index] = data->objectData.rotationMatrices[data->nrOfObjects - 1];
+		data->objectData.worldMatrices[index] = data->objectData.worldMatrices[data->nrOfObjects - 1];
+		data->objectData.modelIndices[index] = data->objectData.modelIndices[data->nrOfObjects - 1];
+		data->objectData.textureIndices[index] = data->objectData.textureIndices[data->nrOfObjects - 1];
+		data->objectData.movements[index] = data->objectData.movements[data->nrOfObjects - 1];
+		data->objectData.rotationAxises[index] = data->objectData.rotationAxises[data->nrOfObjects - 1];
+		data->objectData.rotationSpeeds[index] = data->objectData.rotationSpeeds[data->nrOfObjects - 1];
 
 		// Move pointers of object to their moved data
-		objectToMove->positionPtr = &data->positions[index];
-		objectToMove->scalePtr = &data->scales[index];
-		objectToMove->rotationMatrixPtr = &data->rotationMatrices[index];
-		objectToMove->worldMatrixPtr = &data->worldMatrices[index];
-		objectToMove->modelIndexPtr = &data->modelIndices[index];
-		objectToMove->textureIndexPtr = &data->textureIndices[index];
+		objectToMove->positionPtr = &data->objectData.positions[index];
+		objectToMove->scalePtr = &data->objectData.scales[index];
+		objectToMove->rotationMatrixPtr = &data->objectData.rotationMatrices[index];
+		objectToMove->worldMatrixPtr = &data->objectData.worldMatrices[index];
+		objectToMove->modelIndexPtr = &data->objectData.modelIndices[index];
+		objectToMove->textureIndexPtr = &data->objectData.textureIndices[index];
+		objectToMove->movementPtr = &data->objectData.movements[index];
+		objectToMove->rotationAxisPtr = &data->objectData.rotationAxises[index];
+		objectToMove->rotationSpeedPtr = &data->objectData.rotationSpeeds[index];
 
 		// Change object index
 		objectToMove->index = index;
 
-		m_nrOfObjects--;
+		data->nrOfObjects--;
+
+		return true;
+	}
+	bool RemoveLight(int index)
+	{
+		Data* data = m_data.get();
+		if (index < 0 || index >= static_cast<int>(data->nrOfLights))
+			return false;
+
+		Light* lightToMove = &data->lightData.lights[data->nrOfLights - 1];
+
+		// Move data
+		data->lightData.positions[index] = data->lightData.positions[data->nrOfLights - 1];
+		data->lightData.diffuseColors[index] = data->lightData.diffuseColors[data->nrOfLights - 1];
+		data->lightData.dropoffs[index] = data->lightData.dropoffs[data->nrOfLights - 1];
+
+		// Move pointers of light to their moved data
+		lightToMove->positionPtr = &data->lightData.positions[index];
+		lightToMove->diffuseColorPtr = &data->lightData.diffuseColors[index];
+		lightToMove->dropoffPtr = &data->lightData.dropoffs[index];
+
+		// Change light index
+		lightToMove->index = index;
+
+		data->nrOfLights--;
 
 		return true;
 	}
 
-	Vector3f* GetPositions()
+	ObjectData* GetObjectData()
 	{
-		return m_data->positions;
+		return &m_data->objectData;
 	}
-	Vector3f* GetScales()
+	LightData* GetLightData()
 	{
-		return m_data->scales;
-	}
-	Matrix* GetRotationMatrices()
-	{
-		return m_data->rotationMatrices;
-	}
-	Matrix* GetWorldMatrices()
-	{
-		return m_data->worldMatrices;
-	}
-	int* GetModelIndices()
-	{
-		return m_data->modelIndices;
-	}
-	int* GetTextureIndices()
-	{
-		return m_data->textureIndices;
+		return &m_data->lightData;
 	}
 
-	Object* GetObjectPtr(int index)
+	ObjectV4* GetObjectPtr(int index)
 	{
-		return index < 0 || index >= static_cast<int>(m_nrOfObjects) ? nullptr : &m_data->objects[index];
+		return index < 0 || index >= static_cast<int>(m_data->nrOfObjects) ? nullptr : &m_data->objectData.objects[index];
+	}
+	Light* GetLightPtr(int index)
+	{
+		return index < 0 || index >= static_cast<int>(m_data->nrOfLights) ? nullptr : &m_data->lightData.lights[index];
 	}
 
-	unsigned int GetNrOfObjects() const noexcept
+	unsigned int GetNrOfObjects() const
 	{
-		return m_nrOfObjects;
+		return m_data->nrOfObjects;
+	}
+	unsigned int GetNrOfLights() const
+	{
+		return m_data->nrOfLights;
 	}
 
 private:
 	struct Data
 	{
-		Vector3f positions[MAX_NR_OF_DATA_INSTANCES];
-		Vector3f scales[MAX_NR_OF_DATA_INSTANCES];
-		Matrix rotationMatrices[MAX_NR_OF_DATA_INSTANCES];
-		Matrix worldMatrices[MAX_NR_OF_DATA_INSTANCES];
-		int modelIndices[MAX_NR_OF_DATA_INSTANCES];
-		int textureIndices[MAX_NR_OF_DATA_INSTANCES];
-		Object objects[MAX_NR_OF_DATA_INSTANCES];
+		ObjectData objectData;
+		LightData lightData;
+		unsigned int nrOfObjects = 0U;
+		unsigned int nrOfLights = 0U;
 	};
 
 	std::unique_ptr<Data> m_data;
-
-	unsigned int m_nrOfObjects;
 };
 
 #endif

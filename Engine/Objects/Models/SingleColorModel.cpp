@@ -7,7 +7,7 @@
 #include "../../Buffers/Buffers.hpp"
 //#include "../../FrameWork/Direct3D.hpp"
 //#include "../../Core/Engine.hpp"
-#include "../../FrameWork/FrameWork.hpp"
+//#include "../../FrameWork/FrameWork.hpp"
 
 SingleColorModel::SingleColorModel(FrameWork* frameWork) :
 	Model(frameWork),
@@ -28,7 +28,7 @@ bool SingleColorModel::LoadFromFile(const char* fileName)
 	std::ifstream inFile(fileName);
 	std::string line, type;
 
-	std::vector<DirectX::XMFLOAT3> positions;
+	/*std::vector<DirectX::XMFLOAT3> positions;
 	std::vector<DirectX::XMFLOAT3> normals;
 
 	std::vector<SingleColorVertex> vertices;
@@ -80,7 +80,8 @@ bool SingleColorModel::LoadFromFile(const char* fileName)
 				index++;
 			}
 	
-			vertices.push_back(SingleColorVertex(positions[positionIndex[0]], normals[normalIndex[0]], { 1, 0, 0 } /* m_material->GetAmbient() */));
+			vertices.push_back(SingleColorVertex(positions[positionIndex[0]], normals[normalIndex[0]], { 1, 0, 0 }));
+			//vertices.push_back(SingleColorVertex(positions[positionIndex[0]], normals[normalIndex[0]], { 1, 0, 0 } m_material->GetAmbient()));
 			vertices.push_back(SingleColorVertex(positions[positionIndex[1]], normals[normalIndex[1]], { 1, 0, 0 }));
 			vertices.push_back(SingleColorVertex(positions[positionIndex[2]], normals[normalIndex[2]], { 1, 0, 0 }));
 			vertices.push_back(SingleColorVertex(positions[positionIndex[2]], normals[normalIndex[2]], { 1, 0, 0 }));
@@ -97,13 +98,13 @@ bool SingleColorModel::LoadFromFile(const char* fileName)
 	for (unsigned int i = 0; i < m_nrOfVerts; i++)
 	{
 		m_vertices[i] = vertices[i];
-	}
+	}*/
 
 	return true;
 }
 bool SingleColorModel::CreateVertexBuffer()
 {
-	m_vertexBuffer = Buffers::CreateVertexBuffer(m_frameWork->GetDirect3D()->GetDevice(), m_nrOfVerts * sizeof(SingleColorVertex), m_vertices);
+	//m_vertexBuffer = Buffers::CreateVertexBuffer(m_frameWork->GetDirect3D()->GetDevice(), m_nrOfVerts * sizeof(SingleColorVertex), m_vertices);
 	//m_vertexBuffer = Buffers::CreateVertexBuffer(Direct3D::Get()->GetDevice(), m_nrOfVerts * sizeof(SingleColorVertex), m_vertices);
 	
 	//m_vertexBuffer = Buffers::CreateDynamicVertexBuffer(Direct3D::Get()->GetDevice(), m_nrOfVerts * sizeof(SingleColorVertex), m_vertices);
@@ -143,13 +144,13 @@ bool SingleColorModel::CreateOBB()
 
 void SingleColorModel::SetupRender()
 {
-	ID3D11DeviceContext* deviceContext = m_frameWork->GetDirect3D()->GetDeviceContext();
+	//ID3D11DeviceContext* deviceContext = m_frameWork->GetDirect3D()->GetDeviceContext();
 	//ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
 	unsigned int vertexSize = sizeof(SingleColorVertex);
 	unsigned int offset = 0;
 
-	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &vertexSize, &offset);
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	/*deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &vertexSize, &offset);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);*/
 }
 
 //Model* SingleColorModel::Create(ID3D11Device* device, const char* fileName)

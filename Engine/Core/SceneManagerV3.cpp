@@ -3,6 +3,29 @@
 #include "ModelManager.hpp"
 #include "MaterialManager.hpp"
 
+#include <thread>
+
+#include <chrono>
+typedef std::chrono::high_resolution_clock Clock;
+typedef std::chrono::time_point<std::chrono::steady_clock> Time;
+
+
+void UpdateObjects(float dt, unsigned int startIndex, unsigned int endIndex, Vector3f* p, Vector3f* m, Math::Matrix* rm, Vector3f* ra, float* rs, Vector3f* s, Math::Matrix* wm)
+{
+	for (unsigned int i = startIndex; i < endIndex; i++)
+	{
+		p[i] += m[i] * dt;
+
+		// Global rotation
+		rm[i] *= Math::Matrix::Rotation(ra[i], rs[i] * dt);
+
+		// Local rotation
+		//rotationMatrices[i] = rotationMatrices[i] * Matrix::Rotation(rotationAxises[i], rotationSpeeds[i] * dt);
+		wm[i] = Math::Matrix::World(p[i], rm[i], s[i]);
+	}
+}
+
+
 SceneManagerV3::SceneManagerV3() :
 	m_modelManager(nullptr), m_materialManager(nullptr), m_frameWorkManager(nullptr)
 {
@@ -21,7 +44,7 @@ bool SceneManagerV3::Initialize(ModelManager * modelManager, MaterialManager * m
 	/*
 	Initialize buffers
 	*/
-	m_viewProjBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(Matrix));
+	m_viewProjBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(Math::Matrix));
 	m_lightBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(LightBuffer));
 	if (m_viewProjBufferIndex == -1 || m_lightBufferIndex == -1)
 		return false;
@@ -30,34 +53,112 @@ bool SceneManagerV3::Initialize(ModelManager * modelManager, MaterialManager * m
 	Initialize matrix buffer
 	*/
 	m_indexBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(int) * 4);
-	m_matrixBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(Matrix) * NR_OF_MATRICES_IN_BUFFER);
+	m_matrixBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(Math::Matrix) * NR_OF_MATRICES_IN_BUFFER);
 	if (m_matrixBufferIndex == -1 || m_indexBufferIndex == -1)
 		return false;
-
-	/*
-	Initialize light settings
-	*/
-	LightBuffer lightBuffer;
-	lightBuffer.ambientColor = Vector3f(0.05f, 0.05f, 0.05f);
-	lightBuffer.nrOfLights = 2U;// MAX_NR_OF_LIGHTS;//min(max(4, 0), MAX_NR_OF_LIGHTS);
-
-	lightBuffer.lights[0].position = Vector3f(-50.0f, 10.0f, -50.0f);
-	lightBuffer.lights[0].diffuseColor = Vector3f(1, 1, 1);
-	lightBuffer.lights[0].dropoff = -0.01f;
-	lightBuffer.lights[1].position = Vector3f(100.0f, 10.0f, 100.0f);
-	lightBuffer.lights[1].diffuseColor = Vector3f(1, 1, 1);
-	lightBuffer.lights[1].dropoff = -0.01f;
-
-
-	/*
-	Map light data to buffer (is done here because lights don't change (yet) )
-	*/
-	m_frameWorkManager->GetConstantBufferManager()->MapDataToBuffer(m_lightBufferIndex, &lightBuffer);
 
 	return true;
 }
 
+void SceneManagerV3::Update(float dt)
+{
+	Time t1, t2;
+	t1 = Clock::now();
+
+	ObjectData* objectData = m_dataStorage.GetObjectData();
+
+	unsigned int nThreads = 4U;
+	unsigned int nObjsPerThread = m_dataStorage.GetNrOfObjects() / nThreads;
+
+	/*
+	Launch 3 additional threads
+	*/
+	std::thread threads[3];
+	for (unsigned int i = 0; i < nThreads - 1; i++)
+	{
+		threads[i] = std::thread(
+			UpdateObjects,
+			dt,
+			nObjsPerThread * i,
+			nObjsPerThread * (i + 1),
+			objectData->positions,
+			objectData->movements,
+			objectData->rotationMatrices,
+			objectData->rotationAxises,
+			objectData->rotationSpeeds,
+			objectData->scales,
+			objectData->worldMatrices
+		);
+	}
+	
+	/*
+	Run main thread
+	*/
+	UpdateObjects(
+		dt,
+		//0U,
+		nObjsPerThread * (nThreads - 1),
+		m_dataStorage.GetNrOfObjects(),
+		objectData->positions,
+		objectData->movements,
+		objectData->rotationMatrices,
+		objectData->rotationAxises,
+		objectData->rotationSpeeds,
+		objectData->scales,
+		objectData->worldMatrices
+	);
+
+	for (unsigned int i = 0; i < nThreads - 1; i++)
+	{
+		threads[i].join();
+	}
+
+	t2 = Clock::now();
+
+	long long ns = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count();
+	double s = static_cast<double>(ns * 0.000000001);
+
+	int apa = 0;
+
+
+	/*unsigned int nrOfObjects = m_dataStorage.GetNrOfObjects();
+
+	ObjectData* objectData = m_dataStorage.GetObjectData();
+	
+	Vector3f* positions = objectData->positions;
+	Vector3f* movements = objectData->movements;
+	
+	Math::Matrix* rotationMatrices = objectData->rotationMatrices;
+	Vector3f* rotationAxises = objectData->rotationAxises;
+	float* rotationSpeeds = objectData->rotationSpeeds;
+
+	Vector3f* scales = objectData->scales;
+
+	Math::Matrix* worldMatrices = objectData->worldMatrices;
+
+	
+
+	for (unsigned int i = 0; i < nrOfObjects; i++)
+	{
+		positions[i] += movements[i] * dt;
+
+		// Global rotation
+		rotationMatrices[i] *= Math::Matrix::Rotation(rotationAxises[i], rotationSpeeds[i] * dt);
+
+		// Local rotation
+		//rotationMatrices[i] = rotationMatrices[i] * Matrix::Rotation(rotationAxises[i], rotationSpeeds[i] * dt);
+		worldMatrices[i] = Math::Matrix::World(positions[i], rotationMatrices[i], scales[i]);
+	}*/
+}
+
 void SceneManagerV3::Render()
+{
+	RenderGeometryPass();
+	RenderLightPass();
+	RenderFinalPass();
+}
+
+void SceneManagerV3::RenderGeometryPass()
 {
 	ConstantBufferManager* constantBufferManager = m_frameWorkManager->GetConstantBufferManager();
 	TextureManager* textureManager = m_frameWorkManager->GetTextureManager();
@@ -83,17 +184,18 @@ void SceneManagerV3::Render()
 	*/
 	constantBufferManager->SetConstantBufferToVertexShader(m_viewProjBufferIndex, 0);
 
-	if (m_dataStorage.GetNrOfObjects() > 0)
+	unsigned int nrOfObjects = m_dataStorage.GetNrOfObjects();
+	if (nrOfObjects > 0)
 	{
-		unsigned int nrOfFullMatrixBuffers = m_dataStorage.GetNrOfObjects() / NR_OF_MATRICES_IN_BUFFER;
-		unsigned int nrOfRemainingObjects = m_dataStorage.GetNrOfObjects() - nrOfFullMatrixBuffers * NR_OF_MATRICES_IN_BUFFER;
+		unsigned int nrOfFullMatrixBuffers = nrOfObjects / NR_OF_MATRICES_IN_BUFFER;
+		unsigned int nrOfRemainingObjects = nrOfObjects - nrOfFullMatrixBuffers * NR_OF_MATRICES_IN_BUFFER;
 
-		int* textureIndices = m_dataStorage.GetTextureIndices();
-		int* modelIndices = m_dataStorage.GetModelIndices();
-		Matrix* worldMatrices = m_dataStorage.GetWorldMatrices();
-		//int* objectIndices = m_dataStorage.GetObjectIndices();
+		ObjectData* objectData = m_dataStorage.GetObjectData();
+		int* textureIndices = objectData->textureIndices;
+		int* modelIndices = objectData->modelIndices;
+		Math::Matrix* worldMatrices = objectData->worldMatrices;
 
-		Matrix matrixBuffer[NR_OF_MATRICES_IN_BUFFER];
+		Math::Matrix matrixBuffer[NR_OF_MATRICES_IN_BUFFER];
 
 		TexturedModel* model = nullptr;
 
@@ -106,13 +208,13 @@ void SceneManagerV3::Render()
 			Copy world matrices into buffer
 			*/
 
-			// Changing this loop to memcpy and transposing in Game.cpp has no effect on the FPS
-			std::memcpy(matrixBuffer, &worldMatrices[i * NR_OF_MATRICES_IN_BUFFER], sizeof(Matrix) * NR_OF_MATRICES_IN_BUFFER);
-			//for (unsigned int j = 0; j < NR_OF_MATRICES_IN_BUFFER; j++)
-			//{
-			//	unsigned int currentObjectIndex = i * NR_OF_MATRICES_IN_BUFFER + j;
-			//	matrixBuffer[j] = worldMatrices[currentObjectIndex];//.GetTranspose();
-			//}
+			// Changing this loop to memcpy and transposing in Game.cpp had no effect on the FPS
+			//std::memcpy(matrixBuffer, &worldMatrices[i * NR_OF_MATRICES_IN_BUFFER], sizeof(Matrix) * NR_OF_MATRICES_IN_BUFFER);
+			for (unsigned int j = 0; j < NR_OF_MATRICES_IN_BUFFER; j++)
+			{
+				unsigned int currentObjectIndex = i * NR_OF_MATRICES_IN_BUFFER + j;
+				matrixBuffer[j] = worldMatrices[currentObjectIndex].GetTranspose();
+			}
 
 			/*
 			Map and set the matrix buffer
@@ -158,13 +260,13 @@ void SceneManagerV3::Render()
 			Copy world matrices into buffer
 			*/
 
-			// Changing this loop to memcpy and transposing in Game.cpp has no effect on the FPS
-			std::memcpy(matrixBuffer, &worldMatrices[nrOfFullMatrixBuffers * NR_OF_MATRICES_IN_BUFFER], sizeof(Matrix) * NR_OF_MATRICES_IN_BUFFER);
-			//for (unsigned int i = 0; i < nrOfRemainingObjects; i++)
-			//{
-			//	unsigned int currentObjectIndex = nrOfFullMatrixBuffers * NR_OF_MATRICES_IN_BUFFER + i;
-			//	matrixBuffer[i] = worldMatrices[currentObjectIndex];// .GetTranspose();
-			//}
+			// Changing this loop to memcpy and transposing in Game.cpp had no effect on the FPS
+			//std::memcpy(matrixBuffer, &worldMatrices[nrOfFullMatrixBuffers * NR_OF_MATRICES_IN_BUFFER], sizeof(Matrix) * NR_OF_MATRICES_IN_BUFFER);
+			for (unsigned int i = 0; i < nrOfRemainingObjects; i++)
+			{
+				unsigned int currentObjectIndex = nrOfFullMatrixBuffers * NR_OF_MATRICES_IN_BUFFER + i;
+				matrixBuffer[i] = worldMatrices[currentObjectIndex].GetTranspose();
+			}
 
 			/*
 			Map and set the matrix buffer
@@ -201,35 +303,87 @@ void SceneManagerV3::Render()
 			}
 		}
 	}
+}
+void SceneManagerV3::RenderLightPass()
+{
+	ConstantBufferManager* constantBufferManager = m_frameWorkManager->GetConstantBufferManager();
 
 	/*
-	Set lights
+	Set shaders
+	*/
+	m_frameWorkManager->GetShaderManager()->SetShaders(ShaderTypeV2::LIGHT_PASS);
+
+	/*
+	Set render targets
+	*/
+	m_frameWorkManager->SetLightPassRenderTarget();
+
+	/*
+	Copy light data
+	*/
+	LightData* lightData = m_dataStorage.GetLightData();
+	LightBuffer lightBuffer;
+	lightBuffer.nrOfLights = m_dataStorage.GetNrOfLights();
+	lightBuffer.ambientColor = lightData->ambientColor;
+
+	for (int i = 0; i < lightBuffer.nrOfLights; i++)
+	{
+		lightBuffer.lights[i].position = lightData->positions[i];
+		lightBuffer.lights[i].diffuseColor = lightData->diffuseColors[i];
+		lightBuffer.lights[i].dropoff = lightData->dropoffs[i];
+	}
+
+	/*
+	Map light data
+	*/
+	m_frameWorkManager->GetConstantBufferManager()->MapDataToBuffer(m_lightBufferIndex, &lightBuffer);
+
+	/*
+	Set light data to shader
 	*/
 	constantBufferManager->SetConstantBufferToPixelShader(m_lightBufferIndex, 0);
 
 	/*
 	Render light pass
 	*/
-	m_frameWorkManager->GetShaderManager()->SetShaders(ShaderTypeV2::LIGHT_PASS);
-	m_frameWorkManager->SetLightPassRenderTarget();
 	m_frameWorkManager->RenderLightPass();
-
-	/*
-	Render final pass
-	*/
+}
+void SceneManagerV3::RenderFinalPass()
+{
 	m_frameWorkManager->GetShaderManager()->SetShaders(ShaderTypeV2::FINAL_PASS);
 	m_frameWorkManager->SetFinalPassRenderTarget();
 	m_frameWorkManager->RenderFinalPass();
 }
 
-void SceneManagerV3::SetViewAndProjectionMatrices(const Matrix & view, const Matrix & projection)
+#ifdef SORT_OBJECTS_BY_TEXTURE
+void SceneManagerV3::SortObjectsInDataStorage()
 {
-	Matrix vp = projection.GetTranspose() * view.GetTranspose();
+	ObjectData* objectData = m_dataStorage.GetObjectData();
+	
+	int textureIndex = -1;
+
+	for (unsigned int i = 0; i < m_dataStorage.GetNrOfObjects(); i++)
+	{
+		if (objectData->textureIndices[i] > textureIndex)
+		{
+			objectData->
+		}
+		else
+		{
+
+		}
+	}
+}
+#endif
+
+void SceneManagerV3::SetViewAndProjectionMatrices(const Math::Matrix & view, const Math::Matrix & projection)
+{
+	Math::Matrix vp = projection.GetTranspose() * view.GetTranspose();
 
 	m_frameWorkManager->GetConstantBufferManager()->MapDataToBuffer(m_viewProjBufferIndex, static_cast<void*>(&vp));
 }
 
-Object* SceneManagerV3::CreateObject()
+ObjectV4* SceneManagerV3::CreateObject()
 {
 	/*
 	Simple "solution" for now
@@ -247,7 +401,7 @@ Object* SceneManagerV3::CreateObject()
 #endif
 }
 
-DataStorage * SceneManagerV3::GetObjectData()
+DataStorage * SceneManagerV3::GetData()
 {
 	return &m_dataStorage;
 }

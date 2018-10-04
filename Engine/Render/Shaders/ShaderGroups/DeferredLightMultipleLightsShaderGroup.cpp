@@ -1,7 +1,7 @@
 #include "DeferredLightMultipleLightsShaderGroup.hpp"
 #include <d3d11.h>
 
-#include "../../SamplerStorage.hpp"
+//#include "../../SamplerStorage.hpp"
 
 DeferredLightMultipleLightsShaderGroup::DeferredLightMultipleLightsShaderGroup()
 {
@@ -29,8 +29,8 @@ void DeferredLightMultipleLightsShaderGroup::SetupShaders(ID3D11DeviceContext * 
 {
 	ShaderGroup::SetupShaders(deviceContext);
 
-	ID3D11SamplerState* sampler = SamplerStorage::Get()->GetSampler(m_samplerName);
-	deviceContext->PSSetSamplers(0, 1, &sampler);
+	/*ID3D11SamplerState* sampler = SamplerStorage::Get()->GetSampler(m_samplerName);
+	deviceContext->PSSetSamplers(0, 1, &sampler);*/
 }
 
 void DeferredLightMultipleLightsShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView ** resources/*, Vector3f lightPositions[MAX_NR_OF_LIGHTS], float lightIntensitys[MAX_NR_OF_LIGHTS]*/)

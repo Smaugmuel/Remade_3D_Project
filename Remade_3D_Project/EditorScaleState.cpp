@@ -1,7 +1,7 @@
 #include "EditorScaleState.hpp"
 
 // For input
-#include "../Engine/Input/Input.hpp"
+#include "../Engine/Framework/Input.hpp"
 #include <Windows.h>
 
 // For changing the object
@@ -27,7 +27,7 @@ bool EditorScaleState::Initialize()
 
 void EditorScaleState::ProcessInput()
 {
-	Input* input = Input::Get();
+	/*Input* input = Input::Get();
 
 	if (input->IsKeyDown(VK_LBUTTON))
 	{
@@ -66,7 +66,7 @@ void EditorScaleState::ProcessInput()
 				m_selectedObject->SetScale(scale);
 			}
 		}
-	}
+	}*/
 }
 
 void EditorScaleState::Update(float dt)

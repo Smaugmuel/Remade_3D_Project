@@ -2,8 +2,8 @@
 #include <d3d11.h>
 #include "../FrameWork/WindowSettings.hpp"
 
-#include "../Objects/Textures/TextureStorage.hpp"
-#include "../Objects/Textures/Texture.hpp"
+//#include "../Objects/Textures/TextureStorage.hpp"
+//#include "../Objects/Textures/Texture.hpp"
 
 HUDTexture::HUDTexture()
 {
@@ -53,14 +53,14 @@ bool HUDTexture::Initialize(ID3D11Device * device, const std::string& textureNam
 		return false;
 	}*/
 
-	if (!TextureStorage::Get()->LoadTexture(device, textureName))
+	/*if (!TextureStorage::Get()->LoadTexture(device, textureName))
 	{
 		return false;
-	}
+	}*/
 
 	m_textureName = textureName;
 	
-	m_shaderResourceView = TextureStorage::Get()->GetTexture(textureName);
+	//m_shaderResourceView = TextureStorage::Get()->GetTexture(textureName);
 	//m_shaderResourceView = m_texture->GetShaderResourceView();
 
 	m_vertices_changed_flag = true;
@@ -192,5 +192,6 @@ void HUDTexture::Render(ID3D11DeviceContext * deviceContext)
 
 ID3D11ShaderResourceView * HUDTexture::GetShaderResourceView()
 {
-	return TextureStorage::Get()->GetTexture(m_textureName);// m_texture->GetShaderResourceView();
+	return nullptr;
+	//return TextureStorage::Get()->GetTexture(m_textureName);// m_texture->GetShaderResourceView();
 }

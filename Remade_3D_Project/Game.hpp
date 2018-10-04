@@ -62,13 +62,14 @@ private:
 	bool m_pop_game_state_flag;
 	bool m_shutdown_flag;*/
 
+	
 	Engine m_engine;
 
 	int m_cameraIndex;
 	
 	int m_GUIhelloWorldIndex;
 
-	std::vector<Object*> m_objects;
+	std::vector<ObjectV4*> m_objects;
 
 	/*RenderMode m_renderMode;
 	HUDMode m_HUDMode;

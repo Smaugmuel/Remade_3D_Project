@@ -5,12 +5,12 @@
 #include <vector>
 
 //#include "../Materials/MaterialStorage.hpp"
-#include "../Materials/MaterialStorageV2.hpp"
+//#include "../Materials/MaterialStorageV2.hpp"
 
 #include "../../Buffers/Buffers.hpp"
 //#include "../../FrameWork/Direct3D.hpp"
 //#include "../../Core/Engine.hpp"
-#include "../../FrameWork/FrameWork.hpp"
+//#include "../../FrameWork/FrameWork.hpp"
 
 TextureModel::TextureModel(FrameWork* frameWork) :
 	Model(frameWork),
@@ -32,7 +32,7 @@ bool TextureModel::LoadFromFile(const char * fileName)
 	std::ifstream inFile(fileName);
 	std::string line, type;
 
-	std::vector<DirectX::XMFLOAT3> positions;
+	/*std::vector<DirectX::XMFLOAT3> positions;
 	std::vector<DirectX::XMFLOAT3> normals;
 	std::vector<DirectX::XMFLOAT2> uvs;
 
@@ -119,14 +119,14 @@ bool TextureModel::LoadFromFile(const char * fileName)
 	for (unsigned int i = 0; i < m_nrOfVerts; i++)
 	{
 		m_vertices[i] = vertices[i];
-	}
+	}*/
 
 	return true;
 }
 
 bool TextureModel::CreateVertexBuffer()
 {
-	m_vertexBuffer = Buffers::CreateVertexBuffer(m_frameWork->GetDirect3D()->GetDevice(), m_nrOfVerts * sizeof(TextureVertex), m_vertices);
+	//m_vertexBuffer = Buffers::CreateVertexBuffer(m_frameWork->GetDirect3D()->GetDevice(), m_nrOfVerts * sizeof(TextureVertex), m_vertices);
 	//m_vertexBuffer = Buffers::CreateVertexBuffer(Direct3D::Get()->GetDevice(), m_nrOfVerts * sizeof(TextureVertex), m_vertices);
 	
 	//m_vertexBuffer = Buffers::CreateDynamicVertexBuffer(device, m_nrOfVerts * sizeof(TextureVertex), m_vertices);
@@ -167,13 +167,13 @@ bool TextureModel::CreateOBB()
 
 void TextureModel::SetupRender()
 {
-	ID3D11DeviceContext* deviceContext = m_frameWork->GetDirect3D()->GetDeviceContext();
+	//ID3D11DeviceContext* deviceContext = m_frameWork->GetDirect3D()->GetDeviceContext();
 	//ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
 	unsigned int vertexSize = sizeof(TextureVertex);
 	unsigned int offset = 0;
 
-	deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &vertexSize, &offset);
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	/*deviceContext->IASetVertexBuffers(0, 1, &m_vertexBuffer, &vertexSize, &offset);
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);*/
 }
 
 int TextureModel::GetMaterialIndex() const

@@ -34,7 +34,11 @@ struct VS_INPUT_DATA
 
 struct VS_OUTPUT_DATA
 {
+#ifdef PASS_TO_GEOMETRY_SHADER
+	float3 position : POSITION;
+#else
 	float4 position : SV_POSITION;
+#endif
 #ifdef VBUFFER_PASS_WPOS
 	float3 worldPosition : POSITION;
 #endif
@@ -50,20 +54,32 @@ VS_OUTPUT_DATA main(VS_INPUT_DATA input)
 {
 	VS_OUTPUT_DATA output = (VS_OUTPUT_DATA)0;
 
-	output.position = float4(input.position, 1.0f);
+	float4 position = float4(input.position, 1.0f);
+	//output.position = float4(input.position, 1.0f);
 
 #ifdef CBUFFER_WORLD_MATRIX
-	output.position = mul(output.position, worldMatrix);
+	//output.position = mul(output.position, worldMatrix);
+	position = mul(position, worldMatrix);
 #elif defined(CBUFFER_NR_OF_MATRICES_PER_BUFFER)
-	output.position = mul(output.position, worldMatrices[index.x]);
+	//output.position = mul(output.position, worldMatrices[index.x]);
+	position = mul(position, worldMatrices[index.x]);
 #endif
 #ifdef VBUFFER_PASS_WPOS
-	output.worldPosition = output.position.xyz;
+	//output.worldPosition = output.position.xyz;
+	output.worldPosition = position.xyz;
 #endif
 
 #ifdef CBUFFER_VIEW_PROJECTION_MATRIX
-	output.position = mul(output.position, viewProjectionMatrix);
+	//output.position = mul(output.position, viewProjectionMatrix);
+	position = mul(position, viewProjectionMatrix);
 #endif
+
+#ifdef PASS_TO_GEOMETRY_SHADER
+	output.position = position.xyz;
+#else
+	output.position = position;
+#endif
+
 
 #ifdef VBUFFER_NORMAL
 #ifdef CBUFFER_WORLD_MATRIX

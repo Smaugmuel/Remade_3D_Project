@@ -1,7 +1,7 @@
 #include "DeferredLightMultipleShadowLightsShaderGroup.hpp"
 #include <d3d11.h>
 
-#include "../../SamplerStorage.hpp"
+//#include "../../SamplerStorage.hpp"
 
 #include "../../../Lights/PointLightManager.hpp"
 
@@ -31,8 +31,8 @@ void DeferredLightMultipleShadowLightsShaderGroup::SetupShaders(ID3D11DeviceCont
 {
 	ShaderGroup::SetupShaders(deviceContext);
 
-	ID3D11SamplerState* sampler = SamplerStorage::Get()->GetSampler(m_samplerName);
-	deviceContext->PSSetSamplers(0, 1, &sampler);
+	/*ID3D11SamplerState* sampler = SamplerStorage::Get()->GetSampler(m_samplerName);
+	deviceContext->PSSetSamplers(0, 1, &sampler);*/
 }
 
 void DeferredLightMultipleShadowLightsShaderGroup::SetupPerFrameBuffer(ID3D11DeviceContext * deviceContext, unsigned int nrOfResources, ID3D11ShaderResourceView ** resources, ID3D11ShaderResourceView ** depthTextures)

@@ -16,7 +16,7 @@ public:
 	void SetTexture(int textureIndex);
 
 	void Rotate(Vector3f axis, float angle);
-	void Rotate(const Matrix& rotationMatrix);
+	void Rotate(const Math::Matrix& rotationMatrix);
 
 	Vector3f GetPosition() const noexcept;
 	Vector3f GetScale() const noexcept;
@@ -25,7 +25,7 @@ public:
 	int GetModelIndex() const noexcept;
 	int GetTextureIndex() const noexcept;
 
-	const Matrix& GetWorldMatrix() const noexcept;
+	const Math::Matrix& GetWorldMatrix() const noexcept;
 
 private:
 	friend class SceneManagerV3;
@@ -40,12 +40,12 @@ private:
 	int m_modelIndex = -1;
 	int m_textureIndex = -1;
 
-	Matrix m_translationMatrix;
-	Matrix m_rotationMatrix;
-	Matrix m_scaleMatrix;
+	Math::Matrix m_translationMatrix;
+	Math::Matrix m_rotationMatrix;
+	Math::Matrix m_scaleMatrix;
 	
 	mutable bool m_isWorldMatrixUpdated;
-	mutable Matrix m_worldMatrix;
+	mutable Math::Matrix m_worldMatrix;
 
 	SceneManagerV3* m_sceneManager;
 };

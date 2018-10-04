@@ -62,13 +62,18 @@ void CameraV3::MoveUp(float amount)
 	target = position + dir;
 }
 
-void CameraV3::RotateUp(float amount)
+void CameraV3::RotateUp(float angle)
 {
-
+	Vector3f direction = TargetDirection();
+	Vector3f newDirection = Math::Transform(direction, 0.0f, Math::Matrix::Rotation(Right(), angle));
+	target = position + newDirection;
 }
 
-void CameraV3::RotateDown(float amount)
+void CameraV3::RotateRight(float angle)
 {
+	Vector3f direction = TargetDirection();
+	Vector3f newDirection = Math::Transform(direction, 0.0f, Math::Matrix::Rotation(up, -angle));
+	target = position + newDirection;
 }
 
 Vector3f CameraV3::TargetDirection() const

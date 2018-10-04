@@ -25,7 +25,6 @@ struct TexturedModel
 
 static const unsigned int MAX_NR_OF_MODELS = 16U;
 
-
 class ModelManager final
 {
 public:

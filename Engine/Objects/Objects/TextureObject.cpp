@@ -2,15 +2,15 @@
 
 // For updating obb and retrieving default texture. Other solution would be preferred
 //#include "../Models/ModelStorage.hpp"
-#include "../Models/ModelStorageV2.hpp"
+//#include "../Models/ModelStorageV2.hpp"
 #include "../Models/TextureModel.hpp"
 
 // For retrieving default texture
 //#include "../Materials/MaterialStorage.hpp"
-#include "../Materials/MaterialStorageV2.hpp"
-#include "../Materials/Material.hpp"
-
-#include "../Textures/TextureStorageV2.hpp"
+//#include "../Materials/MaterialStorageV2.hpp"
+//#include "../Materials/Material.hpp"
+//
+//#include "../Textures/TextureStorageV2.hpp"
 
 TextureObject::TextureObject()
 {
@@ -22,11 +22,11 @@ TextureObject::~TextureObject()
 
 bool TextureObject::Initialize(const std::string & modelName)
 {
-	ModelStorageV2* modelStorage = ModelStorageV2::Get();
-	MaterialStorageV2* materialStorage = MaterialStorageV2::Get();
+	/*ModelStorageV2* modelStorage = ModelStorageV2::Get();
+	MaterialStorageV2* materialStorage = MaterialStorageV2::Get();*/
 
 	// Abort if the model or material fails to load
-	if (m_modelIndex = modelStorage->LoadTextureModel(modelName); m_modelIndex == -1)
+	//if (m_modelIndex = modelStorage->LoadTextureModel(modelName); m_modelIndex == -1)
 		return false;
 
 	/*if (m_materialIndex = materialStorage->LoadMaterial(modelStorage->GetTextureModel(m_modelIndex)->GetMaterialName()))
@@ -35,7 +35,7 @@ bool TextureObject::Initialize(const std::string & modelName)
 	
 
 	//m_modelIndex = modelStorage->GetTextureModelIndexByName(modelName);
-	m_defaultTextureIndex = materialStorage->GetMaterial(modelStorage->GetTextureModel(m_modelIndex)->GetMaterialIndex())->GetTextureIndex();
+	//m_defaultTextureIndex = materialStorage->GetMaterial(modelStorage->GetTextureModel(m_modelIndex)->GetMaterialIndex())->GetTextureIndex();
 	m_textureIndex = m_defaultTextureIndex;
 
 	if (!Object::Initialize())
@@ -46,15 +46,15 @@ bool TextureObject::Initialize(const std::string & modelName)
 
 void TextureObject::SetModel(int index)
 {
-	if (index >= 0 && static_cast<unsigned int>(index) < ModelStorageV2::Get()->GetNrOfTextureModels())
+	/*if (index >= 0 && static_cast<unsigned int>(index) < ModelStorageV2::Get()->GetNrOfTextureModels())
 	{
 		m_modelIndex = index;
-	}
+	}*/
 }
 
 void TextureObject::SetModelName(const std::string & name)
 {
-	switch (int index = ModelStorageV2::Get()->GetTextureModelIndexFromName(name))
+	/*switch (int index = ModelStorageV2::Get()->GetTextureModelIndexFromName(name))
 	{
 	case -1:
 		m_modelIndex = ModelStorageV2::Get()->GetTextureModelIndexFromName("cube_uv.obj");
@@ -62,20 +62,20 @@ void TextureObject::SetModelName(const std::string & name)
 	default:
 		m_modelIndex = index;
 		break;
-	}
+	}*/
 }
 
 void TextureObject::SetTexture(int index)
 {
-	if (index >= 0 && static_cast<unsigned int>(index) < TextureStorageV2::Get()->GetNrOfTextures())
+	/*if (index >= 0 && static_cast<unsigned int>(index) < TextureStorageV2::Get()->GetNrOfTextures())
 	{
 		m_modelIndex = index;
-	}
+	}*/
 }
 
 void TextureObject::SetTextureName(const std::string & name)
 {
-	m_textureIndex = TextureStorageV2::Get()->GetIndexByName(name);
+	//m_textureIndex = TextureStorageV2::Get()->GetIndexByName(name);
 	//m_textureName = name;
 }
 
@@ -115,17 +115,20 @@ int TextureObject::GetDefaultTextureIndex() const
 
 const std::string & TextureObject::GetModelName() const
 {
-	return ModelStorageV2::Get()->GetTextureModelNameFromIndex(m_modelIndex);
+	return "";
+	//return ModelStorageV2::Get()->GetTextureModelNameFromIndex(m_modelIndex);
 }
 
 const std::string & TextureObject::GetTextureName() const
 {
-	return TextureStorageV2::Get()->GetNameByIndex(m_textureIndex);
+	return "";
+	//return TextureStorageV2::Get()->GetNameByIndex(m_textureIndex);
 }
 
 const std::string & TextureObject::GetDefaultTextureName() const
 {
-	return TextureStorageV2::Get()->GetNameByIndex(m_defaultTextureIndex);
+	return "";
+	//return TextureStorageV2::Get()->GetNameByIndex(m_defaultTextureIndex);
 }
 
 void TextureObject::UpdateOBB()
@@ -143,13 +146,13 @@ void TextureObject::UpdateOBB()
 		return;
 	}
 
-	m_obb = ModelStorageV2::Get()->GetTextureModel(m_modelIndex)->GetOBB();
+	//m_obb = ModelStorageV2::Get()->GetTextureModel(m_modelIndex)->GetOBB();
 
 	m_obb.center += GetPosition();
 
-	m_obb.vectors[0] = DirectX::XMVector3Transform(m_obb.vectors[0].XMV(), mat);
+	/*m_obb.vectors[0] = DirectX::XMVector3Transform(m_obb.vectors[0].XMV(), mat);
 	m_obb.vectors[1] = DirectX::XMVector3Transform(m_obb.vectors[1].XMV(), mat);
-	m_obb.vectors[2] = DirectX::XMVector3Transform(m_obb.vectors[2].XMV(), mat);
+	m_obb.vectors[2] = DirectX::XMVector3Transform(m_obb.vectors[2].XMV(), mat);*/
 
 	m_obb.halfSides[0] = m_obb.defaultHalfSides[0] * GetScale().x;
 	m_obb.halfSides[1] = m_obb.defaultHalfSides[1] * GetScale().y;

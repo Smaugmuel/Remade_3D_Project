@@ -55,9 +55,9 @@ Output to the next shader for an object
 */
 struct OUT
 {
-#ifdef OUTPUT_POS
+//#ifdef OUTPUT_POS
 	float4 position : SV_POSITION;
-#endif
+//#endif
 #ifdef WORLD_MATRIX
 	#ifdef OUTPUT_WORLD_POS
 		float4 worldPosition : POSITION;

@@ -1,19 +1,19 @@
 #include "SceneManager.hpp"
 //#include "../FrameWork/Direct3D.hpp"
 //#include "../Core/Engine.hpp"
-#include "../FrameWork/FrameWork.hpp"
+//#include "../FrameWork/FrameWork.hpp"
 #include "../Render/Shaders/ShaderManager.hpp"
 //#include "../Objects/Models/ModelStorage.hpp"
 //#include "../Objects/Textures/TextureStorage.hpp"
-#include "../Objects/Models/ModelStorageV2.hpp"
-#include "../Objects/Textures/TextureStorageV2.hpp"
+//#include "../Objects/Models/ModelStorageV2.hpp"
+//#include "../Objects/Textures/TextureStorageV2.hpp"
 #include "../Buffers/ConstantBufferStorage.hpp"
 #include "../Objects/Models/TextureModel.hpp"
 
 //#include "../Camera/PlayerCameraManager.hpp"
 #include "../Camera/Camera.hpp"
 
-#include "../Render/SamplerStorage.hpp"
+//#include "../Render/SamplerStorage.hpp"
 
 //#include "../Render/DeferredScreenTarget.hpp"
 
@@ -29,8 +29,8 @@ SceneManager::~SceneManager()
 bool SceneManager::Initialize(FrameWork * frameWork)
 {
 	m_frameWork = frameWork;
-	m_vsViewMatID = m_frameWork->CreateConstantBuffer(sizeof(float) * 16);
-	m_vsProjMatID = m_frameWork->CreateConstantBuffer(sizeof(float) * 16);
+	/*m_vsViewMatID = m_frameWork->CreateConstantBuffer(sizeof(float) * 16);
+	m_vsProjMatID = m_frameWork->CreateConstantBuffer(sizeof(float) * 16);*/
 	return true;
 }
 
@@ -162,7 +162,7 @@ void SceneManager::Render()
 
 void SceneManager::RenderNormal()
 {
-	ID3D11DeviceContext* deviceContext = m_frameWork->GetDirect3D()->GetDeviceContext();
+	/*ID3D11DeviceContext* deviceContext = m_frameWork->GetDirect3D()->GetDeviceContext();
 	//ID3D11DeviceContext* deviceContext = Direct3D::Get()->GetDeviceContext();
 
 	//TextureStorage* textureStorage = TextureStorage::Get();
@@ -198,8 +198,8 @@ void SceneManager::RenderNormal()
 	bufferStorage->SetVSViewMatrix(deviceContext, camera->GetViewMatrix());
 	bufferStorage->SetVSProjectionMatrix(deviceContext, camera->GetProjectionMatrix());
 
-	/*ID3D11SamplerState* sampler = SamplerStorage::Get()->GetSampler("PointClamp");
-	deviceContext->PSSetSamplers(0, 1, &sampler);*/
+	//ID3D11SamplerState* sampler = SamplerStorage::Get()->GetSampler("PointClamp");
+	//deviceContext->PSSetSamplers(0, 1, &sampler);
 	
 	int previousModel = -1;
 	int previousTexture = -1;
@@ -237,14 +237,14 @@ void SceneManager::RenderNormal()
 
 		// Render
 		model->Render();
-	}
+	}*/
 }
 void SceneManager::RenderDeferredFirstPass()
 {
 }
 void SceneManager::RenderDeferredFirstPassChunks()
 {
-	Direct3D* d3d = FrameWork::Get()->GetDirect3D();
+	/*Direct3D* d3d = FrameWork::Get()->GetDirect3D();
 	//Direct3D* d3d = Direct3D::Get();
 	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 	ShaderManager* shaderManager = ShaderManager::Get();
@@ -307,7 +307,7 @@ void SceneManager::RenderDeferredFirstPassChunks()
 		bufferStorage->SetGSWorldMatrixArray(deviceContext, worldMatrices);
 		bufferStorage->SetGSNrOfObjects(deviceContext, nrOfRemainingCubes);
 		model->Render();
-	}
+	}*/
 }
 void SceneManager::RenderDepth()
 {
@@ -317,7 +317,7 @@ void SceneManager::RenderShadowPass()
 }
 void SceneManager::RenderShadowPassChunks()
 {
-	Direct3D* d3d = FrameWork::Get()->GetDirect3D();
+	/*Direct3D* d3d = FrameWork::Get()->GetDirect3D();
 	//Direct3D* d3d = Direct3D::Get();
 	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 	ShaderManager* shaders = ShaderManager::Get();
@@ -375,14 +375,14 @@ void SceneManager::RenderShadowPassChunks()
 		bufferStorage->SetGSWorldMatrixArray(deviceContext, worldMatrices);
 		bufferStorage->SetGSNrOfObjects(deviceContext, nrOfRemainingCubes);
 		model->Render();
-	}
+	}*/
 }
 void SceneManager::RenderMultipleShadowsPass()
 {
 }
 void SceneManager::RenderDeferredLightShadowPass()
 {
-	Direct3D* d3d = FrameWork::Get()->GetDirect3D();
+	/*Direct3D* d3d = FrameWork::Get()->GetDirect3D();
 	//Direct3D* d3d = Direct3D::Get();
 	ID3D11DeviceContext* deviceContext = d3d->GetDeviceContext();
 	ShaderManager* shaders = ShaderManager::Get();
@@ -404,7 +404,7 @@ void SceneManager::RenderDeferredLightShadowPass()
 		d3d->GetDeferredShaderResourceViews(),
 		d3d->GetShadowShaderResourceView());
 
-	FrameWork::Get()->GetDeferredScreenTarget()->Render(/*deviceContext*/);
+	FrameWork::Get()->GetDeferredScreenTarget()->Render();*/
 }
 void SceneManager::RenderDeferredLightSplitPass()
 {

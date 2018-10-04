@@ -32,7 +32,7 @@ struct SceneObject
 	TextureObject object;
 };
 
-class SceneManager : public Singleton<SceneManager>
+class SceneManager //: public Singleton<SceneManager>
 {
 public:
 	SceneManager();
