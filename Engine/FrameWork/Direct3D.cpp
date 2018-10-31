@@ -436,7 +436,7 @@ void Direct3D::ClearShadowTarget()
 
 void Direct3D::Present()
 {
-	m_swapChain->Present(1, 0);
+	m_swapChain->Present(0, 0);
 }
 
 void Direct3D::SetShadowTarget()

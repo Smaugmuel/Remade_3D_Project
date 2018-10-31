@@ -14,7 +14,6 @@ Math::Matrix FromXMMATRIX(const DirectX::XMMATRIX & xm)
 }
 DirectX::XMMATRIX ToXMMATRIX(const Math::Matrix & m)
 {
-	DirectX::XMFLOAT4X4;
 	DirectX::XMMATRIX xm;
 	std::memcpy(xm.r, m.rows, 64U);
 	return xm;

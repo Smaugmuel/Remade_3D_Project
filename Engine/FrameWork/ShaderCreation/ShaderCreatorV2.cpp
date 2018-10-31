@@ -68,7 +68,7 @@ VertexShaderData ShaderCreatorV2::CompileAndCreateVertexShader(int nrOfDefines, 
 	return shaderData;
 }
 
-ID3D11GeometryShader * ShaderCreatorV2::CompileAndCreateGeometryShader(const char* fileName, int nrOfDefines, ShaderDefine * defines)
+ID3D11GeometryShader * ShaderCreatorV2::CompileAndCreateGeometryShaderFromFile(const char* fileName, int nrOfDefines, ShaderDefine * defines)
 {
 	std::unique_ptr<_D3D_SHADER_MACRO[]> macros = nullptr;
 	_D3D_SHADER_MACRO* macrosRaw = nullptr;

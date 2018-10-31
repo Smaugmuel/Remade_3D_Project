@@ -27,8 +27,10 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	*/
 	std::string nMatsStr = std::to_string(nrOfWorldMatricesInBuffer);
 	const char* nMatsCh = nMatsStr.c_str();
+	std::string nInstances = std::to_string(28);
+	const char* nInstancesCh = nInstances.c_str();
 
-	ShaderDefine vsDefines1[] =
+	ShaderDefine vsDefinesGPass[] =
 	{
 		{ "CBUFFER_VIEW_PROJECTION_MATRIX", nullptr },
 		{ "CBUFFER_NR_OF_MATRICES_PER_BUFFER", nMatsCh },
@@ -36,12 +38,29 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 		{ "VBUFFER_UV", nullptr },
 		{ "VBUFFER_PASS_WPOS", nullptr }
 	};
-	ShaderDefine vsDefines2[] =
+	ShaderDefine vsDefinesGIPass[] =
+	{
+		{ "PASS_TO_GEOMETRY_SHADER", nullptr },
+		{ "VBUFFER_NORMAL", nullptr },
+		{ "VBUFFER_UV", nullptr }
+	};
+	ShaderDefine vsDefinesLPass[] =
 	{
 		{ "VBUFFER_UV", nullptr }
 	};
+
+	/*ShaderDefine gsDefinesGIPass[] =
+	{
+		{ "CBUFFER_VIEW_PROJECTION_MATRIX", nullptr },
+		{ "CBUFFER_NR_OF_MATRICES_PER_BUFFER", nMatsCh },
+		{ "VBUFFER_PASS_WPOS", nullptr },
+		{ "VBUFFER_NORMAL", nullptr },
+		{ "VBUFFER_UV", nullptr },
+		{ "MAX_INSTANCING_AMOUNT", nInstancesCh }
+	};*/
+
 	std::string nLightsStr = std::to_string(maxNrOfLights);
-	ShaderDefine psDefines2[] =
+	ShaderDefine psDefinesLPass[] =
 	{
 		{ "CBUFFER_MAX_NR_OF_LIGHTS", nLightsStr.c_str() }
 	};
@@ -49,27 +68,30 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	/*
 	Define input layout elements
 	*/
-	InputElement vsElements1[] =
+	InputElement vsElementsGPass[] =
 	{
 		{ "POSITION", ElementFormat::FLOAT3 },
 		{ "NORMAL", ElementFormat::FLOAT3 },
 		{ "TEXCOORD", ElementFormat::FLOAT2 }
 	};
-	InputElement vsElements2[] =
+	InputElement vsElementsLPass[] =
 	{
 		{ "POSITION", ElementFormat::FLOAT3 },
 		{ "TEXCOORD", ElementFormat::FLOAT2 }
 	};
 
-	const unsigned int nVSDefines1 = sizeof(vsDefines1) / sizeof(ShaderDefine);
-	const unsigned int nVSDefines2 = sizeof(vsDefines2) / sizeof(ShaderDefine);
-	const unsigned int nPSDefines2 = sizeof(psDefines2) / sizeof(ShaderDefine);
-	const unsigned int nVSElements1 = sizeof(vsElements1) / sizeof(InputElement);
-	const unsigned int nVSElements2 = sizeof(vsElements2) / sizeof(InputElement);
+	const unsigned int nVSDefinesGPass = sizeof(vsDefinesGPass) / sizeof(ShaderDefine);
+	const unsigned int nVSDefinesGIPass = sizeof(vsDefinesGIPass) / sizeof(ShaderDefine);
+	const unsigned int nVSDefinesLPass = sizeof(vsDefinesLPass) / sizeof(ShaderDefine);
+	//const unsigned int nGSDefinesGIPass = sizeof(gsDefinesGIPass) / sizeof(ShaderDefine);
+	const unsigned int nPSDefinesLPass = sizeof(psDefinesLPass) / sizeof(ShaderDefine);
+	const unsigned int nVSElementsGPass = sizeof(vsElementsGPass) / sizeof(InputElement);
+	const unsigned int nVSElementsLPass = sizeof(vsElementsLPass) / sizeof(InputElement);
 
 	const unsigned int gPassIndex = static_cast<unsigned int>(ShaderTypeV2::GEOMETRY_PASS);
-	const unsigned int lPassIndex = static_cast<unsigned int>(ShaderTypeV2::LIGHT_PASS);
+	const unsigned int giPassIndex = static_cast<unsigned int>(ShaderTypeV2::INSTANCED_GEOMETRY_PASS);
 	const unsigned int sPassIndex = static_cast<unsigned int>(ShaderTypeV2::SHADOW_PASS);
+	const unsigned int lPassIndex = static_cast<unsigned int>(ShaderTypeV2::LIGHT_PASS);
 	const unsigned int fPassIndex = static_cast<unsigned int>(ShaderTypeV2::FINAL_PASS);
 
 	/*
@@ -85,11 +107,11 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	/*
 	Create the vertex shader and input layout
 	*/
-	vsData = m_shaderCreator.CompileAndCreateVertexShader(nVSDefines1, vsDefines1);
+	vsData = m_shaderCreator.CompileAndCreateVertexShader(nVSDefinesGPass, vsDefinesGPass);
 	if (!vsData.blob || !vsData.vs)
 		return false;
 	m_vertexShaders[gPassIndex] = vsData.vs;
-	m_inputLayouts[gPassIndex] = m_inputLayoutCreator.CreateInputLayout(vsData.blob, nVSElements1, vsElements1);
+	m_inputLayouts[gPassIndex] = m_inputLayoutCreator.CreateInputLayout(vsData.blob, nVSElementsGPass, vsElementsGPass);
 	if (!m_inputLayouts[gPassIndex])
 		return false;
 	vsData.blob->Release();
@@ -97,7 +119,7 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	/*
 	Disable geometry shader
 	*/
-	m_geometryShaders[static_cast<unsigned int>(ShaderTypeV2::GEOMETRY_PASS)] = nullptr;
+	m_geometryShaders[gPassIndex] = nullptr;
 
 	/*
 	Create the pixel shader
@@ -106,16 +128,45 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	if (!m_pixelShaders[gPassIndex])
 		return false;
 
+	/* =============================== Geometry instancing pass =============================================== */
+
+	/*
+	Create the vertex shader and input layout
+	*/
+	vsData = m_shaderCreator.CompileAndCreateVertexShader(nVSDefinesGIPass, vsDefinesGIPass);
+	if (!vsData.blob || !vsData.vs)
+		return false;
+	m_vertexShaders[giPassIndex] = vsData.vs;
+	m_inputLayouts[giPassIndex] = m_inputLayoutCreator.CreateInputLayout(vsData.blob, nVSElementsGPass, vsElementsGPass);
+	if (!m_inputLayouts[giPassIndex])
+		return false;
+	vsData.blob->Release();
+
+	/*
+	Create the geometry shader
+	*/
+	//m_geometryShaders[giPassIndex] = m_shaderCreator.CompileAndCreateGeometryShaderFromFile("GS_Instancing.hlsl", nGSDefinesGIPass, gsDefinesGIPass);
+	m_geometryShaders[giPassIndex] = m_shaderCreator.CompileAndCreateGeometryShaderFromFile("GS_Instancing.hlsl");
+	if (!m_geometryShaders[giPassIndex])
+		return false;
+
+	/*
+	Create the pixel shader
+	*/
+	m_pixelShaders[giPassIndex] = m_pixelShaders[gPassIndex];
+	if (!m_pixelShaders[giPassIndex])
+		return false;
+
 	/* =============================== Light pass =============================================== */
 
 	/*
 	Create the vertex shader and input layout
 	*/
-	vsData = m_shaderCreator.CompileAndCreateVertexShader(nVSDefines2, vsDefines2);
+	vsData = m_shaderCreator.CompileAndCreateVertexShader(nVSDefinesLPass, vsDefinesLPass);
 	if (!vsData.blob || !vsData.vs)
 		return false;
 	m_vertexShaders[lPassIndex] = vsData.vs;
-	m_inputLayouts[lPassIndex] = m_inputLayoutCreator.CreateInputLayout(vsData.blob, nVSElements2, vsElements2);
+	m_inputLayouts[lPassIndex] = m_inputLayoutCreator.CreateInputLayout(vsData.blob, nVSElementsLPass, vsElementsLPass);
 	if (!m_inputLayouts[lPassIndex])
 		return false;
 	vsData.blob->Release();
@@ -123,13 +174,13 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	/*
 	Disable geometry shader
 	*/
-	m_geometryShaders[static_cast<unsigned int>(ShaderTypeV2::LIGHT_PASS)] = nullptr;
+	m_geometryShaders[lPassIndex] = nullptr;
 
 	/*
 	Create the pixel shader, with or without lights
 	*/
 	if (maxNrOfLights > 0)
-		m_pixelShaders[lPassIndex] = m_shaderCreator.CompileAndCreatePixelShaderFromFile("PS_LightPass.hlsl", nPSDefines2, psDefines2);
+		m_pixelShaders[lPassIndex] = m_shaderCreator.CompileAndCreatePixelShaderFromFile("PS_LightPass.hlsl", nPSDefinesLPass, psDefinesLPass);
 	else
 		m_pixelShaders[lPassIndex] = m_shaderCreator.CompileAndCreatePixelShaderFromFile("PS_LightPass.hlsl");
 	if (!m_pixelShaders[lPassIndex])
@@ -146,13 +197,13 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	/*
 	Disable geometry shader
 	*/
-	m_geometryShaders[static_cast<unsigned int>(ShaderTypeV2::SHADOW_PASS)] = nullptr;
+	m_geometryShaders[sPassIndex] = nullptr;
 
 	/*
 	Create the pixel shader, with or without lights
 	*/
 	if (maxNrOfLights > 0)
-		m_pixelShaders[sPassIndex] = m_shaderCreator.CompileAndCreatePixelShaderFromFile("PS_ShadowPass.hlsl", nPSDefines2, psDefines2);
+		m_pixelShaders[sPassIndex] = m_shaderCreator.CompileAndCreatePixelShaderFromFile("PS_ShadowPass.hlsl", nPSDefinesLPass, psDefinesLPass);
 	else
 		m_pixelShaders[sPassIndex] = m_shaderCreator.CompileAndCreatePixelShaderFromFile("PS_ShadowPass.hlsl");
 	if (!m_pixelShaders[sPassIndex])
@@ -169,7 +220,7 @@ bool ShaderManagerV2::Initialize(ID3D11Device * device, ID3D11DeviceContext * de
 	/*
 	Disable geometry shader
 	*/
-	m_geometryShaders[static_cast<unsigned int>(ShaderTypeV2::FINAL_PASS)] = nullptr;
+	m_geometryShaders[fPassIndex] = nullptr;
 
 	/*
 	Create the pixel shader
@@ -191,76 +242,3 @@ bool ShaderManagerV2::SetShaders(ShaderTypeV2 shaderType)
 
 	return true;
 }
-
-/*int ShaderManagerV2::CreateVertexShader(unsigned int flags)
-{
-	// Define more macros than neccessary, since a null-termination determines the amount
-	D3D_SHADER_MACRO macros[4];
-
-	if (flags & static_cast<unsigned int>(VSFlags::RECEIVE_NORMAL))
-	{
-		if (flags & static_cast<unsigned int>(VSFlags::RECEIVE_UV))
-		{
-			if (flags & static_cast<unsigned int>(VSFlags::PASS_WPOS))
-			{
-				macros[0] = { "RECEIVE_NORMAL", "" };
-				macros[1] = { "RECEIVE_UV", "" };
-				macros[2] = { "PASS_WPOS", "" };
-				macros[3] = { 0, 0 };
-			}
-			else
-			{
-				macros[0] = { "RECEIVE_NORMAL", "" };
-				macros[1] = { "RECEIVE_UV", "" };
-				macros[2] = { 0, 0 };
-			}
-		}
-		else
-		{
-			if (flags & static_cast<unsigned int>(VSFlags::PASS_WPOS))
-			{
-				macros[0] = { "RECEIVE_NORMAL", "" };
-				macros[1] = { "PASS_WPOS", "" };
-				macros[2] = { 0, 0 };
-			}
-			else
-			{
-				macros[0] = { "RECEIVE_NORMAL", "" };
-				macros[1] = { 0, 0 };
-			}
-		}
-	}
-	else
-	{
-		if (flags & static_cast<unsigned int>(VSFlags::RECEIVE_UV))
-		{
-			if (flags & static_cast<unsigned int>(VSFlags::PASS_WPOS))
-			{
-				macros[0] = { "RECEIVE_UV", "" };
-				macros[1] = { "PASS_WPOS", "" };
-				macros[2] = { 0, 0 };
-			}
-			else
-			{
-				macros[0] = { "RECEIVE_UV", "" };
-				macros[1] = { 0, 0 };
-			}
-		}
-		else
-		{
-			if (flags & static_cast<unsigned int>(VSFlags::PASS_WPOS))
-			{
-				macros[0] = { "PASS_WPOS", "" };
-				macros[1] = { 0, 0 };
-			}
-			else
-			{
-				macros[0] = { 0, 0 };
-			}
-		}
-	}
-
-
-
-	return 0;
-}*/

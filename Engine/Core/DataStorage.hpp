@@ -8,7 +8,8 @@
 // Because of the light buffer, "only" 2047 lights can exist
 // 2048 lights could be stored, but that would leave no room for the ambient color and light counter
 #define MAX_NR_OF_LIGHT_INSTANCES 2047U
-#define MAX_NR_OF_OBJECT_INSTANCES 8192U
+//#define MAX_NR_OF_OBJECT_INSTANCES 8192U
+#define MAX_NR_OF_OBJECT_INSTANCES 262144U
 
 struct ObjectV4
 {

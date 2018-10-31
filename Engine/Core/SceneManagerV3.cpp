@@ -9,7 +9,6 @@
 typedef std::chrono::high_resolution_clock Clock;
 typedef std::chrono::time_point<std::chrono::steady_clock> Time;
 
-
 void UpdateObjects(float dt, unsigned int startIndex, unsigned int endIndex, Vector3f* p, Vector3f* m, Math::Matrix* rm, Vector3f* ra, float* rs, Vector3f* s, Math::Matrix* wm)
 {
 	for (unsigned int i = startIndex; i < endIndex; i++)
@@ -52,9 +51,9 @@ bool SceneManagerV3::Initialize(ModelManager * modelManager, MaterialManager * m
 	/*
 	Initialize matrix buffer
 	*/
-	m_indexBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(int) * 4);
+	m_idBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(int) * 4);
 	m_matrixBufferIndex = m_frameWorkManager->GetConstantBufferManager()->CreateConstantBuffer(sizeof(Math::Matrix) * NR_OF_MATRICES_IN_BUFFER);
-	if (m_matrixBufferIndex == -1 || m_indexBufferIndex == -1)
+	if (m_matrixBufferIndex == -1 || m_idBufferIndex == -1)
 		return false;
 
 	return true;
@@ -62,17 +61,22 @@ bool SceneManagerV3::Initialize(ModelManager * modelManager, MaterialManager * m
 
 void SceneManagerV3::Update(float dt)
 {
-	Time t1, t2;
-	t1 = Clock::now();
+	/*
+	Nr of cubes	| FPS normal	| FPS using 3 additional threads
+	------------|---------------|-------------------------------
+	8128		| ~1050			| ~400
+	65280		| ~166			| ~190
+
+	*/
+
 
 	ObjectData* objectData = m_dataStorage.GetObjectData();
 
 	unsigned int nThreads = 4U;
 	unsigned int nObjsPerThread = m_dataStorage.GetNrOfObjects() / nThreads;
 
-	/*
-	Launch 3 additional threads
-	*/
+	
+	// Launch 3 additional threads
 	std::thread threads[3];
 	for (unsigned int i = 0; i < nThreads - 1; i++)
 	{
@@ -91,9 +95,8 @@ void SceneManagerV3::Update(float dt)
 		);
 	}
 	
-	/*
-	Run main thread
-	*/
+	
+	// Run main thread
 	UpdateObjects(
 		dt,
 		//0U,
@@ -112,13 +115,6 @@ void SceneManagerV3::Update(float dt)
 	{
 		threads[i].join();
 	}
-
-	t2 = Clock::now();
-
-	long long ns = std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count();
-	double s = static_cast<double>(ns * 0.000000001);
-
-	int apa = 0;
 
 
 	/*unsigned int nrOfObjects = m_dataStorage.GetNrOfObjects();
@@ -153,7 +149,8 @@ void SceneManagerV3::Update(float dt)
 
 void SceneManagerV3::Render()
 {
-	RenderGeometryPass();
+	//RenderGeometryPass();
+	RenderInstancedGeometryPass();
 	RenderLightPass();
 	RenderFinalPass();
 }
@@ -241,8 +238,8 @@ void SceneManagerV3::RenderGeometryPass()
 				Map and set the matrix index buffer
 				*/
 				int index[] = { static_cast<int>(k), 0, 0, 0 };
-				constantBufferManager->MapDataToBuffer(m_indexBufferIndex, static_cast<void*>(index));
-				constantBufferManager->SetConstantBufferToVertexShader(m_indexBufferIndex, 1);
+				constantBufferManager->MapDataToBuffer(m_idBufferIndex, static_cast<void*>(index));
+				constantBufferManager->SetConstantBufferToVertexShader(m_idBufferIndex, 1);
 
 				/*
 				Render object
@@ -293,8 +290,8 @@ void SceneManagerV3::RenderGeometryPass()
 				Map and set the matrix index buffer
 				*/
 				int index[] = { static_cast<int>(k), 0, 0, 0 };
-				constantBufferManager->MapDataToBuffer(m_indexBufferIndex, static_cast<void*>(index));
-				constantBufferManager->SetConstantBufferToVertexShader(m_indexBufferIndex, 1);
+				constantBufferManager->MapDataToBuffer(m_idBufferIndex, static_cast<void*>(index));
+				constantBufferManager->SetConstantBufferToVertexShader(m_idBufferIndex, 1);
 
 				/*
 				Render object
@@ -303,6 +300,407 @@ void SceneManagerV3::RenderGeometryPass()
 			}
 		}
 	}
+}
+void SceneManagerV3::RenderInstancedGeometryPass()
+{
+	ConstantBufferManager* constantBufferManager = m_frameWorkManager->GetConstantBufferManager();
+	TextureManager* textureManager = m_frameWorkManager->GetTextureManager();
+	VertexBufferManager* vertexBufferManager = m_frameWorkManager->GetVertexBufferManager();
+
+	/*
+	Set up instanced geometry pass render targets (same as regular geometry pass)
+	*/
+	m_frameWorkManager->SetGeometryPassRenderTargets();
+
+	/*
+	Set up sampler state (same as regular geometry pass)
+	*/
+	m_frameWorkManager->GetSamplerManager()->SetSamplerStateToPixelShader(SamplerType::CLAMP, 0);
+
+	/*
+	Set up instanced geometry pass shaders
+	*/
+	m_frameWorkManager->GetShaderManager()->SetShaders(ShaderTypeV2::INSTANCED_GEOMETRY_PASS);
+
+	/*
+	Set view- and projection matrix (same as regular geometry pass)
+	*/
+	constantBufferManager->SetConstantBufferToGeometryShader(m_viewProjBufferIndex, 0);
+
+
+#ifdef ONLY_28_MATRICES
+	int nrOfObjects = m_dataStorage.GetNrOfObjects();
+	if (nrOfObjects > 0)
+	{
+		int nrOfFullMatrixBuffers = nrOfObjects / NR_OF_MATRICES_IN_BUFFER;
+		int nrOfRemainingObjects = nrOfObjects - nrOfFullMatrixBuffers * NR_OF_MATRICES_IN_BUFFER;
+		const int maxNrOfInstances = 28U;
+
+		ObjectData* objectData = m_dataStorage.GetObjectData();
+		int* textureIndices = objectData->textureIndices;
+		int* modelIndices = objectData->modelIndices;
+		Math::Matrix* worldMatrices = objectData->worldMatrices;
+
+		Math::Matrix matrixBuffer[NR_OF_MATRICES_IN_BUFFER];
+
+		TexturedModel* model = nullptr;
+
+		/*
+		Render with full matrix buffers
+		*/
+		for (int i = 0; i < nrOfFullMatrixBuffers; i++)
+		{
+			/*
+			Copy world matrices into buffer
+			*/
+			for (int j = 0; j < NR_OF_MATRICES_IN_BUFFER; j++)
+			{
+				matrixBuffer[j] = worldMatrices[i * NR_OF_MATRICES_IN_BUFFER + j].GetTranspose();
+			}
+
+			/*
+			Map and set the matrix buffer
+			*/
+			constantBufferManager->MapDataToBuffer(m_matrixBufferIndex, static_cast<void*>(matrixBuffer));
+			constantBufferManager->SetConstantBufferToGeometryShader(m_matrixBufferIndex, 2);
+
+			/*
+			Set texture
+			*/
+			textureManager->SetTextureToPixelShader(textureIndices[0], 0);
+
+			/*
+			Set the vertex buffer
+			*/
+			model = m_modelManager->GetModel(modelIndices[0]);
+			vertexBufferManager->SetBufferToInputAssembler(model->vertexBufferIndex, 0);
+
+			/*
+			Map and set the instance index buffer
+			*/
+			int index[] = { 0, maxNrOfInstances, 0, 0 };
+			constantBufferManager->MapDataToBuffer(m_idBufferIndex, static_cast<void*>(index));
+			constantBufferManager->SetConstantBufferToGeometryShader(m_idBufferIndex, 1);
+
+			/*
+			Render object
+			*/
+			m_frameWorkManager->RenderGeometryPassWithCurrentSettings(model->nrOfVertices);
+		}
+
+		/*
+		Render the remaining object which did not fit in a full matrix buffer
+		*/
+		if (nrOfRemainingObjects > 0)
+		{
+			/*
+			Copy world matrices into buffer
+			*/
+			for (int i = 0; i < nrOfRemainingObjects; i++)
+			{
+				matrixBuffer[i] = worldMatrices[nrOfFullMatrixBuffers * NR_OF_MATRICES_IN_BUFFER + i].GetTranspose();
+			}
+
+			/*
+			Map and set the matrix buffer
+			*/
+			constantBufferManager->MapDataToBuffer(m_matrixBufferIndex, matrixBuffer);
+			constantBufferManager->SetConstantBufferToGeometryShader(m_matrixBufferIndex, 2);
+
+			/*
+			Set texture
+			*/
+			textureManager->SetTextureToPixelShader(textureIndices[0], 0);
+
+			/*
+			Set the vertex buffer
+			*/
+			model = m_modelManager->GetModel(modelIndices[0]);
+			vertexBufferManager->SetBufferToInputAssembler(model->vertexBufferIndex, 0);
+
+			/*
+			Set the instance index buffer
+			*/
+			int index[] = { 0, nrOfRemainingObjects, 0, 0 };
+			constantBufferManager->MapDataToBuffer(m_idBufferIndex, static_cast<void*>(index));
+			constantBufferManager->SetConstantBufferToGeometryShader(m_idBufferIndex, 1);
+
+			/*
+			Render object
+			*/
+			m_frameWorkManager->RenderGeometryPassWithCurrentSettings(model->nrOfVertices);
+		}
+	}
+
+
+#else
+	unsigned int nrOfObjects = m_dataStorage.GetNrOfObjects();
+	if (nrOfObjects > 0)
+	{
+		unsigned int nrOfFullMatrixBuffers = nrOfObjects / NR_OF_MATRICES_IN_BUFFER;
+		unsigned int nrOfRemainingObjects = nrOfObjects - nrOfFullMatrixBuffers * NR_OF_MATRICES_IN_BUFFER;
+		const unsigned int maxNrOfInstances = 28U;
+
+		ObjectData* objectData = m_dataStorage.GetObjectData();
+		int* textureIndices = objectData->textureIndices;
+		int* modelIndices = objectData->modelIndices;
+		Math::Matrix* worldMatrices = objectData->worldMatrices;
+
+		Math::Matrix matrixBuffer[NR_OF_MATRICES_IN_BUFFER];
+
+		TexturedModel* model = nullptr;
+
+		/*
+		========================================================================================================
+		*/
+		/*
+		Render with full matrix buffers
+		*/
+		for (unsigned int i = 0; i < nrOfFullMatrixBuffers; i++)
+		{
+			/*
+			Copy world matrices into buffer
+			*/
+
+			// Changing this loop to memcpy and transposing in Game.cpp had no effect on the FPS
+			//std::memcpy(matrixBuffer, &worldMatrices[i * NR_OF_MATRICES_IN_BUFFER], sizeof(Matrix) * NR_OF_MATRICES_IN_BUFFER);
+			for (unsigned int j = 0; j < NR_OF_MATRICES_IN_BUFFER; j++)
+			{
+				unsigned int currentObjectIndex = i * NR_OF_MATRICES_IN_BUFFER + j;
+				matrixBuffer[j] = worldMatrices[currentObjectIndex].GetTranspose();
+			}
+
+			/*
+			Map and set the matrix buffer
+			*/
+			constantBufferManager->MapDataToBuffer(m_matrixBufferIndex, static_cast<void*>(matrixBuffer));
+			constantBufferManager->SetConstantBufferToGeometryShader(m_matrixBufferIndex, 2);
+
+			/*
+			Set texture
+			*/
+			textureManager->SetTextureToPixelShader(textureIndices[0], 0);
+
+			/*
+			Set the vertex buffer
+			*/
+			model = m_modelManager->GetModel(modelIndices[0]);
+			vertexBufferManager->SetBufferToInputAssembler(model->vertexBufferIndex, 0);
+
+			/*
+			========================================================================================================
+			*/
+
+			/*
+			Map and set the matrix index buffer
+			*/
+			unsigned int nrOfFullInstancedCalls = NR_OF_MATRICES_IN_BUFFER / maxNrOfInstances;
+			unsigned int nrOfInstancedObjectsFullCalls = nrOfFullInstancedCalls * maxNrOfInstances;
+			unsigned int nrOfRemainingInstancedObjects = NR_OF_MATRICES_IN_BUFFER - nrOfInstancedObjectsFullCalls;
+
+			/*
+			========================================================================================================
+			*/
+			/*
+			Full instance passes
+			*/
+			for (unsigned int i = 0; i < nrOfFullInstancedCalls; i++)
+			{
+				int index[] = { static_cast<int>(i * maxNrOfInstances), static_cast<int>(maxNrOfInstances), 0, 0 };
+				constantBufferManager->MapDataToBuffer(m_idBufferIndex, static_cast<void*>(index));
+				constantBufferManager->SetConstantBufferToGeometryShader(m_idBufferIndex, 1);
+
+				/*
+				Render object
+				*/
+				m_frameWorkManager->RenderGeometryPassWithCurrentSettings(model->nrOfVertices);
+			}
+
+			/*
+			========================================================================================================
+			*/
+			/*
+			Remaining instance pass
+			*/
+			int index[] = { static_cast<int>(nrOfInstancedObjectsFullCalls), static_cast<int>(nrOfRemainingInstancedObjects), 0, 0 };
+			constantBufferManager->MapDataToBuffer(m_idBufferIndex, static_cast<void*>(index));
+			constantBufferManager->SetConstantBufferToGeometryShader(m_idBufferIndex, 1);
+
+			/*
+			Render object
+			*/
+			m_frameWorkManager->RenderGeometryPassWithCurrentSettings(model->nrOfVertices);
+		}
+
+		/*
+		========================================================================================================
+		*/
+		/*
+		Render the remaining object which did not fit in a full matrix buffer
+		*/
+		if (nrOfRemainingObjects > 0)
+		{
+			/*
+			Copy world matrices into buffer
+			*/
+
+			// Changing this loop to memcpy and transposing in Game.cpp had no effect on the FPS
+			//std::memcpy(matrixBuffer, &worldMatrices[nrOfFullMatrixBuffers * NR_OF_MATRICES_IN_BUFFER], sizeof(Matrix) * NR_OF_MATRICES_IN_BUFFER);
+			for (unsigned int i = 0; i < nrOfRemainingObjects; i++)
+			{
+				unsigned int currentObjectIndex = nrOfFullMatrixBuffers * NR_OF_MATRICES_IN_BUFFER + i;
+				matrixBuffer[i] = worldMatrices[currentObjectIndex].GetTranspose();
+			}
+
+			/*
+			Map and set the matrix buffer
+			*/
+			constantBufferManager->MapDataToBuffer(m_matrixBufferIndex, matrixBuffer);
+			constantBufferManager->SetConstantBufferToGeometryShader(m_matrixBufferIndex, 2);
+
+			/*
+			Set texture
+			*/
+			textureManager->SetTextureToPixelShader(textureIndices[0], 0);
+
+			/*
+			Set the vertex buffer
+			*/
+			model = m_modelManager->GetModel(modelIndices[0]);
+			vertexBufferManager->SetBufferToInputAssembler(model->vertexBufferIndex, 0);
+
+			/*
+			========================================================================================================
+			*/
+
+			/*
+			Map and set the matrix index buffer
+			*/
+			unsigned int nrOfFullInstancedCalls = nrOfRemainingObjects / maxNrOfInstances;
+			unsigned int nrOfInstancedObjectsFullCalls = nrOfFullInstancedCalls * maxNrOfInstances;
+			unsigned int nrOfRemainingInstancedObjects = nrOfRemainingObjects - nrOfInstancedObjectsFullCalls;
+
+			/*
+			========================================================================================================
+			*/
+			/*
+			Full instance passes
+			*/
+			for (unsigned int i = 0; i < nrOfFullInstancedCalls; i++)
+			{
+				int index[] = { static_cast<int>(i * maxNrOfInstances), static_cast<int>(maxNrOfInstances), 0, 0 };
+				constantBufferManager->MapDataToBuffer(m_idBufferIndex, static_cast<void*>(index));
+				constantBufferManager->SetConstantBufferToGeometryShader(m_idBufferIndex, 1);
+
+				/*
+				Render object
+				*/
+				m_frameWorkManager->RenderGeometryPassWithCurrentSettings(model->nrOfVertices);
+			}
+
+			/*
+			========================================================================================================
+			*/
+			/*
+			Remaining instance pass
+			*/
+			int index[] = { static_cast<int>(nrOfInstancedObjectsFullCalls), static_cast<int>(nrOfRemainingInstancedObjects), 0, 0 };
+			constantBufferManager->MapDataToBuffer(m_idBufferIndex, static_cast<void*>(index));
+			constantBufferManager->SetConstantBufferToGeometryShader(m_idBufferIndex, 1);
+
+			/*
+			Render object
+			*/
+			m_frameWorkManager->RenderGeometryPassWithCurrentSettings(model->nrOfVertices);
+		}
+	}
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+#ifdef REMOVED_CODE
+	unsigned int nrOfObjects = NR_OF_MATRICES_IN_BUFFER;// m_dataStorage.GetNrOfObjects();
+	//unsigned int nrOfObjects = m_dataStorage.GetNrOfObjects();
+	if (nrOfObjects > 0)
+	{
+		ObjectData* objectData = m_dataStorage.GetObjectData();
+		int* textureIndices = objectData->textureIndices;
+		int* modelIndices = objectData->modelIndices;
+		Math::Matrix* worldMatrices = objectData->worldMatrices;
+
+		Math::Matrix matrixBuffer[NR_OF_MATRICES_IN_BUFFER];
+
+		TexturedModel* model = nullptr;
+
+
+		for (unsigned int i = 0; i < nrOfObjects; i++)
+		{
+			matrixBuffer[i] = worldMatrices[i].GetTranspose();
+		}
+
+		/*
+		Map and set the matrix buffer
+		*/
+		constantBufferManager->MapDataToBuffer(m_matrixBufferIndex, matrixBuffer);
+		constantBufferManager->SetConstantBufferToGeometryShader(m_matrixBufferIndex, 2);
+
+		/*
+		Set texture
+		*/
+		textureManager->SetTextureToPixelShader(textureIndices[0], 0);
+
+		/*
+		Set the vertex buffer
+		*/
+		model = m_modelManager->GetModel(modelIndices[0]);
+		vertexBufferManager->SetBufferToInputAssembler(model->vertexBufferIndex, 0);
+
+		const unsigned int maxNrOfInstances = 28U;
+		/*
+		Map and set the matrix index buffer
+		*/
+		unsigned int nrOfFullInstancedCalls = nrOfObjects / maxNrOfInstances;
+		unsigned int nrOfObjectsRenderedInFullCalls = nrOfFullInstancedCalls * maxNrOfInstances;
+		unsigned int nrOfRemainingObjects = nrOfObjects - nrOfObjectsRenderedInFullCalls;
+
+		/*
+		Full instance passes
+		*/
+		for (unsigned int i = 0; i < nrOfFullInstancedCalls; i++)
+		{
+			int index[] = { i * maxNrOfInstances, maxNrOfInstances, 0, 0 };
+			constantBufferManager->MapDataToBuffer(m_idBufferIndex, static_cast<void*>(index));
+			constantBufferManager->SetConstantBufferToGeometryShader(m_idBufferIndex, 1);
+			
+			/*
+			Render object
+			*/
+			m_frameWorkManager->RenderGeometryPassWithCurrentSettings(model->nrOfVertices);
+		}
+
+		/*
+		Remaining instance pass
+		*/
+		int index[] = { nrOfObjectsRenderedInFullCalls, maxNrOfInstances, 0, 0 };
+		constantBufferManager->MapDataToBuffer(m_idBufferIndex, static_cast<void*>(index));
+		constantBufferManager->SetConstantBufferToGeometryShader(m_idBufferIndex, 1);
+
+		/*
+		Render object
+		*/
+		m_frameWorkManager->RenderGeometryPassWithCurrentSettings(model->nrOfVertices);
+	}
+#endif
 }
 void SceneManagerV3::RenderLightPass()
 {

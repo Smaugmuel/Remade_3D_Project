@@ -75,12 +75,14 @@ bool Game::Initialize()
 	int characterIndex = modelManager->LoadModel("SimpleCharacter.obj");
 	int cubeIndex = modelManager->LoadModel("cube_uv.obj");
 	int sphereIndex = modelManager->LoadModel("Sphere.obj");
+	int sphereLPIndex = modelManager->LoadModel("Sphere_LowPoly_AvgNormals.obj");
 	int cubeRedIndex = modelManager->LoadModel("cube_uv_red.obj");
 
 	int turretTextureIndex = materialManager->GetMaterial(modelManager->GetModel(turretIndex)->materialIndex)->textureIndex;
 	int characterTextureIndex = materialManager->GetMaterial(modelManager->GetModel(characterIndex)->materialIndex)->textureIndex;
 	int cubeTextureIndex = materialManager->GetMaterial(modelManager->GetModel(cubeIndex)->materialIndex)->textureIndex;
 	int sphereTextureIndex = materialManager->GetMaterial(modelManager->GetModel(sphereIndex)->materialIndex)->textureIndex;
+	int sphereLPTextureIndex = materialManager->GetMaterial(modelManager->GetModel(sphereLPIndex)->materialIndex)->textureIndex;
 	int cubeRedTextureIndex = materialManager->GetMaterial(modelManager->GetModel(cubeRedIndex)->materialIndex)->textureIndex;
 
 
@@ -93,8 +95,8 @@ bool Game::Initialize()
 	int* textureIndices = objectData->textureIndices;
 
 
-	const unsigned int nObjX = 127;
-	const unsigned int nObjZ = 64;
+	const unsigned int nObjX = 511;
+	const unsigned int nObjZ = 512;
 	Vector3f offset(4, 0, 4);
 	Vector3f startPos = Vector3f(static_cast<float>(nObjX) * offset.x, 0.0f, static_cast<float>(nObjZ) * offset.z) * -0.5f;
 
@@ -102,10 +104,12 @@ bool Game::Initialize()
 	{
 		for (int j = 0; j < nObjZ; j++)
 		{
-			int modelIndex = j % 2 == 0 ? turretIndex : characterIndex;
-			int textureIndex = j % 2 == 0 ? turretTextureIndex : characterTextureIndex;
+			/*int modelIndex = j % 2 == 0 ? turretIndex : characterIndex;
+			int textureIndex = j % 2 == 0 ? turretTextureIndex : characterTextureIndex;*/
 			/*int modelIndex = sphereIndex;
 			int textureIndex = sphereTextureIndex;*/
+			int modelIndex = sphereLPIndex;
+			int textureIndex = sphereLPTextureIndex;
 
 			ObjectV4* object = sceneManager->CreateObject();
 			if (!object)
@@ -146,8 +150,8 @@ bool Game::Initialize()
 	Create lights
 	*/
 	LightData* lightData = sceneManager->GetData()->GetLightData();
-	lightData->ambientColor = Vector3f(0.05f, 0.05f, 0.05f);
-	//lightData->ambientColor = Vector3f(1.0f, 1.0f, 1.0f);
+	//lightData->ambientColor = Vector3f(0.05f, 0.05f, 0.05f);
+	lightData->ambientColor = Vector3f(1.0f, 1.0f, 1.0f);
 
 	for (unsigned int i = 0; i < 3U; i++)
 	{
@@ -284,7 +288,7 @@ void Game::Run()
 				Vector3f* rotationAxises = objectData->rotationAxises;
 				Math::Sphere sphere;
 
-				srand(time(NULL));
+				srand(static_cast<unsigned int>(time(NULL)));
 
 				float minDistance = INFINITY;
 				int minDistanceIndex = -1;

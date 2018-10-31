@@ -18,18 +18,12 @@ struct ID3D11InputLayout;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 
-//enum class VSFlags
-//{
-//	RECEIVE_NORMAL = 1,
-//	RECEIVE_UV = 2,
-//	PASS_WPOS = 4
-//};
-
 enum class ShaderTypeV2
 {
 	GEOMETRY_PASS,
-	LIGHT_PASS,
+	INSTANCED_GEOMETRY_PASS,
 	SHADOW_PASS,
+	LIGHT_PASS,
 	FINAL_PASS
 };
 
@@ -43,23 +37,9 @@ public:
 
 	bool Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, int maxNrOfLights, int nrOfWorldMatricesInBuffer);
 
-
-	/*int CreateVertexShader(unsigned int flags);
-	//int CreateVertexShader(const std::string& fileName);
-	int CreateGeometryShader(const std::string& fileName);
-	int CreatePixelShader(const std::string& fileName);*/
-
-	/*bool SetVertexShaderToPipeline(int id);
-	bool SetGeometryShaderToPipeline(int id);
-	bool SetPixelShaderToPipeline(int id);*/
-
 	bool SetShaders(ShaderTypeV2 shaderType);
 
 private:
-	/*bool ValidVSID(int id);
-	bool ValidGSID(int id);
-	bool ValidPSID(int id);*/
-
 	ShaderCreatorV2 m_shaderCreator;
 	InputLayoutCreator m_inputLayoutCreator;
 

@@ -3,8 +3,13 @@
 #include "DataStorage.hpp"
 #include <vector>
 
+//#define ONLY_28_MATRICES
+//#define NR_OF_MATRICES_IN_BUFFER 28
+
 // The constant buffer size limit is 4096 float4's, which means 1024 float4x4's
+
 #define NR_OF_MATRICES_IN_BUFFER 1024
+
 
 static const unsigned int MAX_NR_OF_OBJECTS = MAX_NR_OF_OBJECT_INSTANCES;
 
@@ -59,6 +64,7 @@ private:
 	//void UpdateObjects(Vector3f* p, Vector3f* m, Math::Matrix* rm, Vector3f* ra, float* rs, Vector3f* s, Math::Matrix* wm);
 
 	void RenderGeometryPass();
+	void RenderInstancedGeometryPass();
 	void RenderLightPass();
 	void RenderFinalPass();
 
@@ -69,7 +75,9 @@ private:
 	int m_viewProjBufferIndex;
 	int m_lightBufferIndex;
 	int m_matrixBufferIndex;
-	int m_indexBufferIndex;
+	int m_idBufferIndex;
+	
+	
 
 	DataStorage m_dataStorage;
 

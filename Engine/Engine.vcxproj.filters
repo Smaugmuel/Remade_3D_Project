@@ -502,5 +502,6 @@
     <FxCompile Include="FrameWork\HLSL\PS_FinalPass.hlsl" />
     <FxCompile Include="FrameWork\HLSL\PS_LightPass.hlsl" />
     <FxCompile Include="FrameWork\HLSL\GS_Instancing.hlsl" />
+    <FxCompile Include="FrameWork\HLSL\GS_InstancingGeneric.hlsl" />
   </ItemGroup>
 </Project>
