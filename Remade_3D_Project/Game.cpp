@@ -95,8 +95,8 @@ bool Game::Initialize()
 	int* textureIndices = objectData->textureIndices;
 
 
-	const unsigned int nObjX = 511;
-	const unsigned int nObjZ = 512;
+	const unsigned int nObjX = 64;
+	const unsigned int nObjZ = 32;
 	Vector3f offset(4, 0, 4);
 	Vector3f startPos = Vector3f(static_cast<float>(nObjX) * offset.x, 0.0f, static_cast<float>(nObjZ) * offset.z) * -0.5f;
 
@@ -104,12 +104,12 @@ bool Game::Initialize()
 	{
 		for (int j = 0; j < nObjZ; j++)
 		{
-			/*int modelIndex = j % 2 == 0 ? turretIndex : characterIndex;
-			int textureIndex = j % 2 == 0 ? turretTextureIndex : characterTextureIndex;*/
+			int modelIndex = 0 % 2 == 0 ? turretIndex : characterIndex;
+			int textureIndex = 0 % 2 == 0 ? turretTextureIndex : characterTextureIndex;
 			/*int modelIndex = sphereIndex;
 			int textureIndex = sphereTextureIndex;*/
-			int modelIndex = sphereLPIndex;
-			int textureIndex = sphereLPTextureIndex;
+			/*int modelIndex = cubeTextureIndex;
+			int textureIndex = cubeTextureIndex;*/
 
 			ObjectV4* object = sceneManager->CreateObject();
 			if (!object)
@@ -231,9 +231,6 @@ void Game::Run()
 				objectData->textureIndices[0] = 1;
 			}
 		}
-		
-
-
 
 
 		if (m_engine.GetInput()->IsKeyPressed('G'))
@@ -286,9 +283,8 @@ void Game::Run()
 				Vector3f* positions = objectData->positions;
 				Vector3f* movements = objectData->movements;
 				Vector3f* rotationAxises = objectData->rotationAxises;
+				int* textures = objectData->textureIndices;
 				Math::Sphere sphere;
-
-				srand(static_cast<unsigned int>(time(NULL)));
 
 				float minDistance = INFINITY;
 				int minDistanceIndex = -1;
@@ -316,6 +312,7 @@ void Game::Run()
 					float randY = (static_cast<float>(rand() % 1000) * 0.002f) - 1.0f;
 					float randZ = (static_cast<float>(rand() % 1000) * 0.002f) - 1.0f;
 					movements[minDistanceIndex] = Vector3f(randX, randY, randZ).normalized() * 10.0f;
+					textures[minDistanceIndex] = 0;
 				}
 			}
 		}
